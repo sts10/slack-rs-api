@@ -1,4 +1,18 @@
 
+//=============================================================================
+//
+//                    WARNING: This file is AUTO-GENERATED
+//
+// Do not make changes directly to this file.
+//
+// If you would like to make a change to the library, please update the schema
+// definitions at https://github.com/slack-rs/slack-api-schemas
+//
+//=============================================================================
+
+
+
+
 
 #[allow(unused_imports)]
 use std::collections::HashMap;
@@ -34,7 +48,7 @@ pub fn access_logs<R>(client: &R,
         .map_err(|err| AccessLogsError::Client(err))
         .and_then(|result| {
                       serde_json::from_str::<AccessLogsResponse>(&result)
-                            .map_err(|e| AccessLogsError::MalformedResponse(e))
+                          .map_err(|e| AccessLogsError::MalformedResponse(e))
                   })
         .and_then(|o| o.into())
 }
@@ -78,11 +92,7 @@ impl<E: Error> Into<Result<AccessLogsResponse, AccessLogsError<E>>> for AccessLo
         if self.ok {
             Ok(self)
         } else {
-            Err(self.error
-                    .as_ref()
-                    .map(String::as_ref)
-                    .unwrap_or("")
-                    .into())
+            Err(self.error.as_ref().map(String::as_ref).unwrap_or("").into())
         }
     }
 }
@@ -108,12 +118,10 @@ pub enum AccessLogsError<E: Error> {
     InvalidCharset,
     /// The method was called via a POST request with Content-Type application/x-www-form-urlencoded or multipart/form-data, but the form data was either missing or syntactically invalid.
     InvalidFormData,
-    /// The method was called via a POST request, but the specified Content-Type was invalid. Valid types are: application/x-www-form-urlencoded multipart/form-data text/plain.
+    /// The method was called via a POST request, but the specified Content-Type was invalid. Valid types are: application/json application/x-www-form-urlencoded multipart/form-data text/plain.
     InvalidPostType,
     /// The method was called via a POST request and included a data payload, but the request did not include a Content-Type header.
     MissingPostType,
-    /// The team associated with your request is currently undergoing migration to an Enterprise Organization. Web API and other platform operations will be intermittently unavailable until the transition is complete.
-    TeamAddedToOrg,
     /// The method was called via a POST request, but the POST data was either missing or truncated.
     RequestTimeout,
     /// The response was not parseable as the expected object
@@ -139,7 +147,6 @@ impl<'a, E: Error> From<&'a str> for AccessLogsError<E> {
             "invalid_form_data" => AccessLogsError::InvalidFormData,
             "invalid_post_type" => AccessLogsError::InvalidPostType,
             "missing_post_type" => AccessLogsError::MissingPostType,
-            "team_added_to_org" => AccessLogsError::TeamAddedToOrg,
             "request_timeout" => AccessLogsError::RequestTimeout,
             _ => AccessLogsError::Unknown(s.to_owned()),
         }
@@ -156,19 +163,38 @@ impl<E: Error> Error for AccessLogsError<E> {
     fn description(&self) -> &str {
         match self {
             &AccessLogsError::PaidOnly => "paid_only: This is only available to paid teams.",
-            &AccessLogsError::OverPaginationLimit => "over_pagination_limit: It is not possible to request more than 1000 items per page or more than 100 pages.",
+            &AccessLogsError::OverPaginationLimit => {
+                "over_pagination_limit: It is not possible to request more than 1000 items per page or more than 100 pages."
+            }
             &AccessLogsError::NotAuthed => "not_authed: No authentication token provided.",
             &AccessLogsError::InvalidAuth => "invalid_auth: Invalid authentication token.",
-            &AccessLogsError::AccountInactive => "account_inactive: Authentication token is for a deleted user or team.",
-            &AccessLogsError::UserIsBot => "user_is_bot: This method cannot be called by a bot user.",
-            &AccessLogsError::InvalidArgName => "invalid_arg_name: The method was passed an argument whose name falls outside the bounds of common decency. This includes very long names and names with non-alphanumeric characters other than _. If you get this error, it is typically an indication that you have made a very malformed API call.",
-            &AccessLogsError::InvalidArrayArg => "invalid_array_arg: The method was passed a PHP-style array argument (e.g. with a name like foo[7]). These are never valid with the Slack API.",
-            &AccessLogsError::InvalidCharset => "invalid_charset: The method was called via a POST request, but the charset specified in the Content-Type header was invalid. Valid charset names are: utf-8 iso-8859-1.",
-            &AccessLogsError::InvalidFormData => "invalid_form_data: The method was called via a POST request with Content-Type application/x-www-form-urlencoded or multipart/form-data, but the form data was either missing or syntactically invalid.",
-            &AccessLogsError::InvalidPostType => "invalid_post_type: The method was called via a POST request, but the specified Content-Type was invalid. Valid types are: application/x-www-form-urlencoded multipart/form-data text/plain.",
-            &AccessLogsError::MissingPostType => "missing_post_type: The method was called via a POST request and included a data payload, but the request did not include a Content-Type header.",
-            &AccessLogsError::TeamAddedToOrg => "team_added_to_org: The team associated with your request is currently undergoing migration to an Enterprise Organization. Web API and other platform operations will be intermittently unavailable until the transition is complete.",
-            &AccessLogsError::RequestTimeout => "request_timeout: The method was called via a POST request, but the POST data was either missing or truncated.",
+            &AccessLogsError::AccountInactive => {
+                "account_inactive: Authentication token is for a deleted user or team."
+            }
+            &AccessLogsError::UserIsBot => {
+                "user_is_bot: This method cannot be called by a bot user."
+            }
+            &AccessLogsError::InvalidArgName => {
+                "invalid_arg_name: The method was passed an argument whose name falls outside the bounds of common decency. This includes very long names and names with non-alphanumeric characters other than _. If you get this error, it is typically an indication that you have made a very malformed API call."
+            }
+            &AccessLogsError::InvalidArrayArg => {
+                "invalid_array_arg: The method was passed a PHP-style array argument (e.g. with a name like foo[7]). These are never valid with the Slack API."
+            }
+            &AccessLogsError::InvalidCharset => {
+                "invalid_charset: The method was called via a POST request, but the charset specified in the Content-Type header was invalid. Valid charset names are: utf-8 iso-8859-1."
+            }
+            &AccessLogsError::InvalidFormData => {
+                "invalid_form_data: The method was called via a POST request with Content-Type application/x-www-form-urlencoded or multipart/form-data, but the form data was either missing or syntactically invalid."
+            }
+            &AccessLogsError::InvalidPostType => {
+                "invalid_post_type: The method was called via a POST request, but the specified Content-Type was invalid. Valid types are: application/json application/x-www-form-urlencoded multipart/form-data text/plain."
+            }
+            &AccessLogsError::MissingPostType => {
+                "missing_post_type: The method was called via a POST request and included a data payload, but the request did not include a Content-Type header."
+            }
+            &AccessLogsError::RequestTimeout => {
+                "request_timeout: The method was called via a POST request, but the POST data was either missing or truncated."
+            }
             &AccessLogsError::MalformedResponse(ref e) => e.description(),
             &AccessLogsError::Unknown(ref s) => s,
             &AccessLogsError::Client(ref inner) => inner.description(),
@@ -204,7 +230,7 @@ pub fn billable_info<R>(client: &R,
         .map_err(|err| BillableInfoError::Client(err))
         .and_then(|result| {
                       serde_json::from_str::<BillableInfoResponse>(&result)
-                            .map_err(|e| BillableInfoError::MalformedResponse(e))
+                          .map_err(|e| BillableInfoError::MalformedResponse(e))
                   })
         .and_then(|o| o.into())
 }
@@ -229,11 +255,7 @@ impl<E: Error> Into<Result<BillableInfoResponse, BillableInfoError<E>>> for Bill
         if self.ok {
             Ok(self)
         } else {
-            Err(self.error
-                    .as_ref()
-                    .map(String::as_ref)
-                    .unwrap_or("")
-                    .into())
+            Err(self.error.as_ref().map(String::as_ref).unwrap_or("").into())
         }
     }
 }
@@ -257,12 +279,10 @@ pub enum BillableInfoError<E: Error> {
     InvalidCharset,
     /// The method was called via a POST request with Content-Type application/x-www-form-urlencoded or multipart/form-data, but the form data was either missing or syntactically invalid.
     InvalidFormData,
-    /// The method was called via a POST request, but the specified Content-Type was invalid. Valid types are: application/x-www-form-urlencoded multipart/form-data text/plain.
+    /// The method was called via a POST request, but the specified Content-Type was invalid. Valid types are: application/json application/x-www-form-urlencoded multipart/form-data text/plain.
     InvalidPostType,
     /// The method was called via a POST request and included a data payload, but the request did not include a Content-Type header.
     MissingPostType,
-    /// The team associated with your request is currently undergoing migration to an Enterprise Organization. Web API and other platform operations will be intermittently unavailable until the transition is complete.
-    TeamAddedToOrg,
     /// The method was called via a POST request, but the POST data was either missing or truncated.
     RequestTimeout,
     /// The response was not parseable as the expected object
@@ -287,7 +307,6 @@ impl<'a, E: Error> From<&'a str> for BillableInfoError<E> {
             "invalid_form_data" => BillableInfoError::InvalidFormData,
             "invalid_post_type" => BillableInfoError::InvalidPostType,
             "missing_post_type" => BillableInfoError::MissingPostType,
-            "team_added_to_org" => BillableInfoError::TeamAddedToOrg,
             "request_timeout" => BillableInfoError::RequestTimeout,
             _ => BillableInfoError::Unknown(s.to_owned()),
         }
@@ -303,19 +322,38 @@ impl<E: Error> fmt::Display for BillableInfoError<E> {
 impl<E: Error> Error for BillableInfoError<E> {
     fn description(&self) -> &str {
         match self {
-            &BillableInfoError::UserNotFound => "user_not_found: Unable to find the requested user.",
+            &BillableInfoError::UserNotFound => {
+                "user_not_found: Unable to find the requested user."
+            }
             &BillableInfoError::NotAuthed => "not_authed: No authentication token provided.",
             &BillableInfoError::InvalidAuth => "invalid_auth: Invalid authentication token.",
-            &BillableInfoError::AccountInactive => "account_inactive: Authentication token is for a deleted user or team.",
-            &BillableInfoError::UserIsBot => "user_is_bot: This method cannot be called by a bot user.",
-            &BillableInfoError::InvalidArgName => "invalid_arg_name: The method was passed an argument whose name falls outside the bounds of common decency. This includes very long names and names with non-alphanumeric characters other than _. If you get this error, it is typically an indication that you have made a very malformed API call.",
-            &BillableInfoError::InvalidArrayArg => "invalid_array_arg: The method was passed a PHP-style array argument (e.g. with a name like foo[7]). These are never valid with the Slack API.",
-            &BillableInfoError::InvalidCharset => "invalid_charset: The method was called via a POST request, but the charset specified in the Content-Type header was invalid. Valid charset names are: utf-8 iso-8859-1.",
-            &BillableInfoError::InvalidFormData => "invalid_form_data: The method was called via a POST request with Content-Type application/x-www-form-urlencoded or multipart/form-data, but the form data was either missing or syntactically invalid.",
-            &BillableInfoError::InvalidPostType => "invalid_post_type: The method was called via a POST request, but the specified Content-Type was invalid. Valid types are: application/x-www-form-urlencoded multipart/form-data text/plain.",
-            &BillableInfoError::MissingPostType => "missing_post_type: The method was called via a POST request and included a data payload, but the request did not include a Content-Type header.",
-            &BillableInfoError::TeamAddedToOrg => "team_added_to_org: The team associated with your request is currently undergoing migration to an Enterprise Organization. Web API and other platform operations will be intermittently unavailable until the transition is complete.",
-            &BillableInfoError::RequestTimeout => "request_timeout: The method was called via a POST request, but the POST data was either missing or truncated.",
+            &BillableInfoError::AccountInactive => {
+                "account_inactive: Authentication token is for a deleted user or team."
+            }
+            &BillableInfoError::UserIsBot => {
+                "user_is_bot: This method cannot be called by a bot user."
+            }
+            &BillableInfoError::InvalidArgName => {
+                "invalid_arg_name: The method was passed an argument whose name falls outside the bounds of common decency. This includes very long names and names with non-alphanumeric characters other than _. If you get this error, it is typically an indication that you have made a very malformed API call."
+            }
+            &BillableInfoError::InvalidArrayArg => {
+                "invalid_array_arg: The method was passed a PHP-style array argument (e.g. with a name like foo[7]). These are never valid with the Slack API."
+            }
+            &BillableInfoError::InvalidCharset => {
+                "invalid_charset: The method was called via a POST request, but the charset specified in the Content-Type header was invalid. Valid charset names are: utf-8 iso-8859-1."
+            }
+            &BillableInfoError::InvalidFormData => {
+                "invalid_form_data: The method was called via a POST request with Content-Type application/x-www-form-urlencoded or multipart/form-data, but the form data was either missing or syntactically invalid."
+            }
+            &BillableInfoError::InvalidPostType => {
+                "invalid_post_type: The method was called via a POST request, but the specified Content-Type was invalid. Valid types are: application/json application/x-www-form-urlencoded multipart/form-data text/plain."
+            }
+            &BillableInfoError::MissingPostType => {
+                "missing_post_type: The method was called via a POST request and included a data payload, but the request did not include a Content-Type header."
+            }
+            &BillableInfoError::RequestTimeout => {
+                "request_timeout: The method was called via a POST request, but the POST data was either missing or truncated."
+            }
             &BillableInfoError::MalformedResponse(ref e) => e.description(),
             &BillableInfoError::Unknown(ref s) => s,
             &BillableInfoError::Client(ref inner) => inner.description(),
@@ -345,7 +383,7 @@ pub fn info<R>(client: &R, token: &str) -> Result<InfoResponse, InfoError<R::Err
         .map_err(|err| InfoError::Client(err))
         .and_then(|result| {
                       serde_json::from_str::<InfoResponse>(&result)
-                            .map_err(|e| InfoError::MalformedResponse(e))
+                          .map_err(|e| InfoError::MalformedResponse(e))
                   })
         .and_then(|o| o.into())
 }
@@ -364,11 +402,7 @@ impl<E: Error> Into<Result<InfoResponse, InfoError<E>>> for InfoResponse {
         if self.ok {
             Ok(self)
         } else {
-            Err(self.error
-                    .as_ref()
-                    .map(String::as_ref)
-                    .unwrap_or("")
-                    .into())
+            Err(self.error.as_ref().map(String::as_ref).unwrap_or("").into())
         }
     }
 }
@@ -388,12 +422,10 @@ pub enum InfoError<E: Error> {
     InvalidCharset,
     /// The method was called via a POST request with Content-Type application/x-www-form-urlencoded or multipart/form-data, but the form data was either missing or syntactically invalid.
     InvalidFormData,
-    /// The method was called via a POST request, but the specified Content-Type was invalid. Valid types are: application/x-www-form-urlencoded multipart/form-data text/plain.
+    /// The method was called via a POST request, but the specified Content-Type was invalid. Valid types are: application/json application/x-www-form-urlencoded multipart/form-data text/plain.
     InvalidPostType,
     /// The method was called via a POST request and included a data payload, but the request did not include a Content-Type header.
     MissingPostType,
-    /// The team associated with your request is currently undergoing migration to an Enterprise Organization. Web API and other platform operations will be intermittently unavailable until the transition is complete.
-    TeamAddedToOrg,
     /// The method was called via a POST request, but the POST data was either missing or truncated.
     RequestTimeout,
     /// The response was not parseable as the expected object
@@ -416,7 +448,6 @@ impl<'a, E: Error> From<&'a str> for InfoError<E> {
             "invalid_form_data" => InfoError::InvalidFormData,
             "invalid_post_type" => InfoError::InvalidPostType,
             "missing_post_type" => InfoError::MissingPostType,
-            "team_added_to_org" => InfoError::TeamAddedToOrg,
             "request_timeout" => InfoError::RequestTimeout,
             _ => InfoError::Unknown(s.to_owned()),
         }
@@ -434,15 +465,30 @@ impl<E: Error> Error for InfoError<E> {
         match self {
             &InfoError::NotAuthed => "not_authed: No authentication token provided.",
             &InfoError::InvalidAuth => "invalid_auth: Invalid authentication token.",
-            &InfoError::AccountInactive => "account_inactive: Authentication token is for a deleted user or team.",
-            &InfoError::InvalidArgName => "invalid_arg_name: The method was passed an argument whose name falls outside the bounds of common decency. This includes very long names and names with non-alphanumeric characters other than _. If you get this error, it is typically an indication that you have made a very malformed API call.",
-            &InfoError::InvalidArrayArg => "invalid_array_arg: The method was passed a PHP-style array argument (e.g. with a name like foo[7]). These are never valid with the Slack API.",
-            &InfoError::InvalidCharset => "invalid_charset: The method was called via a POST request, but the charset specified in the Content-Type header was invalid. Valid charset names are: utf-8 iso-8859-1.",
-            &InfoError::InvalidFormData => "invalid_form_data: The method was called via a POST request with Content-Type application/x-www-form-urlencoded or multipart/form-data, but the form data was either missing or syntactically invalid.",
-            &InfoError::InvalidPostType => "invalid_post_type: The method was called via a POST request, but the specified Content-Type was invalid. Valid types are: application/x-www-form-urlencoded multipart/form-data text/plain.",
-            &InfoError::MissingPostType => "missing_post_type: The method was called via a POST request and included a data payload, but the request did not include a Content-Type header.",
-            &InfoError::TeamAddedToOrg => "team_added_to_org: The team associated with your request is currently undergoing migration to an Enterprise Organization. Web API and other platform operations will be intermittently unavailable until the transition is complete.",
-            &InfoError::RequestTimeout => "request_timeout: The method was called via a POST request, but the POST data was either missing or truncated.",
+            &InfoError::AccountInactive => {
+                "account_inactive: Authentication token is for a deleted user or team."
+            }
+            &InfoError::InvalidArgName => {
+                "invalid_arg_name: The method was passed an argument whose name falls outside the bounds of common decency. This includes very long names and names with non-alphanumeric characters other than _. If you get this error, it is typically an indication that you have made a very malformed API call."
+            }
+            &InfoError::InvalidArrayArg => {
+                "invalid_array_arg: The method was passed a PHP-style array argument (e.g. with a name like foo[7]). These are never valid with the Slack API."
+            }
+            &InfoError::InvalidCharset => {
+                "invalid_charset: The method was called via a POST request, but the charset specified in the Content-Type header was invalid. Valid charset names are: utf-8 iso-8859-1."
+            }
+            &InfoError::InvalidFormData => {
+                "invalid_form_data: The method was called via a POST request with Content-Type application/x-www-form-urlencoded or multipart/form-data, but the form data was either missing or syntactically invalid."
+            }
+            &InfoError::InvalidPostType => {
+                "invalid_post_type: The method was called via a POST request, but the specified Content-Type was invalid. Valid types are: application/json application/x-www-form-urlencoded multipart/form-data text/plain."
+            }
+            &InfoError::MissingPostType => {
+                "missing_post_type: The method was called via a POST request and included a data payload, but the request did not include a Content-Type header."
+            }
+            &InfoError::RequestTimeout => {
+                "request_timeout: The method was called via a POST request, but the POST data was either missing or truncated."
+            }
             &InfoError::MalformedResponse(ref e) => e.description(),
             &InfoError::Unknown(ref s) => s,
             &InfoError::Client(ref inner) => inner.description(),
@@ -488,7 +534,7 @@ pub fn integration_logs<R>(client: &R,
         .map_err(|err| IntegrationLogsError::Client(err))
         .and_then(|result| {
                       serde_json::from_str::<IntegrationLogsResponse>(&result)
-                            .map_err(|e| IntegrationLogsError::MalformedResponse(e))
+                          .map_err(|e| IntegrationLogsError::MalformedResponse(e))
                   })
         .and_then(|o| o.into())
 }
@@ -540,11 +586,7 @@ impl<E: Error> Into<Result<IntegrationLogsResponse, IntegrationLogsError<E>>>
         if self.ok {
             Ok(self)
         } else {
-            Err(self.error
-                    .as_ref()
-                    .map(String::as_ref)
-                    .unwrap_or("")
-                    .into())
+            Err(self.error.as_ref().map(String::as_ref).unwrap_or("").into())
         }
     }
 }
@@ -566,12 +608,10 @@ pub enum IntegrationLogsError<E: Error> {
     InvalidCharset,
     /// The method was called via a POST request with Content-Type application/x-www-form-urlencoded or multipart/form-data, but the form data was either missing or syntactically invalid.
     InvalidFormData,
-    /// The method was called via a POST request, but the specified Content-Type was invalid. Valid types are: application/x-www-form-urlencoded multipart/form-data text/plain.
+    /// The method was called via a POST request, but the specified Content-Type was invalid. Valid types are: application/json application/x-www-form-urlencoded multipart/form-data text/plain.
     InvalidPostType,
     /// The method was called via a POST request and included a data payload, but the request did not include a Content-Type header.
     MissingPostType,
-    /// The team associated with your request is currently undergoing migration to an Enterprise Organization. Web API and other platform operations will be intermittently unavailable until the transition is complete.
-    TeamAddedToOrg,
     /// The method was called via a POST request, but the POST data was either missing or truncated.
     RequestTimeout,
     /// The response was not parseable as the expected object
@@ -595,7 +635,6 @@ impl<'a, E: Error> From<&'a str> for IntegrationLogsError<E> {
             "invalid_form_data" => IntegrationLogsError::InvalidFormData,
             "invalid_post_type" => IntegrationLogsError::InvalidPostType,
             "missing_post_type" => IntegrationLogsError::MissingPostType,
-            "team_added_to_org" => IntegrationLogsError::TeamAddedToOrg,
             "request_timeout" => IntegrationLogsError::RequestTimeout,
             _ => IntegrationLogsError::Unknown(s.to_owned()),
         }
@@ -613,16 +652,33 @@ impl<E: Error> Error for IntegrationLogsError<E> {
         match self {
             &IntegrationLogsError::NotAuthed => "not_authed: No authentication token provided.",
             &IntegrationLogsError::InvalidAuth => "invalid_auth: Invalid authentication token.",
-            &IntegrationLogsError::AccountInactive => "account_inactive: Authentication token is for a deleted user or team.",
-            &IntegrationLogsError::UserIsBot => "user_is_bot: This method cannot be called by a bot user.",
-            &IntegrationLogsError::InvalidArgName => "invalid_arg_name: The method was passed an argument whose name falls outside the bounds of common decency. This includes very long names and names with non-alphanumeric characters other than _. If you get this error, it is typically an indication that you have made a very malformed API call.",
-            &IntegrationLogsError::InvalidArrayArg => "invalid_array_arg: The method was passed a PHP-style array argument (e.g. with a name like foo[7]). These are never valid with the Slack API.",
-            &IntegrationLogsError::InvalidCharset => "invalid_charset: The method was called via a POST request, but the charset specified in the Content-Type header was invalid. Valid charset names are: utf-8 iso-8859-1.",
-            &IntegrationLogsError::InvalidFormData => "invalid_form_data: The method was called via a POST request with Content-Type application/x-www-form-urlencoded or multipart/form-data, but the form data was either missing or syntactically invalid.",
-            &IntegrationLogsError::InvalidPostType => "invalid_post_type: The method was called via a POST request, but the specified Content-Type was invalid. Valid types are: application/x-www-form-urlencoded multipart/form-data text/plain.",
-            &IntegrationLogsError::MissingPostType => "missing_post_type: The method was called via a POST request and included a data payload, but the request did not include a Content-Type header.",
-            &IntegrationLogsError::TeamAddedToOrg => "team_added_to_org: The team associated with your request is currently undergoing migration to an Enterprise Organization. Web API and other platform operations will be intermittently unavailable until the transition is complete.",
-            &IntegrationLogsError::RequestTimeout => "request_timeout: The method was called via a POST request, but the POST data was either missing or truncated.",
+            &IntegrationLogsError::AccountInactive => {
+                "account_inactive: Authentication token is for a deleted user or team."
+            }
+            &IntegrationLogsError::UserIsBot => {
+                "user_is_bot: This method cannot be called by a bot user."
+            }
+            &IntegrationLogsError::InvalidArgName => {
+                "invalid_arg_name: The method was passed an argument whose name falls outside the bounds of common decency. This includes very long names and names with non-alphanumeric characters other than _. If you get this error, it is typically an indication that you have made a very malformed API call."
+            }
+            &IntegrationLogsError::InvalidArrayArg => {
+                "invalid_array_arg: The method was passed a PHP-style array argument (e.g. with a name like foo[7]). These are never valid with the Slack API."
+            }
+            &IntegrationLogsError::InvalidCharset => {
+                "invalid_charset: The method was called via a POST request, but the charset specified in the Content-Type header was invalid. Valid charset names are: utf-8 iso-8859-1."
+            }
+            &IntegrationLogsError::InvalidFormData => {
+                "invalid_form_data: The method was called via a POST request with Content-Type application/x-www-form-urlencoded or multipart/form-data, but the form data was either missing or syntactically invalid."
+            }
+            &IntegrationLogsError::InvalidPostType => {
+                "invalid_post_type: The method was called via a POST request, but the specified Content-Type was invalid. Valid types are: application/json application/x-www-form-urlencoded multipart/form-data text/plain."
+            }
+            &IntegrationLogsError::MissingPostType => {
+                "missing_post_type: The method was called via a POST request and included a data payload, but the request did not include a Content-Type header."
+            }
+            &IntegrationLogsError::RequestTimeout => {
+                "request_timeout: The method was called via a POST request, but the POST data was either missing or truncated."
+            }
             &IntegrationLogsError::MalformedResponse(ref e) => e.description(),
             &IntegrationLogsError::Unknown(ref s) => s,
             &IntegrationLogsError::Client(ref inner) => inner.description(),

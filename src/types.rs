@@ -1,3 +1,15 @@
+
+//=============================================================================
+//
+//                    WARNING: This file is AUTO-GENERATED
+//
+// Do not make changes directly to this file.
+//
+// If you would like to make a change to the library, please update the schema
+// definitions at https://github.com/slack-rs/slack-api-schemas
+//
+//=============================================================================
+
 use std::collections::HashMap;
 
 #[derive(Clone, Debug, Deserialize)]
@@ -859,32 +871,6 @@ pub struct User {
 }
 
 #[derive(Clone, Debug, Deserialize)]
-pub struct Usergroup {
-    pub auto_type: Option<String>,
-    pub created_by: Option<String>,
-    pub date_create: Option<i32>,
-    pub date_delete: Option<i32>,
-    pub date_update: Option<i32>,
-    pub deleted_by: Option<String>,
-    pub description: Option<String>,
-    pub handle: Option<String>,
-    pub id: Option<String>,
-    pub is_external: Option<bool>,
-    pub is_usergroup: Option<bool>,
-    pub name: Option<String>,
-    pub prefs: Option<UsergroupPrefs>,
-    pub team_id: Option<String>,
-    pub updated_by: Option<String>,
-    pub user_count: Option<String>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-pub struct UsergroupPrefs {
-    pub channels: Option<Vec<String>>,
-    pub groups: Option<Vec<String>>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
 pub struct UserProfile {
     pub email: Option<String>,
     #[serde(deserialize_with = "::optional_struct_or_empty_array")]
@@ -909,4 +895,30 @@ pub struct UserProfileFields {
     pub alt: Option<String>,
     pub label: Option<String>,
     pub value: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct Usergroup {
+    pub auto_type: Option<String>,
+    pub created_by: Option<String>,
+    pub date_create: Option<i32>,
+    pub date_delete: Option<i32>,
+    pub date_update: Option<i32>,
+    pub deleted_by: Option<String>,
+    pub description: Option<String>,
+    pub handle: Option<String>,
+    pub id: Option<String>,
+    pub is_external: Option<bool>,
+    pub is_usergroup: Option<bool>,
+    pub name: Option<String>,
+    pub prefs: Option<UsergroupPrefs>,
+    pub team_id: Option<String>,
+    pub updated_by: Option<String>,
+    pub user_count: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct UsergroupPrefs {
+    pub channels: Option<Vec<String>>,
+    pub groups: Option<Vec<String>>,
 }
