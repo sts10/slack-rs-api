@@ -216,7 +216,7 @@ pub enum Message {
     Standard(MessageStandard),
     BotMessage(MessageBotMessage),
     BotAdd(MessageBotAdd),
-    //BotRemove(MessageBotRemove), // TODO: I aasume this must be here, but I've never actually seen one
+    BotRemove(MessageBotRemove), // TODO: I aasume this must be here, but I've never actually seen one
     ChannelArchive(MessageChannelArchive),
     ChannelJoin(MessageChannelJoin),
     ChannelLeave(MessageChannelLeave),
@@ -240,6 +240,8 @@ pub enum Message {
     MessageReplied(MessageMessageReplied),
     PinnedItem(MessagePinnedItem),
     ReplyBroadcast(MessageReplyBroadcast),
+    SlackbotResponse(MessageSlackbotResponse),
+    ThreadBroadcast(MessageThreadBroadcast),
     UnpinnedItem(MessageUnpinnedItem),
 }
 
@@ -278,6 +280,7 @@ impl<'de> ::serde::Deserialize<'de> for Message {
             "message_replied",
             "pinned_item",
             "reply_broadcast",
+            "slackbot_response",
             "unpinned_item",
         ];
 
@@ -298,6 +301,11 @@ impl<'de> ::serde::Deserialize<'de> for Message {
                     "bot_add" => {
                         ::serde_json::from_value::<MessageBotAdd>(value.clone())
                             .map(Message::BotAdd)
+                            .map_err(|e| D::Error::custom(&format!("{}", e)))
+                    }
+                    "bot_remove" => {
+                        ::serde_json::from_value::<MessageBotRemove>(value.clone())
+                            .map(Message::BotRemove)
                             .map_err(|e| D::Error::custom(&format!("{}", e)))
                     } 
                     "channel_archive" => {
@@ -415,6 +423,16 @@ impl<'de> ::serde::Deserialize<'de> for Message {
                             .map(Message::ReplyBroadcast)
                             .map_err(|e| D::Error::custom(&format!("{}", e)))
                     }
+                    "slackbot_response" => {
+                        ::serde_json::from_value::<MessageSlackbotResponse>(value.clone())
+                            .map(Message::SlackbotResponse)
+                            .map_err(|e| D::Error::custom(&format!("{}", e)))
+                    }
+                    "thread_broadcast" => {
+                        ::serde_json::from_value::<MessageThreadBroadcast>(value.clone())
+                            .map(Message::ThreadBroadcast)
+                            .map_err(|e| D::Error::custom(&format!("{}", e)))
+                    }
                     "unpinned_item" => {
                         ::serde_json::from_value::<MessageUnpinnedItem>(value.clone())
                             .map(Message::UnpinnedItem)
@@ -440,11 +458,23 @@ impl<'de> ::serde::Deserialize<'de> for Message {
 pub struct MessageBotAdd {
     pub bot_id: Option<String>,
     pub bot_link: Option<String>,
-    //pub subtype: Option<String>,
+    pub subtype: Option<String>,
     pub text: Option<String>,
     pub ts: Option<String>,
-    //#[serde(rename = "type")]
-    //pub ty: Option<String>,
+    #[serde(rename = "type")]
+    pub ty: Option<String>,
+    pub user: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct MessageBotRemove {
+    pub bot_id: Option<String>,
+    pub bot_link: Option<String>,
+    pub subtype: Option<String>,
+    pub text: Option<String>,
+    pub ts: Option<String>,
+    #[serde(rename = "type")]
+    pub ty: Option<String>,
     pub user: Option<String>,
 }
 
@@ -970,18 +1000,30 @@ pub struct MessageSlackbotResponse {
     pub ts: Option<String>,
     #[serde(rename = "type")]
     pub ty: Option<String>,
+    pub subtype: Option<String>,
     pub user: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageThreadBroadcast {
-    pub text: Option<String>,
-    //#[serde(rename = "type")]
-    //pub ty: Option<String>,
-    pub thread_ts: Option<String>,
+    pub attachments: Option<Vec<MessageThreadBroadcastAttachment>>,
     pub root: Option<MessageStandard>,
+    pub text: Option<String>,
+    pub thread_ts: Option<String>,
     pub user: Option<String>,
     pub ts: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct MessageThreadBroadcastAttachment {
+    pub fallback: Option<String>,
+    pub from_url: Option<String>,
+    pub id: Option<i32>, //TODO: This looks like we may also need an ID type wtf really Slack
+    pub service_icon: Option<String>,
+    pub service_name: Option<String>,
+    pub text: Option<String>,
+    pub title: Option<String>,
+    pub title_link: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
