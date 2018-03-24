@@ -216,7 +216,7 @@ pub enum Message {
     Standard(MessageStandard),
     BotMessage(MessageBotMessage),
     BotAdd(MessageBotAdd),
-    BotRemove(MessageBotRemove), // TODO: I aasume this must be here, but I've never actually seen one
+    BotRemove(MessageBotRemove),
     ChannelArchive(MessageChannelArchive),
     ChannelJoin(MessageChannelJoin),
     ChannelLeave(MessageChannelLeave),
