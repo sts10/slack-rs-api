@@ -254,7 +254,7 @@ impl<'de> ::serde::Deserialize<'de> for Message {
             "standard",
             "bot_message",
             "bot_add",
-            //"bot_remove",
+            "bot_remove",
             "channel_archive",
             "channel_join",
             "channel_leave",
