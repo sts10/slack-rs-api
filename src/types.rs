@@ -215,7 +215,7 @@ pub struct Im {
 pub enum Message {
     Standard(MessageStandard),
     BotMessage(MessageBotMessage),
-    //BotAdd(MessageBotAdd),
+    BotAdd(MessageBotAdd),
     //BotRemove(MessageBotRemove), // TODO: I aasume this must be here, but I've never actually seen one
     ChannelArchive(MessageChannelArchive),
     ChannelJoin(MessageChannelJoin),
@@ -253,6 +253,8 @@ impl<'de> ::serde::Deserialize<'de> for Message {
         const VARIANTS: &'static [&'static str] = &[
             "standard",
             "bot_message",
+            "bot_add",
+            //"bot_remove",
             "channel_archive",
             "channel_join",
             "channel_leave",
@@ -293,6 +295,11 @@ impl<'de> ::serde::Deserialize<'de> for Message {
                             .map(Message::BotMessage)
                             .map_err(|e| D::Error::custom(&format!("{}", e)))
                     }
+                    "bot_add" => {
+                        ::serde_json::from_value::<MessageBotAdd>(value.clone())
+                            .map(Message::BotAdd)
+                            .map_err(|e| D::Error::custom(&format!("{}", e)))
+                    } 
                     "channel_archive" => {
                         ::serde_json::from_value::<MessageChannelArchive>(value.clone())
                             .map(Message::ChannelArchive)
@@ -427,6 +434,18 @@ impl<'de> ::serde::Deserialize<'de> for Message {
                 .map_err(|e| D::Error::custom(&format!("{}", e)))
         }
     }
+}
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct MessageBotAdd {
+    pub bot_id: Option<String>,
+    pub bot_link: Option<String>,
+    //pub subtype: Option<String>,
+    pub text: Option<String>,
+    pub ts: Option<String>,
+    //#[serde(rename = "type")]
+    //pub ty: Option<String>,
+    pub user: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -944,6 +963,26 @@ pub struct MessageUnpinnedItem {
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageUnpinnedItemItem {}
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct MessageSlackbotResponse {
+    pub text: Option<String>,
+    pub ts: Option<String>,
+    #[serde(rename = "type")]
+    pub ty: Option<String>,
+    pub user: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct MessageThreadBroadcast {
+    pub text: Option<String>,
+    //#[serde(rename = "type")]
+    //pub ty: Option<String>,
+    pub thread_ts: Option<String>,
+    pub root: Option<MessageStandard>,
+    pub user: Option<String>,
+    pub ts: Option<String>,
+}
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct Mpim {
