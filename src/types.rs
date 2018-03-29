@@ -239,6 +239,7 @@ pub enum Message {
     MessageDeleted(MessageMessageDeleted),
     MessageReplied(MessageMessageReplied),
     PinnedItem(MessagePinnedItem),
+    ReminderAdd(MessageReminderAdd),
     ReplyBroadcast(MessageReplyBroadcast),
     SlackbotResponse(MessageSlackbotResponse),
     ThreadBroadcast(MessageThreadBroadcast),
@@ -279,6 +280,7 @@ impl<'de> ::serde::Deserialize<'de> for Message {
             "message_deleted",
             "message_replied",
             "pinned_item",
+            "reminder_add",
             "reply_broadcast",
             "slackbot_response",
             "unpinned_item",
@@ -418,6 +420,11 @@ impl<'de> ::serde::Deserialize<'de> for Message {
                             .map(Message::PinnedItem)
                             .map_err(|e| D::Error::custom(&format!("{}", e)))
                     }
+                    "reminder_add" => {
+                        ::serde_json::from_value::<MessageReminderAdd>(value.clone())
+                            .map(Message::ReminderAdd)
+                            .map_err(|e| D::Error::custom(&format!("{}", e)))
+                    }
                     "reply_broadcast" => {
                         ::serde_json::from_value::<MessageReplyBroadcast>(value.clone())
                             .map(Message::ReplyBroadcast)
@@ -488,6 +495,8 @@ pub struct MessageBotMessage {
     #[serde(rename = "type")]
     pub ty: Option<String>,
     pub username: Option<String>,
+    pub channel: Option<String>,
+    pub team: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -894,6 +903,16 @@ pub struct MessagePinnedItem {
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessagePinnedItemItem {}
 
+#[derive(Clone, Debug, Deserialize)]
+pub struct MessageReminderAdd {
+    pub message: Option<String>,
+    pub ts: Option<String>,
+    pub subtype: Option<String>,
+    #[serde(rename = "type")]
+    pub ty: Option<String>,
+    pub user: Option<String>,
+    pub channel: Option<String>,
+}
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageReplyBroadcast {
