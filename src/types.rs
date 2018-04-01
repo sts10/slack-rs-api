@@ -1021,6 +1021,7 @@ pub struct MessageSlackbotResponse {
     pub ty: Option<String>,
     pub subtype: Option<String>,
     pub user: Option<String>,
+    pub channel: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
