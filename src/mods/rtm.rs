@@ -37,15 +37,15 @@ pub struct ConnectResponse {
     #[serde(default)]
     ok: bool,
     #[serde(rename = "self")]
-    pub slf: Option<ConnectResponseSelf>,
-    pub team: Option<ConnectResponseTeam>,
-    pub url: Option<String>,
+    pub slf: ConnectResponseSelf,
+    pub team: ConnectResponseTeam,
+    pub url: String,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct ConnectResponseSelf {
-    pub id: Option<String>,
-    pub name: Option<String>,
+    pub id: String,
+    pub name: String,
 }
 
 
@@ -55,7 +55,7 @@ pub struct ConnectResponseTeam {
     pub enterprise_id: Option<String>,
     pub enterprise_name: Option<String>,
     pub id: Option<String>,
-    pub name: Option<String>,
+    pub name: String,
 }
 
 
