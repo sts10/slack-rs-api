@@ -615,6 +615,7 @@ pub struct MessageFileMention {
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageFileShare {
+    pub channel: Option<String>,
     pub file: Option<::File>,
     pub subtype: Option<String>,
     pub text: Option<String>,
