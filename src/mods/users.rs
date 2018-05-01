@@ -660,6 +660,7 @@ pub struct ResponseMetadata {
 
 #[derive(Debug, Deserialize, Error)]
 #[serde(rename_all="snake_case")]
+#[error(non_std)]
 pub enum ListError {
     /// No authentication token provided.
     NotAuthed,
@@ -688,7 +689,7 @@ pub enum ListError {
     MalformedResponse(serde_json::error::Error),
     /// The response returned an error that was unknown to the library
     #[serde(skip_deserializing)]
-    #[error(msg_embedded, no_from, non_std)]
+    #[error(msg_embedded)]
     Unknown(String),
     /// The client had an error sending the request to Slack
     #[serde(skip_deserializing)]
