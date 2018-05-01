@@ -1,50 +1,19 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, fmt};
 
-use std::fmt;
-
-use serde::de::{Visitor, Error, Unexpected, Deserializer};
-
-#[derive(Clone, Debug, PartialEq, PartialOrd)]
-pub struct Timestamp {
-    repr: f32,
+#[derive(Clone, Debug, Deserialize)]
+#[serde(untagged)]
+pub enum Timestamp {
+    Number(::serde_json::Number),
+    String(String),
 }
 
 impl fmt::Display for Timestamp {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.repr)
-    }
-}
-
-/// Deserialize a maybe-string timestamp into a Timestamp.
-pub fn deserialize_timestamp<'d, D: Deserializer<'d>>(d: D) -> Result<Option<Timestamp>, D::Error> {
-    struct TimestampVisitor;
-	impl<'d> Visitor<'d> for TimestampVisitor {
-        type Value = Option<Timestamp>;
-
-        fn expecting(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-            write!(fmt, "an f64, u64, or parseable string")
-        }
-
-        fn visit_f64<E: Error>(self, v: f64) -> Result<Option<Timestamp>, E> {
-            Ok(Some(Timestamp {
-                repr: v as f32,
-            }))
-        }
-
-        fn visit_str<E: Error>(self, v: &str) -> Result<Option<Timestamp>, E> {
-            Ok(Some(Timestamp {
-                repr: v.parse::<f32>().map_err(|_| E::invalid_value(Unexpected::Str(v), &self))?
-            }))
-        }
-	    
-        fn visit_u64<E: Error>(self, v: u64) -> Result<Option<Timestamp>, E> {
-            Ok(Some(Timestamp {
-                repr: v as f32,
-            }))
+        match *self {
+            Timestamp::Number(ref n) => write!(f, "{}", n),
+            Timestamp::String(ref s) => write!(f, "{}", s),
         }
     }
-
-    d.deserialize_any(TimestampVisitor)
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -448,6 +417,7 @@ impl<'de> ::serde::Deserialize<'de> for Message {
                     _ => Err(D::Error::unknown_variant(ty, VARIANTS)),
                 }
             } else {
+                //Err(D::Error::custom(&format!("{:#?}", value)))
                 Err(D::Error::invalid_type(
                     ::serde::de::Unexpected::Unit,
                     &"a string",
@@ -457,6 +427,7 @@ impl<'de> ::serde::Deserialize<'de> for Message {
             ::serde_json::from_value::<MessageStandard>(value.clone())
                 .map(Message::Standard)
                 .map_err(|e| D::Error::custom(&format!("{}", e)))
+            //.map_err(|e| D::Error::custom(&format!("{:#?}", value)))
         }
     }
 }
@@ -978,8 +949,6 @@ pub struct MessageStandardAttachment {
     pub thumb_url: Option<String>,
     pub title: Option<String>,
     pub title_link: Option<String>,
-    #[serde(deserialize_with = "deserialize_timestamp")]
-    #[serde(default)]
     pub ts: Option<Timestamp>,
 }
 

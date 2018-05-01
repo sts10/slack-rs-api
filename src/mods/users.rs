@@ -1,5 +1,5 @@
 //! Get info on members of your Slack team.
-
+#![macro_use]
 
 #[allow(unused_imports)]
 use std::collections::HashMap;
@@ -629,37 +629,21 @@ impl<E: Error> Error for InfoError<E> {
 /// Lists all users in a Slack team.
 ///
 /// Wraps https://api.slack.com/methods/users.list
+api_call!(list, "users.list", ListRequest, ListResponse, ListError);
 
-pub fn list<R>(
-    client: &R,
-    token: &str,
-    request: &ListRequest,
-) -> Result<ListResponse, ListError<R::Error>>
-where
-    R: SlackWebRequestSender,
-{
-
-    let params = vec![
-        Some(("token", token)),
-        request.presence.map(|presence| {
-            ("presence", if presence { "1" } else { "0" })
-        }),
-    ];
-    let params = params.into_iter().filter_map(|x| x).collect::<Vec<_>>();
-    let url = ::get_slack_url_for_method("users.list");
-    client
-        .send(&url, &params[..])
-        .map_err(ListError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<ListResponse>(&result).map_err(ListError::MalformedResponse)
-        })
-        .and_then(|o| o.into())
-}
-
-#[derive(Clone, Default, Debug)]
+/// At this time, providing no limit value will result in Slack
+/// attempting to deliver you the entire result set.
+/// If the collection is too large you may experience HTTP 500 errors.
+/// Resolve this scenario by using pagination.
+///
+/// One day pagination will become required to use this method.
+#[derive(Clone, Default, Debug, Serialize)]
 pub struct ListRequest {
     /// Whether to include presence data in the output
     pub presence: Option<bool>,
+    pub cursor: Option<String>,
+    pub limit: Option<usize>,
+    pub include_locale: bool,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -668,8 +652,14 @@ pub struct ListResponse {
     pub members: Option<Vec<::User>>,
     #[serde(default)]
     ok: bool,
+    cache_ts: Option<String>,
+    response_metadata: Option<ResponseMetadata>,
 }
 
+#[derive(Clone, Debug, Deserialize)]
+pub struct ResponseMetadata {
+    next_cursor: Option<String>,
+}
 
 impl<E: Error> Into<Result<ListResponse, ListError<E>>> for ListResponse {
     fn into(self) -> Result<ListResponse, ListError<E>> {

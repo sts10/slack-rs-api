@@ -12,6 +12,9 @@ pub trait SlackWebRequestSender {
     /// Make an API call to Slack. Takes a map of parameters that get appended to the request as query
     /// params.
     fn send(&self, method: &str, params: &[(&str, &str)]) -> Result<String, Self::Error>;
+
+    /// Make an API call to Slack. Takes a struct that describes the request params
+    fn send_structured<T: ::serde::Serialize>(&self, method: &str, params: &T) -> Result<String, Self::Error>;
 }
 
 #[cfg(feature = "reqwest")]
@@ -32,6 +35,18 @@ mod reqwest_support {
 
             url.query_pairs_mut().extend_pairs(params);
 
+            let mut response = self.get(url).send()?;
+            let mut res_str = String::new();
+            response.read_to_string(&mut res_str).map_err(reqwest::HyperError::from)?;
+
+            Ok(res_str)
+        }
+
+        fn send_structured<T: ::serde::Serialize>(&self, method_url: &str, params: &T) -> Result<String, Self::Error> {
+            let url = reqwest::Url::parse(method_url)
+                .expect("Unable to parse url")
+                .join(&::serde_qs::to_string(params).unwrap())
+                .expect("Unable to parse url");
             let mut response = self.get(url).send()?;
             let mut res_str = String::new();
             response.read_to_string(&mut res_str).map_err(reqwest::HyperError::from)?;

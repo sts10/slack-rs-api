@@ -15,10 +15,33 @@
 //! Low-level, direct interface for the [Slack Web
 //! API](https://api.slack.com/methods).
 
+#[macro_use]
+macro_rules! api_call {
+    ($name:ident, $strname:expr, $reqty:ty, $resty:ty, $errty:tt) => {
+        pub fn $name<R>(
+            client: &R,
+            token: &str,
+            request: &$reqty,
+        ) -> Result<$resty, $errty<R::Error>>
+        where R: SlackWebRequestSender,
+        {
+            let url = ::get_slack_url_for_method($strname);
+            client
+                .send_structured(&url, request)
+                .map_err($errty::Client)
+                .and_then(|result| {
+                    serde_json::from_str::<$resty>(&result).map_err($errty::MalformedResponse)
+                })
+                .and_then(|o| o.into())
+        }
+    }
+}
+
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
 extern crate serde_json;
+extern crate serde_qs;
 
 mod mods;
 pub use mods::*;
