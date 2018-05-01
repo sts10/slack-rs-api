@@ -1,4 +1,5 @@
-use std::{collections::HashMap, fmt};
+use std::fmt;
+use std::collections::HashMap;
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(untagged)]
