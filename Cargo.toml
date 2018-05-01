@@ -12,10 +12,5 @@ serde = "1.0"
 serde_derive = "1.0"
 serde_json = "1.0"
 serde_qs = "0.4"
-
-[dependencies.reqwest]
-optional = true
-version = "0.4.0"
-
-[features]
-default = ["reqwest"]
+reqwest = "0.8"
+derive-error = "0.0.4"

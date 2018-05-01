@@ -14,25 +14,35 @@
 
 //! Low-level, direct interface for the [Slack Web
 //! API](https://api.slack.com/methods).
+extern crate reqwest;
+#[macro_use]
+extern crate derive_error;
+
+pub mod requests;
 
 #[macro_use]
 macro_rules! api_call {
-    ($name:ident, $strname:expr, $reqty:ty, $resty:ty, $errty:tt) => {
-        pub fn $name<R>(
-            client: &R,
+    ($name:ident, $strname:expr, $reqty:ty, Result<$okty:ty, $errty:tt>) => {
+        pub fn $name (
+            client: &::reqwest::Client,
             token: &str,
             request: &$reqty,
-        ) -> Result<$resty, $errty<R::Error>>
-        where R: SlackWebRequestSender,
+        ) -> Result<$okty, $errty>
         {
-            let url = ::get_slack_url_for_method($strname);
-            client
-                .send_structured(&url, request)
-                .map_err($errty::Client)
-                .and_then(|result| {
-                    serde_json::from_str::<$resty>(&result).map_err($errty::MalformedResponse)
-                })
-                .and_then(|o| o.into())
+            #[derive(Deserialize)]
+            struct Temp {
+                error: $errty,
+            }
+
+            let url = ::get_slack_url_for_method($strname) + "?token=" + token;
+            let bytes = ::requests::send_structured(client, &url, request).map_err($errty::Client)?;
+            match serde_json::from_str::<$okty>(&bytes) {
+                Ok(v) => Ok(v),
+                Err(_) => match serde_json::from_str::<Temp>(&bytes) {
+                    Ok(temp) => Err(temp.error),
+                    Err(e) => Err($errty::MalformedResponse(e)),
+                }
+            }
         }
     }
 }
@@ -49,9 +59,6 @@ pub use mods::*;
 mod types;
 pub use types::*;
 
-pub mod requests;
-
-#[cfg(feature = "reqwest")]
 pub use requests::default_client;
 
 fn get_slack_url_for_method(method: &str) -> String {
