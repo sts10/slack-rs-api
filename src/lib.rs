@@ -35,7 +35,7 @@ macro_rules! api_call {
             }
 
             let url = ::get_slack_url_for_method($strname) + "?token=" + token;
-            let bytes = ::requests::send_structured(client, &url, request).map_err($errty::Client)?;
+            let bytes = ::requests::send_structured(client, &url, &request).map_err($errty::Client)?;
             match serde_json::from_str::<$okty>(&bytes) {
                 Ok(v) => Ok(v),
                 Err(_) => match serde_json::from_str::<Temp>(&bytes) {
