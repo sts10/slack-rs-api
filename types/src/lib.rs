@@ -1,3 +1,8 @@
+extern crate serde;
+#[macro_use]
+extern crate serde_derive;
+extern crate serde_json;
+
 use std::fmt;
 use std::collections::HashMap;
 
@@ -1169,4 +1174,83 @@ pub struct UserProfileFields {
     pub alt: Option<String>,
     pub label: Option<String>,
     pub value: Option<String>,
+}
+
+fn optional_struct_or_empty_array<'de, T, D>(deserializer: D) -> Result<Option<T>, D::Error>
+    where T: serde::Deserialize<'de> + Default,
+          D: serde::Deserializer<'de>
+{
+    use std::marker::PhantomData;
+    use serde::de;
+
+    struct StructOrEmptyArray<T>(PhantomData<T>);
+
+    impl<'de, T> de::Visitor<'de> for StructOrEmptyArray<T>
+        where T: de::Deserialize<'de> + Default
+    {
+        type Value = Option<T>;
+
+        fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+            formatter.write_str("struct or empty array")
+        }
+
+        fn visit_seq<A>(self, mut seq: A) -> Result<Option<T>, A::Error>
+            where A: de::SeqAccess<'de>
+        {
+            match seq.next_element::<T>()? {
+                Some(_) => Err(de::Error::custom("non-empty array is not valid")),
+                None => Ok(Some(T::default())),
+            }
+        }
+
+        fn visit_unit<E>(self) -> Result<Option<T>, E>
+            where E: de::Error
+        {
+            Ok(None)
+        }
+
+        fn visit_map<M>(self, access: M) -> Result<Option<T>, M::Error>
+            where M: de::MapAccess<'de>
+        {
+            T::deserialize(de::value::MapAccessDeserializer::new(access)).map(Some)
+        }
+    }
+
+    deserializer.deserialize_any(StructOrEmptyArray(PhantomData))
+}
+
+#[cfg(test)]
+mod tests {
+    use serde_json;
+    use super::UserProfile;
+
+    #[test]
+    fn test_user_profile_fields_empty_array_deserialize() {
+        let user_profile: UserProfile = serde_json::from_str(r#"{"fields": []}"#).unwrap();
+        assert_eq!(0, user_profile.fields.unwrap().len());
+    }
+
+    #[test]
+    fn test_user_profile_fields_empty_map_deserialize() {
+        let user_profile: UserProfile = serde_json::from_str(r#"{"fields": {}}"#).unwrap();
+        assert_eq!(0, user_profile.fields.unwrap().len());
+    }
+
+    #[test]
+    fn test_user_profile_fields_nonempty_map_deserialize() {
+        let user_profile: UserProfile = serde_json::from_str(r#"{"fields": {"some_field": {"alt": "foo", "label": "bar"}}}"#).unwrap();
+        assert_eq!(1, user_profile.fields.unwrap().len());
+    }
+
+    #[test]
+    fn test_user_profile_fields_null_deserialize() {
+        let user_profile: UserProfile = serde_json::from_str(r#"{"fields": null}"#).unwrap();
+        assert!(user_profile.fields.is_none());
+    }
+
+    #[test]
+    fn test_user_profile_fields_undefined_deserialize() {
+        let user_profile: UserProfile = serde_json::from_str(r#"{}"#).unwrap();
+        assert!(user_profile.fields.is_none());
+    }
 }

@@ -6,7 +6,7 @@ use std::env;
 
 fn main() {
     let token = env::var("SLACK_API_TOKEN").expect("SLACK_API_TOKEN not set.");
-    let client = reqwest::Client::new().unwrap();
+    let client = slack::default_client().unwrap();
 
     {
         let request = slack::rtm::StartRequest::default();

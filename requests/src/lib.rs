@@ -1,5 +1,12 @@
 //! Functionality for sending requests to Slack.
+extern crate reqwest;
+extern crate serde;
+extern crate serde_qs;
+
 use std::error;
+
+pub use reqwest::Client;
+pub use reqwest::Error;
 
 /// Functionality for sending authenticated and unauthenticated requests to Slack via HTTP.
 ///
@@ -12,9 +19,6 @@ pub trait SlackWebRequestSender {
     /// params.
     fn send(&self, method: &str, params: &[(&str, &str)]) -> Result<String, Self::Error>;
 }
-
-pub use ::reqwest::Client;
-pub use ::reqwest::Error;
 
 impl SlackWebRequestSender for ::reqwest::Client {
     type Error = ::reqwest::Error;
@@ -30,10 +34,8 @@ impl SlackWebRequestSender for ::reqwest::Client {
 
 /// Make an API call to Slack. Takes a struct that describes the request params
 pub fn send_structured<T: ::serde::Serialize>(client: &::reqwest::Client, method_url: &str, params: &T) -> Result<String, ::reqwest::Error> {
-    let url = ::reqwest::Url::parse(method_url)
-        .expect("Unable to parse url")
-        .join(&::serde_qs::to_string(params).unwrap())
-        .expect("Unable to parse url");
+    let url_text = method_url.to_string() + &::serde_qs::to_string(params).unwrap();
+    let url = ::reqwest::Url::parse(&url_text).unwrap();
     client.get(url).send()?.text()
 }
 
@@ -49,3 +51,36 @@ pub fn send_structured<T: ::serde::Serialize>(client: &::reqwest::Client, method
 pub fn default_client() -> Result<::reqwest::Client, ::reqwest::Error> {
     ::reqwest::Client::builder().build()
 }
+
+#[macro_export]
+macro_rules! api_call {
+    ($name:ident, $strname:expr, $reqty:ty, Result<$okty:ty, $errty:tt>) => {
+        pub fn $name (
+            client: &::reqwest::Client,
+            token: &str,
+            request: &$reqty,
+        ) -> Result<$okty, $errty>
+        {
+            #[derive(Deserialize)]
+            struct Temp {
+                error: $errty,
+            }
+
+            let url = ::get_slack_url_for_method($strname) + "?token=" + token + "&";
+            let bytes = ::requests::send_structured(client, &url, &request).map_err($errty::Client)?;
+            match serde_json::from_str::<$okty>(&bytes) {
+                Ok(v) => Ok(v),
+                Err(_) => match serde_json::from_str::<Temp>(&bytes) {
+                    Ok(temp) => Err(temp.error),
+                    Err(e) => Err($errty::MalformedResponse(e)),
+                }
+            }
+        }
+    }
+}
+
+pub fn get_slack_url_for_method(method: &str) -> String {
+    format!("https://slack.com/api/{}", method)
+}
+
+

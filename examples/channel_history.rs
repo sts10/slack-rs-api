@@ -5,7 +5,7 @@ use std::env;
 
 fn main() {
     let token = env::var("SLACK_API_TOKEN").expect("SLACK_API_TOKEN not set.");
-    let client = reqwest::Client::new().unwrap();
+    let client = slack::default_client().unwrap();
 
     let response = slack::channels::history(&client,
                                             &token,
@@ -15,11 +15,9 @@ fn main() {
                                             });
 
     if let Ok(response) = response {
-        if let Some(messages) = response.messages {
-            println!("Got {} messages:", messages.len());
-            for message in messages {
-                println!("{:?}", message);
-            }
+        println!("Got {} messages:", response.messages.len());
+        for message in response.messages {
+            println!("{:?}", message);
         }
     } else {
         println!("{:?}", response);
