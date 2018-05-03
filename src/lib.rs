@@ -25,10 +25,10 @@ extern crate reqwest;
 
 extern crate types;
 #[macro_use]
-extern crate requests;
+pub extern crate requests;
 
 pub use types::*;
-pub use requests::*;
+use requests::*;
 
 mod mods;
 pub use mods::*;

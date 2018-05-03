@@ -189,6 +189,7 @@ pub struct HistoryResponse {
     pub has_more: Option<bool>,
     pub latest: Option<::Timestamp>,
     pub messages: Vec<::Message>,
+    pub is_limited: Option<bool>,
 }
 
 #[derive(Debug, Deserialize, Error)]
