@@ -398,8 +398,8 @@ pub struct JoinRequest<'a> {
 #[serde(deny_unknown_fields)]
 pub struct JoinResponse {
     ok: bool,
-    pub channel: Channel,
-    pub already_in_channel: bool,
+    pub channel: Channel, //TODO: This is actually an Either based on already_in_channel
+    pub already_in_channel: Option<bool>,
 }
 
 #[derive(Debug, Deserialize, Error)]
@@ -1091,6 +1091,20 @@ mod tests {
     use std::env;
 
     #[test]
+    fn test_archive_unarchive() {
+        let client = requests::default_client().unwrap();
+        let token = env::var("SLACK_API_TOKEN").unwrap();
+
+        let mut req = ArchiveRequest::default();
+        req.channel = "CAGMCM14K";
+        archive(&client, &token, &req).unwrap();
+
+        let mut req = UnarchiveRequest::default();
+        req.channel = "CAGMCM14K";
+        unarchive(&client, &token, &req).unwrap();
+    }
+
+    #[test]
     fn test_create() {
         let client = requests::default_client().unwrap();
         let token = env::var("SLACK_API_TOKEN").unwrap();
@@ -1102,18 +1116,10 @@ mod tests {
                 validate: Some(false),
             },
         ) {
-            Ok(_) => {},
-            Err(CreateError::NameTaken) => {},
+            Ok(_) => {}
+            Err(CreateError::NameTaken) => {}
             Err(e) => panic!(e),
         }
-    }
-
-    #[test]
-    fn test_list() {
-        let client = requests::default_client().unwrap();
-        let token = env::var("SLACK_API_TOKEN").unwrap();
-        let response = list(&client, &token, &ListRequest::default()).unwrap();
-        assert_eq!(response.channels.len(), 3);
     }
 
     #[test]
@@ -1122,37 +1128,7 @@ mod tests {
         let token = env::var("SLACK_API_TOKEN").unwrap();
         let mut req = HistoryRequest::default();
         req.channel = "CAGMCM14K";
-        let _response = history(&client, &token, &req).unwrap();
-    }
-
-    #[test]
-    fn test_archive() {
-        let client = requests::default_client().unwrap();
-        let token = env::var("SLACK_API_TOKEN").unwrap();
-
-        let mut req = UnarchiveRequest::default();
-        req.channel = "CAGMCM14K";
-        unarchive(&client, &token, &req);
-
-        let mut req = ArchiveRequest::default();
-        req.channel = "CAGMCM14K";
-        archive(&client, &token, &req).unwrap();
-
-        let mut req = UnarchiveRequest::default();
-        req.channel = "CAGMCM14K";
-        unarchive(&client, &token, &req);
-    }
-
-    #[test]
-    fn test_unarchive() {
-        let client = requests::default_client().unwrap();
-        let token = env::var("SLACK_API_TOKEN").unwrap();
-        let mut req = ArchiveRequest::default();
-        req.channel = "CAGMCM14K";
-        archive(&client, &token, &req);
-        let mut req = UnarchiveRequest::default();
-        req.channel = "CAGMCM14K";
-        unarchive(&client, &token, &req).unwrap();
+        history(&client, &token, &req).unwrap();
     }
 
     #[test]
@@ -1165,54 +1141,58 @@ mod tests {
     }
 
     #[test]
-    fn test_invite() {
+    fn test_invite_kick() {
         let client = requests::default_client().unwrap();
         let token = env::var("SLACK_API_TOKEN").unwrap();
+
         let mut req = InviteRequest::default();
         req.channel = "CAGMCM14K";
-        req.user = "U9WDA1CGN";
+        req.user = "UAJHFUB0C";
         invite(&client, &token, &req).unwrap();
+
+        let mut req = KickRequest::default();
+        req.channel = "CAGMCM14K";
+        req.user = "UAJHFUB0C";
+        kick(&client, &token, &req).unwrap();
     }
 
     #[test]
-    fn test_set_topic() {
+    fn test_join_leave() {
         let client = requests::default_client().unwrap();
         let token = env::var("SLACK_API_TOKEN").unwrap();
-        let mut req = SetTopicRequest::default();
+
+        let mut req = JoinRequest::default();
+        req.name = "#testchannel";
+        join(&client, &token, &req).unwrap();
+
+        let mut req = LeaveRequest::default();
         req.channel = "CAGMCM14K";
-        req.topic = "test_topic";
-
-        let response = set_topic(&client, &token, &req).unwrap();
-        assert_eq!(response.topic, "test_topic");
-
-        req.topic = "other_test_topic";
-        let response = set_topic(&client, &token, &req).unwrap();
-        assert_eq!(response.topic, "other_test_topic");
+        leave(&client, &token, &req).unwrap();
     }
 
     #[test]
-    fn test_set_purpose() {
+    fn test_list() {
         let client = requests::default_client().unwrap();
         let token = env::var("SLACK_API_TOKEN").unwrap();
-        let mut req = SetPurposeRequest::default();
-        req.channel = "CAGMCM14K";
-        req.purpose = "test_purpose";
-
-        let response = set_purpose(&client, &token, &req).unwrap();
-        assert_eq!(response.purpose, "test_purpose");
-
-        req.purpose = "other_test_purpose";
-        let response = set_purpose(&client, &token, &req).unwrap();
-        assert_eq!(response.purpose, "other_test_purpose");
+        list(&client, &token, &ListRequest::default()).unwrap();
     }
 
     #[test]
-    fn test_replies() {
+    fn test_mark() {
+        use std::time::{SystemTime, UNIX_EPOCH};
+
+        let start = SystemTime::now();
+        let since_the_epoch = start.duration_since(UNIX_EPOCH).unwrap();
+        let time_string = format!("{}", since_the_epoch.as_secs());
+
         let client = requests::default_client().unwrap();
         let token = env::var("SLACK_API_TOKEN").unwrap();
-        let mut req = RepliesRequest::default();
-        req.channel = "CAGMCM14K";
-        replies(&client, &token, &req).unwrap();
+
+        let req = MarkRequest{
+            channel: "C9VGPGBL4",
+            ts: &time_string,
+        };
+        mark(&client, &token, &req).unwrap();
     }
 
     #[test]
@@ -1231,4 +1211,45 @@ mod tests {
         rename(&client, &token, &req).unwrap();
     }
 
+    #[test]
+    fn test_replies() {
+        let client = requests::default_client().unwrap();
+        let token = env::var("SLACK_API_TOKEN").unwrap();
+        let mut req = RepliesRequest::default();
+        req.channel = "CAGMCM14K";
+        req.thread_ts = "1525306421.000207";
+        replies(&client, &token, &req).unwrap();
+    }
+
+    #[test]
+    fn test_set_purpose() {
+        let client = requests::default_client().unwrap();
+        let token = env::var("SLACK_API_TOKEN").unwrap();
+        let mut req = SetPurposeRequest::default();
+        req.channel = "C9VGPGBL4";
+        req.purpose = "test_purpose";
+
+        let response = set_purpose(&client, &token, &req).unwrap();
+        assert_eq!(response.purpose, "test_purpose");
+
+        req.purpose = "other_test_purpose";
+        let response = set_purpose(&client, &token, &req).unwrap();
+        assert_eq!(response.purpose, "other_test_purpose");
+    }
+
+    #[test]
+    fn test_set_topic() {
+        let client = requests::default_client().unwrap();
+        let token = env::var("SLACK_API_TOKEN").unwrap();
+        let mut req = SetTopicRequest::default();
+        req.channel = "C9VGPGBL4";
+        req.topic = "test_topic";
+
+        let response = set_topic(&client, &token, &req).unwrap();
+        assert_eq!(response.topic, "test_topic");
+
+        req.topic = "other_test_topic";
+        let response = set_topic(&client, &token, &req).unwrap();
+        assert_eq!(response.topic, "other_test_topic");
+    }
 }
