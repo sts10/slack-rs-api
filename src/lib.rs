@@ -14,8 +14,6 @@
 
 //! Low-level, direct interface for the [Slack Web
 //! API](https://api.slack.com/methods).
-#[macro_use]
-extern crate derive_error;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
@@ -35,3 +33,4 @@ pub use mods::*;
 
 pub extern crate channels;
 pub extern crate api;
+pub extern crate auth;

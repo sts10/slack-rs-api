@@ -1,17 +1,13 @@
 //! Get info on your team's Slack channels, create or archive channels, invite users, set the topic and purpose, and mark a channel as read.
 
-#[macro_use]
-extern crate derive_error;
 extern crate reqwest;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
 extern crate serde_json;
-extern crate serde_qs;
 
 #[macro_use]
 extern crate requests;
-use requests::get_slack_url_for_method;
 
 extern crate types;
 use types::*;
@@ -19,7 +15,7 @@ use types::*;
 /// Archives a channel.
 ///
 /// Wraps https://api.slack.com/methods/channels.archive
-api_call!(archive, "channels.archive", ArchiveRequest, Result<ArchiveResponse, ArchiveError>);
+api_call!(archive, "channels.archive", ArchiveRequest, ArchiveResponse);
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct ArchiveRequest<'a> {
@@ -33,60 +29,11 @@ pub struct ArchiveResponse {
     ok: bool,
 }
 
-#[derive(Debug, Deserialize, Error)]
-#[serde(rename_all = "snake_case")]
-#[error(non_std)]
-pub enum ArchiveError {
-    /// Value passed for channel was invalid.
-    ChannelNotFound,
-    /// Channel has already been archived.
-    AlreadyArchived,
-    /// You cannot archive the general channel
-    CantArchiveGeneral,
-    /// A team preference prevents the authenticated user from archiving.
-    RestrictedAction,
-    /// No authentication token provided.
-    NotAuthed,
-    /// Invalid authentication token.
-    InvalidAuth,
-    /// Authentication token is for a deleted user or team.
-    AccountInactive,
-    /// This method cannot be called by a bot user.
-    UserIsBot,
-    /// This method cannot be called by a restricted user or single channel guest.
-    UserIsRestricted,
-    /// The method was passed an argument whose name falls outside the bounds of common decency. This includes very long names and names with non-alphanumeric characters other than _. If you get this error, it is typically an indication that you have made a very malformed API call.
-    InvalidArgName,
-    /// The method was passed a PHP-style array argument (e.g. with a name like foo[7]). These are never valid with the Slack API.
-    InvalidArrayArg,
-    /// The method was called via a POST request, but the charset specified in the Content-Type header was invalid. Valid charset names are: utf-8 iso-8859-1.
-    InvalidCharset,
-    /// The method was called via a POST request with Content-Type application/x-www-form-urlencoded or multipart/form-data, but the form data was either missing or syntactically invalid.
-    InvalidFormData,
-    /// The method was called via a POST request, but the specified Content-Type was invalid. Valid types are: application/x-www-form-urlencoded multipart/form-data text/plain.
-    InvalidPostType,
-    /// The method was called via a POST request and included a data payload, but the request did not include a Content-Type header.
-    MissingPostType,
-    /// The team associated with your request is currently undergoing migration to an Enterprise Organization. Web API and other platform operations will be intermittently unavailable until the transition is complete.
-    TeamAddedToOrg,
-    /// The method was called via a POST request, but the POST data was either missing or truncated.
-    RequestTimeout,
-    /// The response was not parseable as the expected object
-    #[serde(skip_deserializing)]
-    MalformedResponse(serde_json::error::Error),
-    /// The response returned an error that was unknown to the library
-    #[serde(skip_deserializing)]
-    #[error(msg_embedded, no_from, non_std)]
-    Unknown(String),
-    /// The client had an error sending the request to Slack
-    #[serde(skip_deserializing)]
-    Client(::reqwest::Error),
-}
-
 /// Creates a channel.
 ///
 /// Wraps https://api.slack.com/methods/channels.create
-api_call!(create, "channels.create", CreateRequest, Result<CreateResponse, CreateError>);
+
+api_call!(create, "channels.create", CreateRequest, CreateResponse);
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct CreateRequest<'a> {
@@ -103,68 +50,11 @@ pub struct CreateResponse {
     pub channel: Channel,
 }
 
-#[derive(Debug, Deserialize, Error)]
-#[serde(rename_all = "snake_case")]
-#[error(non_std)]
-pub enum CreateError {
-    /// A channel cannot be created with the given name.
-    NameTaken,
-    /// A team preference prevents the authenticated user from creating channels.
-    RestrictedAction,
-    /// Value passed for name was empty.
-    NoChannel,
-    /// Value passed for name was empty.
-    InvalidNameRequired,
-    /// Value passed for name contained only punctuation.
-    InvalidNamePunctuation,
-    /// Value passed for name exceeded max length.
-    InvalidNameMaxlength,
-    /// Value passed for name contained unallowed special characters or upper case characters.
-    InvalidNameSpecials,
-    /// Value passed for name was invalid.
-    InvalidName,
-    /// No authentication token provided.
-    NotAuthed,
-    /// Invalid authentication token.
-    InvalidAuth,
-    /// Authentication token is for a deleted user or team.
-    AccountInactive,
-    /// This method cannot be called by a bot user.
-    UserIsBot,
-    /// This method cannot be called by a restricted user or single channel guest.
-    UserIsRestricted,
-    /// The method was passed an argument whose name falls outside the bounds of common decency. This includes very long names and names with non-alphanumeric characters other than _. If you get this error, it is typically an indication that you have made a very malformed API call.
-    InvalidArgName,
-    /// The method was passed a PHP-style array argument (e.g. with a name like foo[7]). These are never valid with the Slack API.
-    InvalidArrayArg,
-    /// The method was called via a POST request, but the charset specified in the Content-Type header was invalid. Valid charset names are: utf-8 iso-8859-1.
-    InvalidCharset,
-    /// The method was called via a POST request with Content-Type application/x-www-form-urlencoded or multipart/form-data, but the form data was either missing or syntactically invalid.
-    InvalidFormData,
-    /// The method was called via a POST request, but the specified Content-Type was invalid. Valid types are: application/x-www-form-urlencoded multipart/form-data text/plain.
-    InvalidPostType,
-    /// The method was called via a POST request and included a data payload, but the request did not include a Content-Type header.
-    MissingPostType,
-    /// The team associated with your request is currently undergoing migration to an Enterprise Organization. Web API and other platform operations will be intermittently unavailable until the transition is complete.
-    TeamAddedToOrg,
-    /// The method was called via a POST request, but the POST data was either missing or truncated.
-    RequestTimeout,
-    /// The response was not parseable as the expected object
-    #[serde(skip_deserializing)]
-    MalformedResponse(serde_json::error::Error),
-    /// The response returned an error that was unknown to the library
-    #[serde(skip_deserializing)]
-    #[error(msg_embedded, no_from, non_std)]
-    Unknown(String),
-    /// The client had an error sending the request to Slack
-    #[serde(skip_deserializing)]
-    Client(::reqwest::Error),
-}
-
 /// Fetches history of messages and events from a channel.
 ///
 /// Wraps https://api.slack.com/methods/channels.history
-api_call!(history, "channels.history", HistoryRequest, Result<HistoryResponse, HistoryError>);
+
+api_call!(history, "channels.history", HistoryRequest, HistoryResponse);
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct HistoryRequest<'a> {
@@ -192,54 +82,11 @@ pub struct HistoryResponse {
     pub is_limited: Option<bool>,
 }
 
-#[derive(Debug, Deserialize, Error)]
-#[serde(rename_all = "snake_case")]
-#[error(non_std)]
-pub enum HistoryError {
-    /// Value passed for channel was invalid.
-    ChannelNotFound,
-    /// Value passed for latest was invalid
-    InvalidTsLatest,
-    /// Value passed for oldest was invalid
-    InvalidTsOldest,
-    /// No authentication token provided.
-    NotAuthed,
-    /// Invalid authentication token.
-    InvalidAuth,
-    /// Authentication token is for a deleted user or team.
-    AccountInactive,
-    /// The method was passed an argument whose name falls outside the bounds of common decency. This includes very long names and names with non-alphanumeric characters other than _. If you get this error, it is typically an indication that you have made a very malformed API call.
-    InvalidArgName,
-    /// The method was passed a PHP-style array argument (e.g. with a name like foo[7]). These are never valid with the Slack API.
-    InvalidArrayArg,
-    /// The method was called via a POST request, but the charset specified in the Content-Type header was invalid. Valid charset names are: utf-8 iso-8859-1.
-    InvalidCharset,
-    /// The method was called via a POST request with Content-Type application/x-www-form-urlencoded or multipart/form-data, but the form data was either missing or syntactically invalid.
-    InvalidFormData,
-    /// The method was called via a POST request, but the specified Content-Type was invalid. Valid types are: application/x-www-form-urlencoded multipart/form-data text/plain.
-    InvalidPostType,
-    /// The method was called via a POST request and included a data payload, but the request did not include a Content-Type header.
-    MissingPostType,
-    /// The team associated with your request is currently undergoing migration to an Enterprise Organization. Web API and other platform operations will be intermittently unavailable until the transition is complete.
-    TeamAddedToOrg,
-    /// The method was called via a POST request, but the POST data was either missing or truncated.
-    RequestTimeout,
-    /// The response was not parseable as the expected object
-    #[serde(skip_deserializing)]
-    MalformedResponse(serde_json::error::Error),
-    /// The response returned an error that was unknown to the library
-    #[serde(skip_deserializing)]
-    #[error(msg_embedded, no_from, non_std)]
-    Unknown(String),
-    /// The client had an error sending the request to Slack
-    #[serde(skip_deserializing)]
-    Client(::reqwest::Error),
-}
-
 /// Gets information about a channel.
 ///
 /// Wraps https://api.slack.com/methods/channels.info
-api_call!(info, "channels.info", InfoRequest, Result<InfoResponse, InfoError>);
+
+api_call!(info, "channels.info", InfoRequest, InfoResponse);
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct InfoRequest<'a> {
@@ -255,50 +102,11 @@ pub struct InfoResponse {
     pub channel: Channel,
 }
 
-#[derive(Debug, Deserialize, Error)]
-#[serde(rename_all = "snake_case")]
-#[error(non_std)]
-pub enum InfoError {
-    /// Value passed for channel was invalid.
-    ChannelNotFound,
-    /// No authentication token provided.
-    NotAuthed,
-    /// Invalid authentication token.
-    InvalidAuth,
-    /// Authentication token is for a deleted user or team.
-    AccountInactive,
-    /// The method was passed an argument whose name falls outside the bounds of common decency. This includes very long names and names with non-alphanumeric characters other than _. If you get this error, it is typically an indication that you have made a very malformed API call.
-    InvalidArgName,
-    /// The method was passed a PHP-style array argument (e.g. with a name like foo[7]). These are never valid with the Slack API.
-    InvalidArrayArg,
-    /// The method was called via a POST request, but the charset specified in the Content-Type header was invalid. Valid charset names are: utf-8 iso-8859-1.
-    InvalidCharset,
-    /// The method was called via a POST request with Content-Type application/x-www-form-urlencoded or multipart/form-data, but the form data was either missing or syntactically invalid.
-    InvalidFormData,
-    /// The method was called via a POST request, but the specified Content-Type was invalid. Valid types are: application/x-www-form-urlencoded multipart/form-data text/plain.
-    InvalidPostType,
-    /// The method was called via a POST request and included a data payload, but the request did not include a Content-Type header.
-    MissingPostType,
-    /// The team associated with your request is currently undergoing migration to an Enterprise Organization. Web API and other platform operations will be intermittently unavailable until the transition is complete.
-    TeamAddedToOrg,
-    /// The method was called via a POST request, but the POST data was either missing or truncated.
-    RequestTimeout,
-    /// The response was not parseable as the expected object
-    #[serde(skip_deserializing)]
-    MalformedResponse(serde_json::error::Error),
-    /// The response returned an error that was unknown to the library
-    #[serde(skip_deserializing)]
-    #[error(msg_embedded, no_from, non_std)]
-    Unknown(String),
-    /// The client had an error sending the request to Slack
-    #[serde(skip_deserializing)]
-    Client(::reqwest::Error),
-}
-
 /// Invites a user to a channel.
 ///
 /// Wraps https://api.slack.com/methods/channels.invite
-api_call!(invite, "channels.invite", InviteRequest, Result<InviteResponse, InviteError>);
+
+api_call!(invite, "channels.invite", InviteRequest, InviteResponse);
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct InviteRequest<'a> {
@@ -315,76 +123,11 @@ pub struct InviteResponse {
     pub channel: Channel,
 }
 
-#[derive(Debug, Deserialize, Error)]
-#[serde(rename_all = "snake_case")]
-#[error(non_std)]
-pub enum InviteError {
-    /// Value passed for channel was invalid.
-    ChannelNotFound,
-    /// Value passed for user was invalid.
-    UserNotFound,
-    /// Authenticated user cannot invite themselves to a channel.
-    CantInviteSelf,
-    /// Authenticated user is not in the channel.
-    NotInChannel,
-    /// Invited user is already in the channel.
-    AlreadyInChannel,
-    /// Channel has been archived.
-    IsArchived,
-    /// User cannot be invited to this channel.
-    CantInvite,
-    /// URA is already in the maximum number of channels.
-    UraMaxChannels,
-    /// No authentication token provided.
-    NotAuthed,
-    /// Invalid authentication token.
-    InvalidAuth,
-    /// Authentication token is for a deleted user or team.
-    AccountInactive,
-    /// This method cannot be called by a bot user.
-    UserIsBot,
-    /// This method cannot be called by a single channel guest.
-    UserIsUltraRestricted,
-    /// The method was passed an argument whose name falls outside the bounds of common decency.
-    /// This includes very long names and names with non-alphanumeric characters other than _.
-    /// If you get this error, it is typically an indication that you have made a very malformed API call.
-    InvalidArgName,
-    /// The method was passed a PHP-style array argument (e.g. with a name like foo[7]).
-    /// These are never valid with the Slack API.
-    InvalidArrayArg,
-    /// The method was called via a POST request, but the charset specified in the Content-Type header was invalid.
-    /// Valid charset names are: utf-8 iso-8859-1.
-    InvalidCharset,
-    /// The method was called via a POST request with Content-Type application/x-www-form-urlencoded or
-    /// multipart/form-data, but the form data was either missing or syntactically invalid.
-    InvalidFormData,
-    /// The method was called via a POST request, but the specified Content-Type was invalid.
-    /// Valid types are: application/x-www-form-urlencoded multipart/form-data text/plain.
-    InvalidPostType,
-    /// The method was called via a POST request and included a data payload,
-    /// but the request did not include a Content-Type header.
-    MissingPostType,
-    /// The team associated with your request is currently undergoing migration to an Enterprise Organization.
-    /// Web API and other platform operations will be intermittently unavailable until the transition is complete.
-    TeamAddedToOrg,
-    /// The method was called via a POST request, but the POST data was either missing or truncated.
-    RequestTimeout,
-    /// The response was not parseable as the expected object
-    #[serde(skip_deserializing)]
-    MalformedResponse(serde_json::error::Error),
-    /// The response returned an error that was unknown to the library
-    #[serde(skip_deserializing)]
-    #[error(msg_embedded, no_from, non_std)]
-    Unknown(String),
-    /// The client had an error sending the request to Slack
-    #[serde(skip_deserializing)]
-    Client(::reqwest::Error),
-}
-
 /// Joins a channel, creating it if needed.
 ///
 /// Wraps https://api.slack.com/methods/channels.join
-api_call!(join, "channels.join", JoinRequest, Result<JoinResponse, JoinError>);
+
+api_call!(join, "channels.join", JoinRequest, JoinResponse);
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct JoinRequest<'a> {
@@ -402,80 +145,11 @@ pub struct JoinResponse {
     pub already_in_channel: Option<bool>,
 }
 
-#[derive(Debug, Deserialize, Error)]
-#[serde(rename_all = "snake_case")]
-#[error(non_std)]
-pub enum JoinError {
-    /// Value passed for channel was invalid.
-    ChannelNotFound,
-    /// A channel cannot be created with the given name.
-    NameTaken,
-    /// A team preference prevents the authenticated user from creating channels.
-    RestrictedAction,
-    /// Value passed for name was empty.
-    NoChannel,
-    /// Channel has been archived.
-    IsArchived,
-    /// Value passed for name was empty.
-    InvalidNameRequired,
-    /// Value passed for name contained only punctuation.
-    InvalidNamePunctuation,
-    /// Value passed for name exceeded max length.
-    InvalidNameMaxlength,
-    /// Value passed for name contained unallowed special characters or upper case characters.
-    InvalidNameSpecials,
-    /// Value passed for name was invalid.
-    InvalidName,
-    /// No authentication token provided.
-    NotAuthed,
-    /// Invalid authentication token.
-    InvalidAuth,
-    /// Authentication token is for a deleted user or team.
-    AccountInactive,
-    /// This method cannot be called by a bot user.
-    UserIsBot,
-    /// This method cannot be called by a restricted user or single channel guest.
-    UserIsRestricted,
-    /// The method was passed an argument whose name falls outside the bounds of common decency.
-    /// This includes very long names and names with non-alphanumeric characters other than _.
-    /// If you get this error, it is typically an indication that you have made a very malformed API call.
-    InvalidArgName,
-    /// The method was passed a PHP-style array argument (e.g. with a name like foo[7]).
-    /// These are never valid with the Slack API.
-    InvalidArrayArg,
-    /// The method was called via a POST request, but the charset specified in the Content-Type header was invalid.
-    /// Valid charset names are: utf-8 iso-8859-1.
-    InvalidCharset,
-    /// The method was called via a POST request with Content-Type application/x-www-form-urlencoded
-    /// or multipart/form-data, but the form data was either missing or syntactically invalid.
-    InvalidFormData,
-    /// The method was called via a POST request, but the specified Content-Type was invalid.
-    /// Valid types are: application/x-www-form-urlencoded multipart/form-data text/plain.
-    InvalidPostType,
-    /// The method was called via a POST request and included a data payload,
-    /// but the request did not include a Content-Type header.
-    MissingPostType,
-    /// The team associated with your request is currently undergoing migration to an Enterprise Organization.
-    /// Web API and other platform operations will be intermittently unavailable until the transition is complete.
-    TeamAddedToOrg,
-    /// The method was called via a POST request, but the POST data was either missing or truncated.
-    RequestTimeout,
-    /// The response was not parseable as the expected object
-    #[serde(skip_deserializing)]
-    MalformedResponse(serde_json::error::Error),
-    /// The response returned an error that was unknown to the library
-    #[serde(skip_deserializing)]
-    #[error(msg_embedded, no_from, non_std)]
-    Unknown(String),
-    /// The client had an error sending the request to Slack
-    #[serde(skip_deserializing)]
-    Client(::reqwest::Error),
-}
-
 /// Removes a user from a channel.
 ///
 /// Wraps https://api.slack.com/methods/channels.kick
-api_call!(kick, "channels.kick", KickRequest, Result<KickResponse, KickError>);
+
+api_call!(kick, "channels.kick", KickRequest, KickResponse);
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct KickRequest<'a> {
@@ -491,64 +165,11 @@ pub struct KickResponse {
     ok: bool,
 }
 
-#[derive(Debug, Deserialize, Error)]
-#[serde(rename_all = "snake_case")]
-#[error(non_std)]
-pub enum KickError {
-    /// Value passed for channel was invalid.
-    ChannelNotFound,
-    /// Value passed for user was invalid.
-    UserNotFound,
-    /// Authenticated user can't kick themselves from a channel.
-    CantKickSelf,
-    /// User was not in the channel.
-    NotInChannel,
-    /// User cannot be removed from #general.
-    CantKickFromGeneral,
-    /// A team preference prevents the authenticated user from kicking.
-    RestrictedAction,
-    /// No authentication token provided.
-    NotAuthed,
-    /// Invalid authentication token.
-    InvalidAuth,
-    /// Authentication token is for a deleted user or team.
-    AccountInactive,
-    /// This method cannot be called by a bot user.
-    UserIsBot,
-    /// This method cannot be called by a restricted user or single channel guest.
-    UserIsRestricted,
-    /// The method was passed an argument whose name falls outside the bounds of common decency. This includes very long names and names with non-alphanumeric characters other than _. If you get this error, it is typically an indication that you have made a very malformed API call.
-    InvalidArgName,
-    /// The method was passed a PHP-style array argument (e.g. with a name like foo[7]). These are never valid with the Slack API.
-    InvalidArrayArg,
-    /// The method was called via a POST request, but the charset specified in the Content-Type header was invalid. Valid charset names are: utf-8 iso-8859-1.
-    InvalidCharset,
-    /// The method was called via a POST request with Content-Type application/x-www-form-urlencoded or multipart/form-data, but the form data was either missing or syntactically invalid.
-    InvalidFormData,
-    /// The method was called via a POST request, but the specified Content-Type was invalid. Valid types are: application/x-www-form-urlencoded multipart/form-data text/plain.
-    InvalidPostType,
-    /// The method was called via a POST request and included a data payload, but the request did not include a Content-Type header.
-    MissingPostType,
-    /// The team associated with your request is currently undergoing migration to an Enterprise Organization. Web API and other platform operations will be intermittently unavailable until the transition is complete.
-    TeamAddedToOrg,
-    /// The method was called via a POST request, but the POST data was either missing or truncated.
-    RequestTimeout,
-    /// The response was not parseable as the expected object
-    #[serde(skip_deserializing)]
-    MalformedResponse(serde_json::error::Error),
-    /// The response returned an error that was unknown to the library
-    #[serde(skip_deserializing)]
-    #[error(msg_embedded, no_from, non_std)]
-    Unknown(String),
-    /// The client had an error sending the request to Slack
-    #[serde(skip_deserializing)]
-    Client(::reqwest::Error),
-}
-
 /// Leaves a channel.
 ///
 /// Wraps https://api.slack.com/methods/channels.leave
-api_call!(leave, "channels.leave", LeaveRequest, Result<LeaveResponse, LeaveError>);
+
+api_call!(leave, "channels.leave", LeaveRequest, LeaveResponse);
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct LeaveRequest<'a> {
@@ -563,58 +184,11 @@ pub struct LeaveResponse {
     not_in_channel: Option<bool>,
 }
 
-#[derive(Debug, Deserialize, Error)]
-#[serde(rename_all = "snake_case")]
-#[error(non_std)]
-pub enum LeaveError {
-    /// Value passed for channel was invalid.
-    ChannelNotFound,
-    /// Channel has been archived.
-    IsArchived,
-    /// Authenticated user cannot leave the general channel
-    CantLeaveGeneral,
-    /// No authentication token provided.
-    NotAuthed,
-    /// Invalid authentication token.
-    InvalidAuth,
-    /// Authentication token is for a deleted user or team.
-    AccountInactive,
-    /// This method cannot be called by a bot user.
-    UserIsBot,
-    /// This method cannot be called by a restricted user or single channel guest.
-    UserIsRestricted,
-    /// The method was passed an argument whose name falls outside the bounds of common decency. This includes very long names and names with non-alphanumeric characters other than _. If you get this error, it is typically an indication that you have made a very malformed API call.
-    InvalidArgName,
-    /// The method was passed a PHP-style array argument (e.g. with a name like foo[7]). These are never valid with the Slack API.
-    InvalidArrayArg,
-    /// The method was called via a POST request, but the charset specified in the Content-Type header was invalid. Valid charset names are: utf-8 iso-8859-1.
-    InvalidCharset,
-    /// The method was called via a POST request with Content-Type application/x-www-form-urlencoded or multipart/form-data, but the form data was either missing or syntactically invalid.
-    InvalidFormData,
-    /// The method was called via a POST request, but the specified Content-Type was invalid. Valid types are: application/x-www-form-urlencoded multipart/form-data text/plain.
-    InvalidPostType,
-    /// The method was called via a POST request and included a data payload, but the request did not include a Content-Type header.
-    MissingPostType,
-    /// The team associated with your request is currently undergoing migration to an Enterprise Organization. Web API and other platform operations will be intermittently unavailable until the transition is complete.
-    TeamAddedToOrg,
-    /// The method was called via a POST request, but the POST data was either missing or truncated.
-    RequestTimeout,
-    /// The response was not parseable as the expected object
-    #[serde(skip_deserializing)]
-    MalformedResponse(serde_json::error::Error),
-    /// The response returned an error that was unknown to the library
-    #[serde(skip_deserializing)]
-    #[error(msg_embedded, no_from, non_std)]
-    Unknown(String),
-    /// The client had an error sending the request to Slack
-    #[serde(skip_deserializing)]
-    Client(::reqwest::Error),
-}
-
 /// Lists all channels in a Slack team.
 ///
 /// Wraps https://api.slack.com/methods/channels.list
-api_call!(list, "channels.list", ListRequest, Result<ListResponse, ListError>);
+
+api_call!(list, "channels.list", ListRequest, ListResponse);
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct ListRequest {
@@ -639,48 +213,11 @@ pub struct ResponseMetadata {
     next_cursor: Option<String>,
 }
 
-#[derive(Debug, Deserialize, Error)]
-#[serde(rename_all = "snake_case")]
-#[error(non_std)]
-pub enum ListError {
-    /// No authentication token provided.
-    NotAuthed,
-    /// Invalid authentication token.
-    InvalidAuth,
-    /// Authentication token is for a deleted user or team.
-    AccountInactive,
-    /// The method was passed an argument whose name falls outside the bounds of common decency. This includes very long names and names with non-alphanumeric characters other than _. If you get this error, it is typically an indication that you have made a very malformed API call.
-    InvalidArgName,
-    /// The method was passed a PHP-style array argument (e.g. with a name like foo[7]). These are never valid with the Slack API.
-    InvalidArrayArg,
-    /// The method was called via a POST request, but the charset specified in the Content-Type header was invalid. Valid charset names are: utf-8 iso-8859-1.
-    InvalidCharset,
-    /// The method was called via a POST request with Content-Type application/x-www-form-urlencoded or multipart/form-data, but the form data was either missing or syntactically invalid.
-    InvalidFormData,
-    /// The method was called via a POST request, but the specified Content-Type was invalid. Valid types are: application/x-www-form-urlencoded multipart/form-data text/plain.
-    InvalidPostType,
-    /// The method was called via a POST request and included a data payload, but the request did not include a Content-Type header.
-    MissingPostType,
-    /// The team associated with your request is currently undergoing migration to an Enterprise Organization. Web API and other platform operations will be intermittently unavailable until the transition is complete.
-    TeamAddedToOrg,
-    /// The method was called via a POST request, but the POST data was either missing or truncated.
-    RequestTimeout,
-    /// The response was not parseable as the expected object
-    #[serde(skip_deserializing)]
-    MalformedResponse(serde_json::error::Error),
-    /// The response returned an error that was unknown to the library
-    #[serde(skip_deserializing)]
-    #[error(msg_embedded, no_from, non_std)]
-    Unknown(String),
-    /// The client had an error sending the request to Slack
-    #[serde(skip_deserializing)]
-    Client(::reqwest::Error),
-}
-
 /// Sets the read cursor in a channel.
 ///
 /// Wraps https://api.slack.com/methods/channels.mark
-api_call!(mark, "channels.mark", MarkRequest, Result<MarkResponse, MarkError>);
+
+api_call!(mark, "channels.mark", MarkRequest, MarkResponse);
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct MarkRequest<'a> {
@@ -696,54 +233,11 @@ pub struct MarkResponse {
     ok: bool,
 }
 
-#[derive(Debug, Deserialize, Error)]
-#[serde(rename_all = "snake_case")]
-#[error(non_std)]
-pub enum MarkError {
-    /// Value passed for channel was invalid.
-    ChannelNotFound,
-    /// Value passed for timestamp was invalid.
-    InvalidTimestamp,
-    /// Caller is not a member of the channel.
-    NotInChannel,
-    /// No authentication token provided.
-    NotAuthed,
-    /// Invalid authentication token.
-    InvalidAuth,
-    /// Authentication token is for a deleted user or team.
-    AccountInactive,
-    /// The method was passed an argument whose name falls outside the bounds of common decency. This includes very long names and names with non-alphanumeric characters other than _. If you get this error, it is typically an indication that you have made a very malformed API call.
-    InvalidArgName,
-    /// The method was passed a PHP-style array argument (e.g. with a name like foo[7]). These are never valid with the Slack API.
-    InvalidArrayArg,
-    /// The method was called via a POST request, but the charset specified in the Content-Type header was invalid. Valid charset names are: utf-8 iso-8859-1.
-    InvalidCharset,
-    /// The method was called via a POST request with Content-Type application/x-www-form-urlencoded or multipart/form-data, but the form data was either missing or syntactically invalid.
-    InvalidFormData,
-    /// The method was called via a POST request, but the specified Content-Type was invalid. Valid types are: application/x-www-form-urlencoded multipart/form-data text/plain.
-    InvalidPostType,
-    /// The method was called via a POST request and included a data payload, but the request did not include a Content-Type header.
-    MissingPostType,
-    /// The team associated with your request is currently undergoing migration to an Enterprise Organization. Web API and other platform operations will be intermittently unavailable until the transition is complete.
-    TeamAddedToOrg,
-    /// The method was called via a POST request, but the POST data was either missing or truncated.
-    RequestTimeout,
-    /// The response was not parseable as the expected object
-    #[serde(skip_deserializing)]
-    MalformedResponse(serde_json::error::Error),
-    /// The response returned an error that was unknown to the library
-    #[serde(skip_deserializing)]
-    #[error(msg_embedded, no_from, non_std)]
-    Unknown(String),
-    /// The client had an error sending the request to Slack
-    #[serde(skip_deserializing)]
-    Client(::reqwest::Error),
-}
-
 /// Renames a channel.
 ///
 /// Wraps https://api.slack.com/methods/channels.rename
-api_call!(rename, "channels.rename", RenameRequest, Result<RenameResponse, RenameError>);
+
+api_call!(rename, "channels.rename", RenameRequest, RenameResponse);
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct RenameRequest<'a> {
@@ -762,70 +256,11 @@ pub struct RenameResponse {
     pub channel: Channel,
 }
 
-#[derive(Debug, Deserialize, Error)]
-#[serde(rename_all = "snake_case")]
-#[error(non_std)]
-pub enum RenameError {
-    /// Value passed for channel was invalid.
-    ChannelNotFound,
-    /// Caller is not a member of the channel.
-    NotInChannel,
-    /// Caller cannot rename this channel
-    NotAuthorized,
-    /// Value passed for name was invalid.
-    InvalidName,
-    /// New channel name is taken
-    NameTaken,
-    /// Value passed for name was empty.
-    InvalidNameRequired,
-    /// Value passed for name contained only punctuation.
-    InvalidNamePunctuation,
-    /// Value passed for name exceeded max length.
-    InvalidNameMaxlength,
-    /// Value passed for name contained unallowed special characters or upper case characters.
-    InvalidNameSpecials,
-    /// No authentication token provided.
-    NotAuthed,
-    /// Invalid authentication token.
-    InvalidAuth,
-    /// Authentication token is for a deleted user or team.
-    AccountInactive,
-    /// This method cannot be called by a bot user.
-    UserIsBot,
-    /// This method cannot be called by a restricted user or single channel guest.
-    UserIsRestricted,
-    /// The method was passed an argument whose name falls outside the bounds of common decency. This includes very long names and names with non-alphanumeric characters other than _. If you get this error, it is typically an indication that you have made a very malformed API call.
-    InvalidArgName,
-    /// The method was passed a PHP-style array argument (e.g. with a name like foo[7]). These are never valid with the Slack API.
-    InvalidArrayArg,
-    /// The method was called via a POST request, but the charset specified in the Content-Type header was invalid. Valid charset names are: utf-8 iso-8859-1.
-    InvalidCharset,
-    /// The method was called via a POST request with Content-Type application/x-www-form-urlencoded or multipart/form-data, but the form data was either missing or syntactically invalid.
-    InvalidFormData,
-    /// The method was called via a POST request, but the specified Content-Type was invalid. Valid types are: application/x-www-form-urlencoded multipart/form-data text/plain.
-    InvalidPostType,
-    /// The method was called via a POST request and included a data payload, but the request did not include a Content-Type header.
-    MissingPostType,
-    /// The team associated with your request is currently undergoing migration to an Enterprise Organization. Web API and other platform operations will be intermittently unavailable until the transition is complete.
-    TeamAddedToOrg,
-    /// The method was called via a POST request, but the POST data was either missing or truncated.
-    RequestTimeout,
-    /// The response was not parseable as the expected object
-    #[serde(skip_deserializing)]
-    MalformedResponse(serde_json::error::Error),
-    /// The response returned an error that was unknown to the library
-    #[serde(skip_deserializing)]
-    #[error(msg_embedded, no_from, non_std)]
-    Unknown(String),
-    /// The client had an error sending the request to Slack
-    #[serde(skip_deserializing)]
-    Client(::reqwest::Error),
-}
-
 /// Retrieve a thread of messages posted to a channel
 ///
 /// Wraps https://api.slack.com/methods/channels.replies
-api_call!(replies, "channels.replies", RepliesRequest, Result<RepliesResponse, RepliesError>);
+
+api_call!(replies, "channels.replies", RepliesRequest, RepliesResponse);
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct RepliesRequest<'a> {
@@ -844,52 +279,11 @@ pub struct RepliesResponse {
     pub messages: Vec<::Message>,
 }
 
-#[derive(Debug, Deserialize, Error)]
-#[serde(rename_all = "snake_case")]
-#[error(non_std)]
-pub enum RepliesError {
-    /// Value for channel was missing or invalid.
-    ChannelNotFound,
-    /// Value for thread_ts was missing or invalid.
-    ThreadNotFound,
-    /// No authentication token provided.
-    NotAuthed,
-    /// Invalid authentication token.
-    InvalidAuth,
-    /// Authentication token is for a deleted user or team.
-    AccountInactive,
-    /// The method was passed an argument whose name falls outside the bounds of common decency. This includes very long names and names with non-alphanumeric characters other than _. If you get this error, it is typically an indication that you have made a very malformed API call.
-    InvalidArgName,
-    /// The method was passed a PHP-style array argument (e.g. with a name like foo[7]). These are never valid with the Slack API.
-    InvalidArrayArg,
-    /// The method was called via a POST request, but the charset specified in the Content-Type header was invalid. Valid charset names are: utf-8 iso-8859-1.
-    InvalidCharset,
-    /// The method was called via a POST request with Content-Type application/x-www-form-urlencoded or multipart/form-data, but the form data was either missing or syntactically invalid.
-    InvalidFormData,
-    /// The method was called via a POST request, but the specified Content-Type was invalid. Valid types are: application/x-www-form-urlencoded multipart/form-data text/plain.
-    InvalidPostType,
-    /// The method was called via a POST request and included a data payload, but the request did not include a Content-Type header.
-    MissingPostType,
-    /// The team associated with your request is currently undergoing migration to an Enterprise Organization. Web API and other platform operations will be intermittently unavailable until the transition is complete.
-    TeamAddedToOrg,
-    /// The method was called via a POST request, but the POST data was either missing or truncated.
-    RequestTimeout,
-    /// The response was not parseable as the expected object
-    #[serde(skip_deserializing)]
-    MalformedResponse(serde_json::error::Error),
-    /// The response returned an error that was unknown to the library
-    #[serde(skip_deserializing)]
-    #[error(msg_embedded, no_from, non_std)]
-    Unknown(String),
-    /// The client had an error sending the request to Slack
-    #[serde(skip_deserializing)]
-    Client(::reqwest::Error),
-}
-
 /// Sets the purpose for a channel.
 ///
 /// Wraps https://api.slack.com/methods/channels.setPurpose
-api_call!(set_purpose, "channels.setPurpose", SetPurposeRequest, Result<SetPurposeResponse, SetPurposeError>);
+
+api_call!(set_purpose, "channels.setPurpose", SetPurposeRequest, SetPurposeResponse);
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct SetPurposeRequest<'a> {
@@ -906,58 +300,11 @@ pub struct SetPurposeResponse {
     pub purpose: String,
 }
 
-#[derive(Debug, Deserialize, Error)]
-#[serde(rename_all = "snake_case")]
-#[error(non_std)]
-pub enum SetPurposeError {
-    /// Value passed for channel was invalid.
-    ChannelNotFound,
-    /// Authenticated user is not in the channel.
-    NotInChannel,
-    /// Channel has been archived.
-    IsArchived,
-    /// Purpose was longer than 250 characters.
-    TooLong,
-    /// This method cannot be called by a restricted user or single channel guest.
-    UserIsRestricted,
-    /// No authentication token provided.
-    NotAuthed,
-    /// Invalid authentication token.
-    InvalidAuth,
-    /// Authentication token is for a deleted user or team.
-    AccountInactive,
-    /// The method was passed an argument whose name falls outside the bounds of common decency. This includes very long names and names with non-alphanumeric characters other than _. If you get this error, it is typically an indication that you have made a very malformed API call.
-    InvalidArgName,
-    /// The method was passed a PHP-style array argument (e.g. with a name like foo[7]). These are never valid with the Slack API.
-    InvalidArrayArg,
-    /// The method was called via a POST request, but the charset specified in the Content-Type header was invalid. Valid charset names are: utf-8 iso-8859-1.
-    InvalidCharset,
-    /// The method was called via a POST request with Content-Type application/x-www-form-urlencoded or multipart/form-data, but the form data was either missing or syntactically invalid.
-    InvalidFormData,
-    /// The method was called via a POST request, but the specified Content-Type was invalid. Valid types are: application/x-www-form-urlencoded multipart/form-data text/plain.
-    InvalidPostType,
-    /// The method was called via a POST request and included a data payload, but the request did not include a Content-Type header.
-    MissingPostType,
-    /// The team associated with your request is currently undergoing migration to an Enterprise Organization. Web API and other platform operations will be intermittently unavailable until the transition is complete.
-    TeamAddedToOrg,
-    /// The method was called via a POST request, but the POST data was either missing or truncated.
-    RequestTimeout,
-    /// The response was not parseable as the expected object
-    #[serde(skip_deserializing)]
-    MalformedResponse(serde_json::error::Error),
-    /// The response returned an error that was unknown to the library
-    #[serde(skip_deserializing)]
-    #[error(msg_embedded, no_from, non_std)]
-    Unknown(String),
-    /// The client had an error sending the request to Slack
-    #[serde(skip_deserializing)]
-    Client(::reqwest::Error),
-}
-
 /// Sets the topic for a channel.
 ///
 /// Wraps https://api.slack.com/methods/channels.setTopic
-api_call!(set_topic, "channels.setTopic", SetTopicRequest, Result<SetTopicResponse, SetTopicError>);
+
+api_call!(set_topic, "channels.setTopic", SetTopicRequest, SetTopicResponse);
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct SetTopicRequest<'a> {
@@ -974,58 +321,11 @@ pub struct SetTopicResponse {
     pub topic: String,
 }
 
-#[derive(Debug, Deserialize, Error)]
-#[serde(rename_all = "snake_case")]
-#[error(non_std)]
-pub enum SetTopicError {
-    /// Value passed for channel was invalid.
-    ChannelNotFound,
-    /// Authenticated user is not in the channel.
-    NotInChannel,
-    /// Channel has been archived.
-    IsArchived,
-    /// Topic was longer than 250 characters.
-    TooLong,
-    /// This method cannot be called by a restricted user or single channel guest.
-    UserIsRestricted,
-    /// No authentication token provided.
-    NotAuthed,
-    /// Invalid authentication token.
-    InvalidAuth,
-    /// Authentication token is for a deleted user or team.
-    AccountInactive,
-    /// The method was passed an argument whose name falls outside the bounds of common decency. This includes very long names and names with non-alphanumeric characters other than _. If you get this error, it is typically an indication that you have made a very malformed API call.
-    InvalidArgName,
-    /// The method was passed a PHP-style array argument (e.g. with a name like foo[7]). These are never valid with the Slack API.
-    InvalidArrayArg,
-    /// The method was called via a POST request, but the charset specified in the Content-Type header was invalid. Valid charset names are: utf-8 iso-8859-1.
-    InvalidCharset,
-    /// The method was called via a POST request with Content-Type application/x-www-form-urlencoded or multipart/form-data, but the form data was either missing or syntactically invalid.
-    InvalidFormData,
-    /// The method was called via a POST request, but the specified Content-Type was invalid. Valid types are: application/x-www-form-urlencoded multipart/form-data text/plain.
-    InvalidPostType,
-    /// The method was called via a POST request and included a data payload, but the request did not include a Content-Type header.
-    MissingPostType,
-    /// The team associated with your request is currently undergoing migration to an Enterprise Organization. Web API and other platform operations will be intermittently unavailable until the transition is complete.
-    TeamAddedToOrg,
-    /// The method was called via a POST request, but the POST data was either missing or truncated.
-    RequestTimeout,
-    /// The response was not parseable as the expected object
-    #[serde(skip_deserializing)]
-    MalformedResponse(serde_json::error::Error),
-    /// The response returned an error that was unknown to the library
-    #[serde(skip_deserializing)]
-    #[error(msg_embedded, no_from, non_std)]
-    Unknown(String),
-    /// The client had an error sending the request to Slack
-    #[serde(skip_deserializing)]
-    Client(::reqwest::Error),
-}
-
 /// Unarchives a channel.
 ///
 /// Wraps https://api.slack.com/methods/channels.unarchive
-api_call!(unarchive, "channels.unarchive", UnarchiveRequest, Result<UnarchiveResponse, UnarchiveError>);
+
+api_call!(unarchive, "channels.unarchive", UnarchiveRequest, UnarchiveResponse);
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct UnarchiveRequest<'a> {
@@ -1037,52 +337,6 @@ pub struct UnarchiveRequest<'a> {
 #[serde(deny_unknown_fields)]
 pub struct UnarchiveResponse {
     ok: bool,
-}
-
-#[derive(Debug, Deserialize, Error)]
-#[serde(rename_all = "snake_case")]
-#[error(non_std)]
-pub enum UnarchiveError {
-    /// Value passed for channel was invalid.
-    ChannelNotFound,
-    /// Channel is not archived.
-    NotArchived,
-    /// No authentication token provided.
-    NotAuthed,
-    /// Invalid authentication token.
-    InvalidAuth,
-    /// Authentication token is for a deleted user or team.
-    AccountInactive,
-    /// This method cannot be called by a bot user.
-    UserIsBot,
-    /// This method cannot be called by a restricted user or single channel guest.
-    UserIsRestricted,
-    /// The method was passed an argument whose name falls outside the bounds of common decency. This includes very long names and names with non-alphanumeric characters other than _. If you get this error, it is typically an indication that you have made a very malformed API call.
-    InvalidArgName,
-    /// The method was passed a PHP-style array argument (e.g. with a name like foo[7]). These are never valid with the Slack API.
-    InvalidArrayArg,
-    /// The method was called via a POST request, but the charset specified in the Content-Type header was invalid. Valid charset names are: utf-8 iso-8859-1.
-    InvalidCharset,
-    /// The method was called via a POST request with Content-Type application/x-www-form-urlencoded or multipart/form-data, but the form data was either missing or syntactically invalid.
-    InvalidFormData,
-    /// The method was called via a POST request, but the specified Content-Type was invalid. Valid types are: application/x-www-form-urlencoded multipart/form-data text/plain.
-    InvalidPostType,
-    /// The method was called via a POST request and included a data payload, but the request did not include a Content-Type header.
-    MissingPostType,
-    /// The team associated with your request is currently undergoing migration to an Enterprise Organization. Web API and other platform operations will be intermittently unavailable until the transition is complete.
-    TeamAddedToOrg,
-    /// The method was called via a POST request, but the POST data was either missing or truncated.
-    RequestTimeout,
-    /// The response was not parseable as the expected object
-    #[serde(skip_deserializing)]
-    MalformedResponse(serde_json::error::Error),
-    /// The response returned an error that was unknown to the library
-    #[serde(skip_deserializing)]
-    #[error(msg_embedded, no_from, non_std)]
-    Unknown(String),
-    /// The client had an error sending the request to Slack
-    #[serde(skip_deserializing)]
-    Client(::reqwest::Error),
 }
 
 #[cfg(test)]
@@ -1117,7 +371,11 @@ mod tests {
             },
         ) {
             Ok(_) => {}
-            Err(CreateError::NameTaken) => {}
+            Err(requests::Error::Slack(cause)) => {
+                if cause != "name_taken" {
+                    panic!(cause);
+                }
+            }
             Err(e) => panic!(e),
         }
     }

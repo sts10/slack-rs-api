@@ -13,7 +13,7 @@ use requests::SlackWebRequestSender;
 /// Starts a Real Time Messaging session.
 ///
 /// Wraps https://api.slack.com/methods/rtm.connect
-api_call!(connect, "rtm.connect", ConnectRequest, Result<ConnectResponse, ConnectError>);
+api_call!(connect, "rtm.connect", ConnectRequest, ConnectResponse);
 
 #[derive(Clone, Debug, Default, Serialize)]
 pub struct ConnectRequest {
@@ -42,44 +42,6 @@ pub struct ConnectResponseTeam {
     pub enterprise_name: Option<String>,
     pub id: Option<String>,
     pub name: String,
-}
-
-#[derive(Debug, Deserialize, Error)]
-#[serde(rename_all="snake_case")]
-#[error(non_std)]
-pub enum ConnectError {
-    /// No authentication token provided.
-    NotAuthed,
-    /// Invalid authentication token.
-    InvalidAuth,
-    /// Authentication token is for a deleted user or team.
-    AccountInactive,
-    /// The method was passed an argument whose name falls outside the bounds of common decency. This includes very long names and names with non-alphanumeric characters other than _. If you get this error, it is typically an indication that you have made a very malformed API call.
-    InvalidArgName,
-    /// The method was passed a PHP-style array argument (e.g. with a name like foo[7]). These are never valid with the Slack API.
-    InvalidArrayArg,
-    /// The method was called via a POST request, but the charset specified in the Content-Type header was invalid. Valid charset names are: utf-8 iso-8859-1.
-    InvalidCharset,
-    /// The method was called via a POST request with Content-Type application/x-www-form-urlencoded or multipart/form-data, but the form data was either missing or syntactically invalid.
-    InvalidFormData,
-    /// The method was called via a POST request, but the specified Content-Type was invalid. Valid types are: application/x-www-form-urlencoded multipart/form-data text/plain.
-    InvalidPostType,
-    /// The method was called via a POST request and included a data payload, but the request did not include a Content-Type header.
-    MissingPostType,
-    /// The team associated with your request is currently undergoing migration to an Enterprise Organization. Web API and other platform operations will be intermittently unavailable until the transition is complete.
-    TeamAddedToOrg,
-    /// The method was called via a POST request, but the POST data was either missing or truncated.
-    RequestTimeout,
-    /// The response was not parseable as the expected object
-    #[serde(skip_deserializing)]
-    MalformedResponse(serde_json::error::Error),
-    /// The response returned an error that was unknown to the library
-    #[serde(skip_deserializing)]
-    #[error(msg_embedded, no_from, non_std)]
-    Unknown(String),
-    /// The client had an error sending the request to Slack
-    #[serde(skip_deserializing)]
-    Client(::reqwest::Error),
 }
 
 /// Starts a Real Time Messaging session.
