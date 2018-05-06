@@ -34,3 +34,4 @@ mod mods;
 pub use mods::*;
 
 pub extern crate channels;
+pub extern crate api;
