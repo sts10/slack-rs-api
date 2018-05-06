@@ -1,6 +1,3 @@
-pub mod auth;
-pub mod bots;
-pub mod chat;
 pub mod dnd;
 pub mod emoji;
 pub mod files_comments;
