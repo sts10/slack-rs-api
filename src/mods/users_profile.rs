@@ -1,5 +1,3 @@
-
-
 #[allow(unused_imports)]
 use std::collections::HashMap;
 use std::convert::From;
@@ -14,30 +12,23 @@ use requests::SlackWebRequestSender;
 ///
 /// Wraps https://api.slack.com/methods/users.profile.get
 
-pub fn get<R>(
-    client: &R,
-    token: &str,
-    request: &GetRequest,
-) -> Result<GetResponse, GetError<R::Error>>
+pub fn get<R>(client: &R, token: &str, request: &GetRequest) -> Result<GetResponse, GetError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![
         Some(("token", token)),
         request.user.map(|user| ("user", user)),
-        request.include_labels.map(|include_labels| {
-            ("include_labels", if include_labels { "1" } else { "0" })
-        }),
+        request
+            .include_labels
+            .map(|include_labels| ("include_labels", if include_labels { "1" } else { "0" })),
     ];
     let params = params.into_iter().filter_map(|x| x).collect::<Vec<_>>();
     let url = ::get_slack_url_for_method("users.profile.get");
     client
         .send(&url, &params[..])
         .map_err(GetError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<GetResponse>(&result).map_err(GetError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<GetResponse>(&result).map_err(GetError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -56,7 +47,6 @@ pub struct GetResponse {
     ok: bool,
     pub profile: Option<::UserProfile>,
 }
-
 
 impl<E: Error> Into<Result<GetResponse, GetError<E>>> for GetResponse {
     fn into(self) -> Result<GetResponse, GetError<E>> {
@@ -183,15 +173,10 @@ impl<E: Error> Error for GetError<E> {
 ///
 /// Wraps https://api.slack.com/methods/users.profile.set
 
-pub fn set<R>(
-    client: &R,
-    token: &str,
-    request: &SetRequest,
-) -> Result<SetResponse, SetError<R::Error>>
+pub fn set<R>(client: &R, token: &str, request: &SetRequest) -> Result<SetResponse, SetError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![
         Some(("token", token)),
         request.user.map(|user| ("user", user)),
@@ -204,9 +189,7 @@ where
     client
         .send(&url, &params[..])
         .map_err(SetError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<SetResponse>(&result).map_err(SetError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<SetResponse>(&result).map_err(SetError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -229,7 +212,6 @@ pub struct SetResponse {
     ok: bool,
     pub profile: Option<::UserProfile>,
 }
-
 
 impl<E: Error> Into<Result<SetResponse, SetError<E>>> for SetResponse {
     fn into(self) -> Result<SetResponse, SetError<E>> {

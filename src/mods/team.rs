@@ -1,5 +1,3 @@
-
-
 #[allow(unused_imports)]
 use std::collections::HashMap;
 use std::convert::From;
@@ -37,8 +35,7 @@ where
         .send(&url, &params[..])
         .map_err(AccessLogsError::Client)
         .and_then(|result| {
-            serde_json::from_str::<AccessLogsResponse>(&result)
-                .map_err(AccessLogsError::MalformedResponse)
+            serde_json::from_str::<AccessLogsResponse>(&result).map_err(AccessLogsError::MalformedResponse)
         })
         .and_then(|o| o.into())
 }
@@ -75,7 +72,6 @@ pub struct AccessLogsResponseLogin {
     pub user_id: Option<String>,
     pub username: Option<String>,
 }
-
 
 impl<E: Error> Into<Result<AccessLogsResponse, AccessLogsError<E>>> for AccessLogsResponse {
     fn into(self) -> Result<AccessLogsResponse, AccessLogsError<E>> {
@@ -218,19 +214,14 @@ pub fn billable_info<R>(
 where
     R: SlackWebRequestSender,
 {
-
-    let params = vec![
-        Some(("token", token)),
-        request.user.map(|user| ("user", user)),
-    ];
+    let params = vec![Some(("token", token)), request.user.map(|user| ("user", user))];
     let params = params.into_iter().filter_map(|x| x).collect::<Vec<_>>();
     let url = ::get_slack_url_for_method("team.billableInfo");
     client
         .send(&url, &params[..])
         .map_err(BillableInfoError::Client)
         .and_then(|result| {
-            serde_json::from_str::<BillableInfoResponse>(&result)
-                .map_err(BillableInfoError::MalformedResponse)
+            serde_json::from_str::<BillableInfoResponse>(&result).map_err(BillableInfoError::MalformedResponse)
         })
         .and_then(|o| o.into())
 }
@@ -248,7 +239,6 @@ pub struct BillableInfoResponse {
     #[serde(default)]
     ok: bool,
 }
-
 
 impl<E: Error> Into<Result<BillableInfoResponse, BillableInfoError<E>>> for BillableInfoResponse {
     fn into(self) -> Result<BillableInfoResponse, BillableInfoError<E>> {
@@ -386,9 +376,7 @@ where
     client
         .send(&url, &params[..])
         .map_err(InfoError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<InfoResponse>(&result).map_err(InfoError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<InfoResponse>(&result).map_err(InfoError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -399,7 +387,6 @@ pub struct InfoResponse {
     ok: bool,
     pub team: Option<::Team>,
 }
-
 
 impl<E: Error> Into<Result<InfoResponse, InfoError<E>>> for InfoResponse {
     fn into(self) -> Result<InfoResponse, InfoError<E>> {
@@ -530,14 +517,10 @@ where
     let page = request.page.map(|page| page.to_string());
     let params = vec![
         Some(("token", token)),
-        request.service_id.map(
-            |service_id| ("service_id", service_id)
-        ),
+        request.service_id.map(|service_id| ("service_id", service_id)),
         request.app_id.map(|app_id| ("app_id", app_id)),
         request.user.map(|user| ("user", user)),
-        request.change_type.map(|change_type| {
-            ("change_type", change_type)
-        }),
+        request.change_type.map(|change_type| ("change_type", change_type)),
         count.as_ref().map(|count| ("count", &count[..])),
         page.as_ref().map(|page| ("page", &page[..])),
     ];
@@ -547,8 +530,7 @@ where
         .send(&url, &params[..])
         .map_err(IntegrationLogsError::Client)
         .and_then(|result| {
-            serde_json::from_str::<IntegrationLogsResponse>(&result)
-                .map_err(IntegrationLogsError::MalformedResponse)
+            serde_json::from_str::<IntegrationLogsResponse>(&result).map_err(IntegrationLogsError::MalformedResponse)
         })
         .and_then(|o| o.into())
 }
@@ -593,9 +575,7 @@ pub struct IntegrationLogsResponseLog {
     pub user_name: Option<String>,
 }
 
-
-impl<E: Error> Into<Result<IntegrationLogsResponse, IntegrationLogsError<E>>>
-    for IntegrationLogsResponse {
+impl<E: Error> Into<Result<IntegrationLogsResponse, IntegrationLogsError<E>>> for IntegrationLogsResponse {
     fn into(self) -> Result<IntegrationLogsResponse, IntegrationLogsError<E>> {
         if self.ok {
             Ok(self)

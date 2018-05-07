@@ -1,13 +1,3 @@
-extern crate reqwest;
-extern crate serde;
-#[macro_use]
-extern crate serde_derive;
-extern crate serde_json;
-extern crate serde_qs;
-
-#[macro_use]
-extern crate requests;
-
 /// Gets information about a bot user.
 ///
 /// Wraps https://api.slack.com/methods/bots.info

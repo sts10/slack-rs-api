@@ -15,10 +15,7 @@ use requests::SlackWebRequestSender;
 ///
 /// Wraps https://api.slack.com/methods/users.deletePhoto
 
-pub fn delete_photo<R>(
-    client: &R,
-    token: &str,
-) -> Result<DeletePhotoResponse, DeletePhotoError<R::Error>>
+pub fn delete_photo<R>(client: &R, token: &str) -> Result<DeletePhotoResponse, DeletePhotoError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
@@ -28,8 +25,7 @@ where
         .send(&url, &params[..])
         .map_err(DeletePhotoError::Client)
         .and_then(|result| {
-            serde_json::from_str::<DeletePhotoResponse>(&result)
-                .map_err(DeletePhotoError::MalformedResponse)
+            serde_json::from_str::<DeletePhotoResponse>(&result).map_err(DeletePhotoError::MalformedResponse)
         })
         .and_then(|o| o.into())
 }
@@ -40,7 +36,6 @@ pub struct DeletePhotoResponse {
     #[serde(default)]
     ok: bool,
 }
-
 
 impl<E: Error> Into<Result<DeletePhotoResponse, DeletePhotoError<E>>> for DeletePhotoResponse {
     fn into(self) -> Result<DeletePhotoResponse, DeletePhotoError<E>> {
@@ -173,7 +168,6 @@ pub fn get_presence<R>(
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![Some(("token", token)), Some(("user", request.user))];
     let params = params.into_iter().filter_map(|x| x).collect::<Vec<_>>();
     let url = ::get_slack_url_for_method("users.getPresence");
@@ -181,8 +175,7 @@ where
         .send(&url, &params[..])
         .map_err(GetPresenceError::Client)
         .and_then(|result| {
-            serde_json::from_str::<GetPresenceResponse>(&result)
-                .map_err(GetPresenceError::MalformedResponse)
+            serde_json::from_str::<GetPresenceResponse>(&result).map_err(GetPresenceError::MalformedResponse)
         })
         .and_then(|o| o.into())
 }
@@ -200,7 +193,6 @@ pub struct GetPresenceResponse {
     ok: bool,
     pub presence: Option<String>,
 }
-
 
 impl<E: Error> Into<Result<GetPresenceResponse, GetPresenceError<E>>> for GetPresenceResponse {
     fn into(self) -> Result<GetPresenceResponse, GetPresenceError<E>> {
@@ -328,11 +320,7 @@ where
     client
         .send(&url, &params[..])
         .map_err(IdentityError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<IdentityResponse>(&result).map_err(
-                IdentityError::MalformedResponse,
-            )
-        })
+        .and_then(|result| serde_json::from_str::<IdentityResponse>(&result).map_err(IdentityError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -344,7 +332,6 @@ pub struct IdentityResponse {
     pub team: Option<::Team>,
     pub user: Option<::User>,
 }
-
 
 impl<E: Error> Into<Result<IdentityResponse, IdentityError<E>>> for IdentityResponse {
     fn into(self) -> Result<IdentityResponse, IdentityError<E>> {
@@ -467,24 +454,17 @@ impl<E: Error> Error for IdentityError<E> {
 ///
 /// Wraps https://api.slack.com/methods/users.info
 
-pub fn info<R>(
-    client: &R,
-    token: &str,
-    request: &InfoRequest,
-) -> Result<InfoResponse, InfoError<R::Error>>
+pub fn info<R>(client: &R, token: &str, request: &InfoRequest) -> Result<InfoResponse, InfoError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![Some(("token", token)), Some(("user", request.user))];
     let params = params.into_iter().filter_map(|x| x).collect::<Vec<_>>();
     let url = ::get_slack_url_for_method("users.info");
     client
         .send(&url, &params[..])
         .map_err(InfoError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<InfoResponse>(&result).map_err(InfoError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<InfoResponse>(&result).map_err(InfoError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -501,7 +481,6 @@ pub struct InfoResponse {
     ok: bool,
     pub user: Option<::User>,
 }
-
 
 impl<E: Error> Into<Result<InfoResponse, InfoError<E>>> for InfoResponse {
     fn into(self) -> Result<InfoResponse, InfoError<E>> {
@@ -672,9 +651,7 @@ where
         .send(&url, &params[..])
         .map_err(SetActiveError::Client)
         .and_then(|result| {
-            serde_json::from_str::<SetActiveResponse>(&result).map_err(
-                SetActiveError::MalformedResponse,
-            )
+            serde_json::from_str::<SetActiveResponse>(&result).map_err(SetActiveError::MalformedResponse)
         })
         .and_then(|o| o.into())
 }
@@ -685,7 +662,6 @@ pub struct SetActiveResponse {
     #[serde(default)]
     ok: bool,
 }
-
 
 impl<E: Error> Into<Result<SetActiveResponse, SetActiveError<E>>> for SetActiveResponse {
     fn into(self) -> Result<SetActiveResponse, SetActiveError<E>> {
@@ -800,7 +776,6 @@ impl<E: Error> Error for SetActiveError<E> {
     }
 }
 
-
 /// Manually sets user presence.
 ///
 /// Wraps https://api.slack.com/methods/users.setPresence
@@ -813,7 +788,6 @@ pub fn set_presence<R>(
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![Some(("token", token)), Some(("presence", request.presence))];
     let params = params.into_iter().filter_map(|x| x).collect::<Vec<_>>();
     let url = ::get_slack_url_for_method("users.setPresence");
@@ -821,8 +795,7 @@ where
         .send(&url, &params[..])
         .map_err(SetPresenceError::Client)
         .and_then(|result| {
-            serde_json::from_str::<SetPresenceResponse>(&result)
-                .map_err(SetPresenceError::MalformedResponse)
+            serde_json::from_str::<SetPresenceResponse>(&result).map_err(SetPresenceError::MalformedResponse)
         })
         .and_then(|o| o.into())
 }
@@ -839,7 +812,6 @@ pub struct SetPresenceResponse {
     #[serde(default)]
     ok: bool,
 }
-
 
 impl<E: Error> Into<Result<SetPresenceResponse, SetPresenceError<E>>> for SetPresenceResponse {
     fn into(self) -> Result<SetPresenceResponse, SetPresenceError<E>> {

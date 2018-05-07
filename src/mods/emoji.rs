@@ -1,5 +1,3 @@
-
-
 #[allow(unused_imports)]
 use std::collections::HashMap;
 use std::convert::From;
@@ -23,9 +21,7 @@ where
     client
         .send(&url, &params[..])
         .map_err(ListError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<ListResponse>(&result).map_err(ListError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<ListResponse>(&result).map_err(ListError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -36,7 +32,6 @@ pub struct ListResponse {
     #[serde(default)]
     ok: bool,
 }
-
 
 impl<E: Error> Into<Result<ListResponse, ListError<E>>> for ListResponse {
     fn into(self) -> Result<ListResponse, ListError<E>> {

@@ -1,15 +1,3 @@
-//! Get info on your team's Slack channels, create or archive channels, invite users, set the topic and purpose, and mark a channel as read.
-
-extern crate reqwest;
-extern crate serde;
-#[macro_use]
-extern crate serde_derive;
-extern crate serde_json;
-extern crate serde_qs;
-
-#[macro_use]
-extern crate requests;
-
 /// Revokes a token.
 ///
 /// Wraps https://api.slack.com/methods/auth.revoke

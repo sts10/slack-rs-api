@@ -1,6 +1,5 @@
 //! Get info on your team's private channels.
 
-
 #[allow(unused_imports)]
 use std::collections::HashMap;
 use std::convert::From;
@@ -15,26 +14,17 @@ use requests::SlackWebRequestSender;
 ///
 /// Wraps https://api.slack.com/methods/groups.archive
 
-pub fn archive<R>(
-    client: &R,
-    token: &str,
-    request: &ArchiveRequest,
-) -> Result<ArchiveResponse, ArchiveError<R::Error>>
+pub fn archive<R>(client: &R, token: &str, request: &ArchiveRequest) -> Result<ArchiveResponse, ArchiveError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![Some(("token", token)), Some(("channel", request.channel))];
     let params = params.into_iter().filter_map(|x| x).collect::<Vec<_>>();
     let url = ::get_slack_url_for_method("groups.archive");
     client
         .send(&url, &params[..])
         .map_err(ArchiveError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<ArchiveResponse>(&result).map_err(
-                ArchiveError::MalformedResponse,
-            )
-        })
+        .and_then(|result| serde_json::from_str::<ArchiveResponse>(&result).map_err(ArchiveError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -50,7 +40,6 @@ pub struct ArchiveResponse {
     #[serde(default)]
     ok: bool,
 }
-
 
 impl<E: Error> Into<Result<ArchiveResponse, ArchiveError<E>>> for ArchiveResponse {
     fn into(self) -> Result<ArchiveResponse, ArchiveError<E>> {
@@ -201,24 +190,17 @@ impl<E: Error> Error for ArchiveError<E> {
 ///
 /// Wraps https://api.slack.com/methods/groups.close
 
-pub fn close<R>(
-    client: &R,
-    token: &str,
-    request: &CloseRequest,
-) -> Result<CloseResponse, CloseError<R::Error>>
+pub fn close<R>(client: &R, token: &str, request: &CloseRequest) -> Result<CloseResponse, CloseError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![Some(("token", token)), Some(("channel", request.channel))];
     let params = params.into_iter().filter_map(|x| x).collect::<Vec<_>>();
     let url = ::get_slack_url_for_method("groups.close");
     client
         .send(&url, &params[..])
         .map_err(CloseError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<CloseResponse>(&result).map_err(CloseError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<CloseResponse>(&result).map_err(CloseError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -234,7 +216,6 @@ pub struct CloseResponse {
     #[serde(default)]
     ok: bool,
 }
-
 
 impl<E: Error> Into<Result<CloseResponse, CloseError<E>>> for CloseResponse {
     fn into(self) -> Result<CloseResponse, CloseError<E>> {
@@ -359,30 +340,23 @@ impl<E: Error> Error for CloseError<E> {
 ///
 /// Wraps https://api.slack.com/methods/groups.create
 
-pub fn create<R>(
-    client: &R,
-    token: &str,
-    request: &CreateRequest,
-) -> Result<CreateResponse, CreateError<R::Error>>
+pub fn create<R>(client: &R, token: &str, request: &CreateRequest) -> Result<CreateResponse, CreateError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![
         Some(("token", token)),
         Some(("name", request.name)),
-        request.validate.map(|validate| {
-            ("validate", if validate { "1" } else { "0" })
-        }),
+        request
+            .validate
+            .map(|validate| ("validate", if validate { "1" } else { "0" })),
     ];
     let params = params.into_iter().filter_map(|x| x).collect::<Vec<_>>();
     let url = ::get_slack_url_for_method("groups.create");
     client
         .send(&url, &params[..])
         .map_err(CreateError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<CreateResponse>(&result).map_err(CreateError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<CreateResponse>(&result).map_err(CreateError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -401,7 +375,6 @@ pub struct CreateResponse {
     #[serde(default)]
     ok: bool,
 }
-
 
 impl<E: Error> Into<Result<CreateResponse, CreateError<E>>> for CreateResponse {
     fn into(self) -> Result<CreateResponse, CreateError<E>> {
@@ -580,7 +553,6 @@ pub fn create_child<R>(
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![Some(("token", token)), Some(("channel", request.channel))];
     let params = params.into_iter().filter_map(|x| x).collect::<Vec<_>>();
     let url = ::get_slack_url_for_method("groups.createChild");
@@ -588,8 +560,7 @@ where
         .send(&url, &params[..])
         .map_err(CreateChildError::Client)
         .and_then(|result| {
-            serde_json::from_str::<CreateChildResponse>(&result)
-                .map_err(CreateChildError::MalformedResponse)
+            serde_json::from_str::<CreateChildResponse>(&result).map_err(CreateChildError::MalformedResponse)
         })
         .and_then(|o| o.into())
 }
@@ -607,7 +578,6 @@ pub struct CreateChildResponse {
     #[serde(default)]
     ok: bool,
 }
-
 
 impl<E: Error> Into<Result<CreateChildResponse, CreateChildError<E>>> for CreateChildResponse {
     fn into(self) -> Result<CreateChildResponse, CreateChildError<E>> {
@@ -756,11 +726,7 @@ impl<E: Error> Error for CreateChildError<E> {
 ///
 /// Wraps https://api.slack.com/methods/groups.history
 
-pub fn history<R>(
-    client: &R,
-    token: &str,
-    request: &HistoryRequest,
-) -> Result<HistoryResponse, HistoryError<R::Error>>
+pub fn history<R>(client: &R, token: &str, request: &HistoryRequest) -> Result<HistoryResponse, HistoryError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
@@ -770,24 +736,20 @@ where
         Some(("channel", request.channel)),
         request.latest.map(|latest| ("latest", latest)),
         request.oldest.map(|oldest| ("oldest", oldest)),
-        request.inclusive.map(|inclusive| {
-            ("inclusive", if inclusive { "1" } else { "0" })
-        }),
+        request
+            .inclusive
+            .map(|inclusive| ("inclusive", if inclusive { "1" } else { "0" })),
         count.as_ref().map(|count| ("count", &count[..])),
-        request.unreads.map(|unreads| {
-            ("unreads", if unreads { "1" } else { "0" })
-        }),
+        request
+            .unreads
+            .map(|unreads| ("unreads", if unreads { "1" } else { "0" })),
     ];
     let params = params.into_iter().filter_map(|x| x).collect::<Vec<_>>();
     let url = ::get_slack_url_for_method("groups.history");
     client
         .send(&url, &params[..])
         .map_err(HistoryError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<HistoryResponse>(&result).map_err(
-                HistoryError::MalformedResponse,
-            )
-        })
+        .and_then(|result| serde_json::from_str::<HistoryResponse>(&result).map_err(HistoryError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -816,7 +778,6 @@ pub struct HistoryResponse {
     #[serde(default)]
     ok: bool,
 }
-
 
 impl<E: Error> Into<Result<HistoryResponse, HistoryError<E>>> for HistoryResponse {
     fn into(self) -> Result<HistoryResponse, HistoryError<E>> {
@@ -953,24 +914,17 @@ impl<E: Error> Error for HistoryError<E> {
 ///
 /// Wraps https://api.slack.com/methods/groups.info
 
-pub fn info<R>(
-    client: &R,
-    token: &str,
-    request: &InfoRequest,
-) -> Result<InfoResponse, InfoError<R::Error>>
+pub fn info<R>(client: &R, token: &str, request: &InfoRequest) -> Result<InfoResponse, InfoError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![Some(("token", token)), Some(("channel", request.channel))];
     let params = params.into_iter().filter_map(|x| x).collect::<Vec<_>>();
     let url = ::get_slack_url_for_method("groups.info");
     client
         .send(&url, &params[..])
         .map_err(InfoError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<InfoResponse>(&result).map_err(InfoError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<InfoResponse>(&result).map_err(InfoError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -987,7 +941,6 @@ pub struct InfoResponse {
     #[serde(default)]
     ok: bool,
 }
-
 
 impl<E: Error> Into<Result<InfoResponse, InfoError<E>>> for InfoResponse {
     fn into(self) -> Result<InfoResponse, InfoError<E>> {
@@ -1112,15 +1065,10 @@ impl<E: Error> Error for InfoError<E> {
 ///
 /// Wraps https://api.slack.com/methods/groups.invite
 
-pub fn invite<R>(
-    client: &R,
-    token: &str,
-    request: &InviteRequest,
-) -> Result<InviteResponse, InviteError<R::Error>>
+pub fn invite<R>(client: &R, token: &str, request: &InviteRequest) -> Result<InviteResponse, InviteError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![
         Some(("token", token)),
         Some(("channel", request.channel)),
@@ -1131,9 +1079,7 @@ where
     client
         .send(&url, &params[..])
         .map_err(InviteError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<InviteResponse>(&result).map_err(InviteError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<InviteResponse>(&result).map_err(InviteError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -1152,7 +1098,6 @@ pub struct InviteResponse {
     #[serde(default)]
     ok: bool,
 }
-
 
 impl<E: Error> Into<Result<InviteResponse, InviteError<E>>> for InviteResponse {
     fn into(self) -> Result<InviteResponse, InviteError<E>> {
@@ -1311,15 +1256,10 @@ impl<E: Error> Error for InviteError<E> {
 ///
 /// Wraps https://api.slack.com/methods/groups.kick
 
-pub fn kick<R>(
-    client: &R,
-    token: &str,
-    request: &KickRequest,
-) -> Result<KickResponse, KickError<R::Error>>
+pub fn kick<R>(client: &R, token: &str, request: &KickRequest) -> Result<KickResponse, KickError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![
         Some(("token", token)),
         Some(("channel", request.channel)),
@@ -1330,9 +1270,7 @@ where
     client
         .send(&url, &params[..])
         .map_err(KickError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<KickResponse>(&result).map_err(KickError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<KickResponse>(&result).map_err(KickError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -1350,7 +1288,6 @@ pub struct KickResponse {
     #[serde(default)]
     ok: bool,
 }
-
 
 impl<E: Error> Into<Result<KickResponse, KickError<E>>> for KickResponse {
     fn into(self) -> Result<KickResponse, KickError<E>> {
@@ -1503,24 +1440,17 @@ impl<E: Error> Error for KickError<E> {
 ///
 /// Wraps https://api.slack.com/methods/groups.leave
 
-pub fn leave<R>(
-    client: &R,
-    token: &str,
-    request: &LeaveRequest,
-) -> Result<LeaveResponse, LeaveError<R::Error>>
+pub fn leave<R>(client: &R, token: &str, request: &LeaveRequest) -> Result<LeaveResponse, LeaveError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![Some(("token", token)), Some(("channel", request.channel))];
     let params = params.into_iter().filter_map(|x| x).collect::<Vec<_>>();
     let url = ::get_slack_url_for_method("groups.leave");
     client
         .send(&url, &params[..])
         .map_err(LeaveError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<LeaveResponse>(&result).map_err(LeaveError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<LeaveResponse>(&result).map_err(LeaveError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -1536,7 +1466,6 @@ pub struct LeaveResponse {
     #[serde(default)]
     ok: bool,
 }
-
 
 impl<E: Error> Into<Result<LeaveResponse, LeaveError<E>>> for LeaveResponse {
     fn into(self) -> Result<LeaveResponse, LeaveError<E>> {
@@ -1675,29 +1604,22 @@ impl<E: Error> Error for LeaveError<E> {
 ///
 /// Wraps https://api.slack.com/methods/groups.list
 
-pub fn list<R>(
-    client: &R,
-    token: &str,
-    request: &ListRequest,
-) -> Result<ListResponse, ListError<R::Error>>
+pub fn list<R>(client: &R, token: &str, request: &ListRequest) -> Result<ListResponse, ListError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![
         Some(("token", token)),
-        request.exclude_archived.map(|exclude_archived| {
-            ("exclude_archived", if exclude_archived { "1" } else { "0" })
-        }),
+        request
+            .exclude_archived
+            .map(|exclude_archived| ("exclude_archived", if exclude_archived { "1" } else { "0" })),
     ];
     let params = params.into_iter().filter_map(|x| x).collect::<Vec<_>>();
     let url = ::get_slack_url_for_method("groups.list");
     client
         .send(&url, &params[..])
         .map_err(ListError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<ListResponse>(&result).map_err(ListError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<ListResponse>(&result).map_err(ListError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -1714,7 +1636,6 @@ pub struct ListResponse {
     #[serde(default)]
     ok: bool,
 }
-
 
 impl<E: Error> Into<Result<ListResponse, ListError<E>>> for ListResponse {
     fn into(self) -> Result<ListResponse, ListError<E>> {
@@ -1833,15 +1754,10 @@ impl<E: Error> Error for ListError<E> {
 ///
 /// Wraps https://api.slack.com/methods/groups.mark
 
-pub fn mark<R>(
-    client: &R,
-    token: &str,
-    request: &MarkRequest,
-) -> Result<MarkResponse, MarkError<R::Error>>
+pub fn mark<R>(client: &R, token: &str, request: &MarkRequest) -> Result<MarkResponse, MarkError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![
         Some(("token", token)),
         Some(("channel", request.channel)),
@@ -1852,9 +1768,7 @@ where
     client
         .send(&url, &params[..])
         .map_err(MarkError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<MarkResponse>(&result).map_err(MarkError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<MarkResponse>(&result).map_err(MarkError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -1872,7 +1786,6 @@ pub struct MarkResponse {
     #[serde(default)]
     ok: bool,
 }
-
 
 impl<E: Error> Into<Result<MarkResponse, MarkError<E>>> for MarkResponse {
     fn into(self) -> Result<MarkResponse, MarkError<E>> {
@@ -2003,24 +1916,17 @@ impl<E: Error> Error for MarkError<E> {
 ///
 /// Wraps https://api.slack.com/methods/groups.open
 
-pub fn open<R>(
-    client: &R,
-    token: &str,
-    request: &OpenRequest,
-) -> Result<OpenResponse, OpenError<R::Error>>
+pub fn open<R>(client: &R, token: &str, request: &OpenRequest) -> Result<OpenResponse, OpenError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![Some(("token", token)), Some(("channel", request.channel))];
     let params = params.into_iter().filter_map(|x| x).collect::<Vec<_>>();
     let url = ::get_slack_url_for_method("groups.open");
     client
         .send(&url, &params[..])
         .map_err(OpenError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<OpenResponse>(&result).map_err(OpenError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<OpenResponse>(&result).map_err(OpenError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -2036,7 +1942,6 @@ pub struct OpenResponse {
     #[serde(default)]
     ok: bool,
 }
-
 
 impl<E: Error> Into<Result<OpenResponse, OpenError<E>>> for OpenResponse {
     fn into(self) -> Result<OpenResponse, OpenError<E>> {
@@ -2161,31 +2066,24 @@ impl<E: Error> Error for OpenError<E> {
 ///
 /// Wraps https://api.slack.com/methods/groups.rename
 
-pub fn rename<R>(
-    client: &R,
-    token: &str,
-    request: &RenameRequest,
-) -> Result<RenameResponse, RenameError<R::Error>>
+pub fn rename<R>(client: &R, token: &str, request: &RenameRequest) -> Result<RenameResponse, RenameError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![
         Some(("token", token)),
         Some(("channel", request.channel)),
         Some(("name", request.name)),
-        request.validate.map(|validate| {
-            ("validate", if validate { "1" } else { "0" })
-        }),
+        request
+            .validate
+            .map(|validate| ("validate", if validate { "1" } else { "0" })),
     ];
     let params = params.into_iter().filter_map(|x| x).collect::<Vec<_>>();
     let url = ::get_slack_url_for_method("groups.rename");
     client
         .send(&url, &params[..])
         .map_err(RenameError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<RenameResponse>(&result).map_err(RenameError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<RenameResponse>(&result).map_err(RenameError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -2214,7 +2112,6 @@ pub struct RenameResponseChannel {
     pub is_group: Option<bool>,
     pub name: Option<String>,
 }
-
 
 impl<E: Error> Into<Result<RenameResponse, RenameError<E>>> for RenameResponse {
     fn into(self) -> Result<RenameResponse, RenameError<E>> {
@@ -2381,15 +2278,10 @@ impl<E: Error> Error for RenameError<E> {
 ///
 /// Wraps https://api.slack.com/methods/groups.replies
 
-pub fn replies<R>(
-    client: &R,
-    token: &str,
-    request: &RepliesRequest,
-) -> Result<RepliesResponse, RepliesError<R::Error>>
+pub fn replies<R>(client: &R, token: &str, request: &RepliesRequest) -> Result<RepliesResponse, RepliesError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![
         Some(("token", token)),
         Some(("channel", request.channel)),
@@ -2400,11 +2292,7 @@ where
     client
         .send(&url, &params[..])
         .map_err(RepliesError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<RepliesResponse>(&result).map_err(
-                RepliesError::MalformedResponse,
-            )
-        })
+        .and_then(|result| serde_json::from_str::<RepliesResponse>(&result).map_err(RepliesError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -2424,7 +2312,6 @@ pub struct RepliesResponse {
     ok: bool,
     pub thread_info: Option<::ThreadInfo>,
 }
-
 
 impl<E: Error> Into<Result<RepliesResponse, RepliesError<E>>> for RepliesResponse {
     fn into(self) -> Result<RepliesResponse, RepliesError<E>> {
@@ -2567,7 +2454,6 @@ pub fn set_purpose<R>(
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![
         Some(("token", token)),
         Some(("channel", request.channel)),
@@ -2579,8 +2465,7 @@ where
         .send(&url, &params[..])
         .map_err(SetPurposeError::Client)
         .and_then(|result| {
-            serde_json::from_str::<SetPurposeResponse>(&result)
-                .map_err(SetPurposeError::MalformedResponse)
+            serde_json::from_str::<SetPurposeResponse>(&result).map_err(SetPurposeError::MalformedResponse)
         })
         .and_then(|o| o.into())
 }
@@ -2600,7 +2485,6 @@ pub struct SetPurposeResponse {
     ok: bool,
     pub purpose: Option<String>,
 }
-
 
 impl<E: Error> Into<Result<SetPurposeResponse, SetPurposeError<E>>> for SetPurposeResponse {
     fn into(self) -> Result<SetPurposeResponse, SetPurposeError<E>> {
@@ -2747,7 +2631,6 @@ pub fn set_topic<R>(
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![
         Some(("token", token)),
         Some(("channel", request.channel)),
@@ -2758,11 +2641,7 @@ where
     client
         .send(&url, &params[..])
         .map_err(SetTopicError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<SetTopicResponse>(&result).map_err(
-                SetTopicError::MalformedResponse,
-            )
-        })
+        .and_then(|result| serde_json::from_str::<SetTopicResponse>(&result).map_err(SetTopicError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -2781,7 +2660,6 @@ pub struct SetTopicResponse {
     ok: bool,
     pub topic: Option<String>,
 }
-
 
 impl<E: Error> Into<Result<SetTopicResponse, SetTopicError<E>>> for SetTopicResponse {
     fn into(self) -> Result<SetTopicResponse, SetTopicError<E>> {
@@ -2928,7 +2806,6 @@ pub fn unarchive<R>(
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![Some(("token", token)), Some(("channel", request.channel))];
     let params = params.into_iter().filter_map(|x| x).collect::<Vec<_>>();
     let url = ::get_slack_url_for_method("groups.unarchive");
@@ -2936,9 +2813,7 @@ where
         .send(&url, &params[..])
         .map_err(UnarchiveError::Client)
         .and_then(|result| {
-            serde_json::from_str::<UnarchiveResponse>(&result).map_err(
-                UnarchiveError::MalformedResponse,
-            )
+            serde_json::from_str::<UnarchiveResponse>(&result).map_err(UnarchiveError::MalformedResponse)
         })
         .and_then(|o| o.into())
 }
@@ -2955,7 +2830,6 @@ pub struct UnarchiveResponse {
     #[serde(default)]
     ok: bool,
 }
-
 
 impl<E: Error> Into<Result<UnarchiveResponse, UnarchiveError<E>>> for UnarchiveResponse {
     fn into(self) -> Result<UnarchiveResponse, UnarchiveError<E>> {

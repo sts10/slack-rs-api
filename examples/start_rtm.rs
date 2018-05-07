@@ -1,5 +1,5 @@
-extern crate slack_api as slack;
 extern crate reqwest;
+extern crate slack_api as slack;
 
 use std::default::Default;
 use std::env;
@@ -14,17 +14,13 @@ fn main() {
 
         if let Ok(response) = response {
             if let Some(channels) = response.channels {
-                let channels = channels.iter()
-                    .filter_map(|c| c.name.clone())
-                    .collect::<Vec<_>>();
+                let channels = channels.iter().filter_map(|c| c.name.clone()).collect::<Vec<_>>();
 
                 println!("Got channels: {}", channels.join(", "));
             }
 
             if let Some(users) = response.users {
-                let users = users.iter()
-                    .filter_map(|u| u.name.clone())
-                    .collect::<Vec<_>>();
+                let users = users.iter().filter_map(|u| u.name.clone()).collect::<Vec<_>>();
 
                 println!("Got users: {}", users.join(", "));
             }

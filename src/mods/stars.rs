@@ -1,5 +1,3 @@
-
-
 #[allow(unused_imports)]
 use std::collections::HashMap;
 use std::convert::From;
@@ -14,21 +12,14 @@ use requests::SlackWebRequestSender;
 ///
 /// Wraps https://api.slack.com/methods/stars.add
 
-pub fn add<R>(
-    client: &R,
-    token: &str,
-    request: &AddRequest,
-) -> Result<AddResponse, AddError<R::Error>>
+pub fn add<R>(client: &R, token: &str, request: &AddRequest) -> Result<AddResponse, AddError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![
         Some(("token", token)),
         request.file.map(|file| ("file", file)),
-        request.file_comment.map(|file_comment| {
-            ("file_comment", file_comment)
-        }),
+        request.file_comment.map(|file_comment| ("file_comment", file_comment)),
         request.channel.map(|channel| ("channel", channel)),
         request.timestamp.map(|timestamp| ("timestamp", timestamp)),
     ];
@@ -37,9 +28,7 @@ where
     client
         .send(&url, &params[..])
         .map_err(AddError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<AddResponse>(&result).map_err(AddError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<AddResponse>(&result).map_err(AddError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -61,7 +50,6 @@ pub struct AddResponse {
     #[serde(default)]
     ok: bool,
 }
-
 
 impl<E: Error> Into<Result<AddResponse, AddError<E>>> for AddResponse {
     fn into(self) -> Result<AddResponse, AddError<E>> {
@@ -218,11 +206,7 @@ impl<E: Error> Error for AddError<E> {
 ///
 /// Wraps https://api.slack.com/methods/stars.list
 
-pub fn list<R>(
-    client: &R,
-    token: &str,
-    request: &ListRequest,
-) -> Result<ListResponse, ListError<R::Error>>
+pub fn list<R>(client: &R, token: &str, request: &ListRequest) -> Result<ListResponse, ListError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
@@ -238,9 +222,7 @@ where
     client
         .send(&url, &params[..])
         .map_err(ListError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<ListResponse>(&result).map_err(ListError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<ListResponse>(&result).map_err(ListError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -278,50 +260,34 @@ impl<'de> ::serde::Deserialize<'de> for ListResponseItem {
     {
         use serde::de::Error as SerdeError;
 
-        const VARIANTS: &'static [&'static str] =
-            &["message", "file", "file_comment", "channel", "im", "group"];
+        const VARIANTS: &'static [&'static str] = &["message", "file", "file_comment", "channel", "im", "group"];
 
         let value = ::serde_json::Value::deserialize(deserializer)?;
         if let Some(ty_val) = value.get("type") {
             if let Some(ty) = ty_val.as_str() {
                 match ty {
-                    "message" => {
-                        ::serde_json::from_value::<ListResponseItemMessage>(value.clone())
-                            .map(ListResponseItem::Message)
-                            .map_err(|e| D::Error::custom(&format!("{}", e)))
-                    }
-                    "file" => {
-                        ::serde_json::from_value::<ListResponseItemFile>(value.clone())
-                            .map(ListResponseItem::File)
-                            .map_err(|e| D::Error::custom(&format!("{}", e)))
-                    }
-                    "file_comment" => {
-                        ::serde_json::from_value::<ListResponseItemFileComment>(value.clone())
-                            .map(ListResponseItem::FileComment)
-                            .map_err(|e| D::Error::custom(&format!("{}", e)))
-                    }
-                    "channel" => {
-                        ::serde_json::from_value::<ListResponseItemChannel>(value.clone())
-                            .map(ListResponseItem::Channel)
-                            .map_err(|e| D::Error::custom(&format!("{}", e)))
-                    }
-                    "im" => {
-                        ::serde_json::from_value::<ListResponseItemIm>(value.clone())
-                            .map(ListResponseItem::Im)
-                            .map_err(|e| D::Error::custom(&format!("{}", e)))
-                    }
-                    "group" => {
-                        ::serde_json::from_value::<ListResponseItemGroup>(value.clone())
-                            .map(ListResponseItem::Group)
-                            .map_err(|e| D::Error::custom(&format!("{}", e)))
-                    }
+                    "message" => ::serde_json::from_value::<ListResponseItemMessage>(value.clone())
+                        .map(ListResponseItem::Message)
+                        .map_err(|e| D::Error::custom(&format!("{}", e))),
+                    "file" => ::serde_json::from_value::<ListResponseItemFile>(value.clone())
+                        .map(ListResponseItem::File)
+                        .map_err(|e| D::Error::custom(&format!("{}", e))),
+                    "file_comment" => ::serde_json::from_value::<ListResponseItemFileComment>(value.clone())
+                        .map(ListResponseItem::FileComment)
+                        .map_err(|e| D::Error::custom(&format!("{}", e))),
+                    "channel" => ::serde_json::from_value::<ListResponseItemChannel>(value.clone())
+                        .map(ListResponseItem::Channel)
+                        .map_err(|e| D::Error::custom(&format!("{}", e))),
+                    "im" => ::serde_json::from_value::<ListResponseItemIm>(value.clone())
+                        .map(ListResponseItem::Im)
+                        .map_err(|e| D::Error::custom(&format!("{}", e))),
+                    "group" => ::serde_json::from_value::<ListResponseItemGroup>(value.clone())
+                        .map(ListResponseItem::Group)
+                        .map_err(|e| D::Error::custom(&format!("{}", e))),
                     _ => Err(D::Error::unknown_variant(ty, VARIANTS)),
                 }
             } else {
-                Err(D::Error::invalid_type(
-                    ::serde::de::Unexpected::Unit,
-                    &"a string",
-                ))
+                Err(D::Error::invalid_type(::serde::de::Unexpected::Unit, &"a string"))
             }
         } else {
             Err(D::Error::missing_field("type"))
@@ -336,14 +302,12 @@ pub struct ListResponseItemChannel {
     pub ty: String,
 }
 
-
 #[derive(Clone, Debug, Deserialize)]
 pub struct ListResponseItemFile {
     pub file: ::File,
     #[serde(rename = "type")]
     pub ty: String,
 }
-
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct ListResponseItemFileComment {
@@ -353,14 +317,12 @@ pub struct ListResponseItemFileComment {
     pub ty: String,
 }
 
-
 #[derive(Clone, Debug, Deserialize)]
 pub struct ListResponseItemGroup {
     pub group: String,
     #[serde(rename = "type")]
     pub ty: String,
 }
-
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct ListResponseItemIm {
@@ -369,7 +331,6 @@ pub struct ListResponseItemIm {
     pub ty: String,
 }
 
-
 #[derive(Clone, Debug, Deserialize)]
 pub struct ListResponseItemMessage {
     pub channel: String,
@@ -377,7 +338,6 @@ pub struct ListResponseItemMessage {
     #[serde(rename = "type")]
     pub ty: String,
 }
-
 
 impl<E: Error> Into<Result<ListResponse, ListError<E>>> for ListResponse {
     fn into(self) -> Result<ListResponse, ListError<E>> {
@@ -510,21 +470,14 @@ impl<E: Error> Error for ListError<E> {
 ///
 /// Wraps https://api.slack.com/methods/stars.remove
 
-pub fn remove<R>(
-    client: &R,
-    token: &str,
-    request: &RemoveRequest,
-) -> Result<RemoveResponse, RemoveError<R::Error>>
+pub fn remove<R>(client: &R, token: &str, request: &RemoveRequest) -> Result<RemoveResponse, RemoveError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![
         Some(("token", token)),
         request.file.map(|file| ("file", file)),
-        request.file_comment.map(|file_comment| {
-            ("file_comment", file_comment)
-        }),
+        request.file_comment.map(|file_comment| ("file_comment", file_comment)),
         request.channel.map(|channel| ("channel", channel)),
         request.timestamp.map(|timestamp| ("timestamp", timestamp)),
     ];
@@ -533,9 +486,7 @@ where
     client
         .send(&url, &params[..])
         .map_err(RemoveError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<RemoveResponse>(&result).map_err(RemoveError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<RemoveResponse>(&result).map_err(RemoveError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -557,7 +508,6 @@ pub struct RemoveResponse {
     #[serde(default)]
     ok: bool,
 }
-
 
 impl<E: Error> Into<Result<RemoveResponse, RemoveError<E>>> for RemoveResponse {
     fn into(self) -> Result<RemoveResponse, RemoveError<E>> {

@@ -17,20 +17,16 @@
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
+extern crate reqwest;
 extern crate serde_json;
 extern crate serde_qs;
-extern crate reqwest;
 
-extern crate types;
 #[macro_use]
-pub extern crate requests;
-
-pub use types::*;
+pub mod requests;
 use requests::*;
+
+mod types;
+pub use types::*;
 
 mod mods;
 pub use mods::*;
-
-pub extern crate channels;
-pub extern crate api;
-pub extern crate auth;

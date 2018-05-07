@@ -1,5 +1,3 @@
-
-
 #[allow(unused_imports)]
 use std::collections::HashMap;
 use std::convert::From;
@@ -48,44 +46,34 @@ pub struct ConnectResponseTeam {
 ///
 /// Wraps https://api.slack.com/methods/rtm.start
 
-pub fn start<R>(
-    client: &R,
-    token: &str,
-    request: &StartRequest,
-) -> Result<StartResponse, StartError<R::Error>>
+pub fn start<R>(client: &R, token: &str, request: &StartRequest) -> Result<StartResponse, StartError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![
         Some(("token", token)),
-        request.no_unreads.map(|no_unreads| {
-            ("no_unreads", if no_unreads { "1" } else { "0" })
-        }),
-        request.mpim_aware.map(|mpim_aware| {
-            ("mpim_aware", if mpim_aware { "1" } else { "0" })
-        }),
-        request.no_latest.map(|no_latest| {
-            ("no_latest", if no_latest { "1" } else { "0" })
-        }),
-        request.batch_presence_aware.map(|batch_presence_aware| {
-            (
-                "batch_presence_aware",
-                if batch_presence_aware { "1" } else { "0" },
-            )
-        }),
-        request.include_locale.map(|include_locale| {
-            ("include_locale", if include_locale { "1" } else { "0" })
-        }),
+        request
+            .no_unreads
+            .map(|no_unreads| ("no_unreads", if no_unreads { "1" } else { "0" })),
+        request
+            .mpim_aware
+            .map(|mpim_aware| ("mpim_aware", if mpim_aware { "1" } else { "0" })),
+        request
+            .no_latest
+            .map(|no_latest| ("no_latest", if no_latest { "1" } else { "0" })),
+        request
+            .batch_presence_aware
+            .map(|batch_presence_aware| ("batch_presence_aware", if batch_presence_aware { "1" } else { "0" })),
+        request
+            .include_locale
+            .map(|include_locale| ("include_locale", if include_locale { "1" } else { "0" })),
     ];
     let params = params.into_iter().filter_map(|x| x).collect::<Vec<_>>();
     let url = ::get_slack_url_for_method("rtm.start");
     client
         .send(&url, &params[..])
         .map_err(StartError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<StartResponse>(&result).map_err(StartError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<StartResponse>(&result).map_err(StartError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -119,7 +107,6 @@ pub struct StartResponse {
     pub url: Option<String>,
     pub users: Option<Vec<::User>>,
 }
-
 
 impl<E: Error> Into<Result<StartResponse, StartError<E>>> for StartResponse {
     fn into(self) -> Result<StartResponse, StartError<E>> {

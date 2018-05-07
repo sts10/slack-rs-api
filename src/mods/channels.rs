@@ -1,15 +1,5 @@
 //! Get info on your team's Slack channels, create or archive channels, invite users, set the topic and purpose, and mark a channel as read.
 
-extern crate reqwest;
-extern crate serde;
-#[macro_use]
-extern crate serde_derive;
-extern crate serde_json;
-
-#[macro_use]
-extern crate requests;
-
-extern crate types;
 use types::*;
 
 /// Archives a channel.
@@ -283,7 +273,12 @@ pub struct RepliesResponse {
 ///
 /// Wraps https://api.slack.com/methods/channels.setPurpose
 
-api_call!(set_purpose, "channels.setPurpose", SetPurposeRequest, SetPurposeResponse);
+api_call!(
+    set_purpose,
+    "channels.setPurpose",
+    SetPurposeRequest,
+    SetPurposeResponse
+);
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct SetPurposeRequest<'a> {
@@ -446,7 +441,7 @@ mod tests {
         let client = requests::default_client().unwrap();
         let token = env::var("SLACK_API_TOKEN").unwrap();
 
-        let req = MarkRequest{
+        let req = MarkRequest {
             channel: "C9VGPGBL4",
             ts: &time_string,
         };

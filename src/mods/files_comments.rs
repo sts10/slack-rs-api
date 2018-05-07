@@ -1,5 +1,3 @@
-
-
 #[allow(unused_imports)]
 use std::collections::HashMap;
 use std::convert::From;
@@ -14,15 +12,10 @@ use requests::SlackWebRequestSender;
 ///
 /// Wraps https://api.slack.com/methods/files.comments.add
 
-pub fn add<R>(
-    client: &R,
-    token: &str,
-    request: &AddRequest,
-) -> Result<AddResponse, AddError<R::Error>>
+pub fn add<R>(client: &R, token: &str, request: &AddRequest) -> Result<AddResponse, AddError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![
         Some(("token", token)),
         Some(("file", request.file)),
@@ -33,9 +26,7 @@ where
     client
         .send(&url, &params[..])
         .map_err(AddError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<AddResponse>(&result).map_err(AddError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<AddResponse>(&result).map_err(AddError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -54,7 +45,6 @@ pub struct AddResponse {
     #[serde(default)]
     ok: bool,
 }
-
 
 impl<E: Error> Into<Result<AddResponse, AddError<E>>> for AddResponse {
     fn into(self) -> Result<AddResponse, AddError<E>> {
@@ -185,15 +175,10 @@ impl<E: Error> Error for AddError<E> {
 ///
 /// Wraps https://api.slack.com/methods/files.comments.delete
 
-pub fn delete<R>(
-    client: &R,
-    token: &str,
-    request: &DeleteRequest,
-) -> Result<DeleteResponse, DeleteError<R::Error>>
+pub fn delete<R>(client: &R, token: &str, request: &DeleteRequest) -> Result<DeleteResponse, DeleteError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![
         Some(("token", token)),
         Some(("file", request.file)),
@@ -204,9 +189,7 @@ where
     client
         .send(&url, &params[..])
         .map_err(DeleteError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<DeleteResponse>(&result).map_err(DeleteError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<DeleteResponse>(&result).map_err(DeleteError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -224,7 +207,6 @@ pub struct DeleteResponse {
     #[serde(default)]
     ok: bool,
 }
-
 
 impl<E: Error> Into<Result<DeleteResponse, DeleteError<E>>> for DeleteResponse {
     fn into(self) -> Result<DeleteResponse, DeleteError<E>> {
@@ -355,15 +337,10 @@ impl<E: Error> Error for DeleteError<E> {
 ///
 /// Wraps https://api.slack.com/methods/files.comments.edit
 
-pub fn edit<R>(
-    client: &R,
-    token: &str,
-    request: &EditRequest,
-) -> Result<EditResponse, EditError<R::Error>>
+pub fn edit<R>(client: &R, token: &str, request: &EditRequest) -> Result<EditResponse, EditError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![
         Some(("token", token)),
         Some(("file", request.file)),
@@ -375,9 +352,7 @@ where
     client
         .send(&url, &params[..])
         .map_err(EditError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<EditResponse>(&result).map_err(EditError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<EditResponse>(&result).map_err(EditError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -398,7 +373,6 @@ pub struct EditResponse {
     #[serde(default)]
     ok: bool,
 }
-
 
 impl<E: Error> Into<Result<EditResponse, EditError<E>>> for EditResponse {
     fn into(self) -> Result<EditResponse, EditError<E>> {

@@ -1,6 +1,5 @@
 //! Search your team's files and messages.
 
-
 #[allow(unused_imports)]
 use std::collections::HashMap;
 use std::convert::From;
@@ -15,11 +14,7 @@ use requests::SlackWebRequestSender;
 ///
 /// Wraps https://api.slack.com/methods/search.all
 
-pub fn all<R>(
-    client: &R,
-    token: &str,
-    request: &AllRequest,
-) -> Result<AllResponse, AllError<R::Error>>
+pub fn all<R>(client: &R, token: &str, request: &AllRequest) -> Result<AllResponse, AllError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
@@ -30,9 +25,9 @@ where
         Some(("query", request.query)),
         request.sort.map(|sort| ("sort", sort)),
         request.sort_dir.map(|sort_dir| ("sort_dir", sort_dir)),
-        request.highlight.map(|highlight| {
-            ("highlight", if highlight { "1" } else { "0" })
-        }),
+        request
+            .highlight
+            .map(|highlight| ("highlight", if highlight { "1" } else { "0" })),
         count.as_ref().map(|count| ("count", &count[..])),
         page.as_ref().map(|page| ("page", &page[..])),
     ];
@@ -41,9 +36,7 @@ where
     client
         .send(&url, &params[..])
         .map_err(AllError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<AllResponse>(&result).map_err(AllError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<AllResponse>(&result).map_err(AllError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -79,13 +72,11 @@ pub struct AllResponseFiles {
     pub paging: ::Paging,
 }
 
-
 #[derive(Clone, Debug, Deserialize)]
 pub struct AllResponseMessages {
     pub matches: Vec<::Message>,
     pub paging: ::Paging,
 }
-
 
 impl<E: Error> Into<Result<AllResponse, AllError<E>>> for AllResponse {
     fn into(self) -> Result<AllResponse, AllError<E>> {
@@ -208,11 +199,7 @@ impl<E: Error> Error for AllError<E> {
 ///
 /// Wraps https://api.slack.com/methods/search.files
 
-pub fn files<R>(
-    client: &R,
-    token: &str,
-    request: &FilesRequest,
-) -> Result<FilesResponse, FilesError<R::Error>>
+pub fn files<R>(client: &R, token: &str, request: &FilesRequest) -> Result<FilesResponse, FilesError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
@@ -223,9 +210,9 @@ where
         Some(("query", request.query)),
         request.sort.map(|sort| ("sort", sort)),
         request.sort_dir.map(|sort_dir| ("sort_dir", sort_dir)),
-        request.highlight.map(|highlight| {
-            ("highlight", if highlight { "1" } else { "0" })
-        }),
+        request
+            .highlight
+            .map(|highlight| ("highlight", if highlight { "1" } else { "0" })),
         count.as_ref().map(|count| ("count", &count[..])),
         page.as_ref().map(|page| ("page", &page[..])),
     ];
@@ -234,9 +221,7 @@ where
     client
         .send(&url, &params[..])
         .map_err(FilesError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<FilesResponse>(&result).map_err(FilesError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<FilesResponse>(&result).map_err(FilesError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -271,7 +256,6 @@ pub struct FilesResponseFiles {
     pub paging: Option<::Paging>,
     pub total: Option<i32>,
 }
-
 
 impl<E: Error> Into<Result<FilesResponse, FilesError<E>>> for FilesResponse {
     fn into(self) -> Result<FilesResponse, FilesError<E>> {
@@ -409,9 +393,9 @@ where
         Some(("query", request.query)),
         request.sort.map(|sort| ("sort", sort)),
         request.sort_dir.map(|sort_dir| ("sort_dir", sort_dir)),
-        request.highlight.map(|highlight| {
-            ("highlight", if highlight { "1" } else { "0" })
-        }),
+        request
+            .highlight
+            .map(|highlight| ("highlight", if highlight { "1" } else { "0" })),
         count.as_ref().map(|count| ("count", &count[..])),
         page.as_ref().map(|page| ("page", &page[..])),
     ];
@@ -420,11 +404,7 @@ where
     client
         .send(&url, &params[..])
         .map_err(MessagesError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<MessagesResponse>(&result).map_err(
-                MessagesError::MalformedResponse,
-            )
-        })
+        .and_then(|result| serde_json::from_str::<MessagesResponse>(&result).map_err(MessagesError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -459,7 +439,6 @@ pub struct MessagesResponseMessages {
     pub paging: Option<::Paging>,
     pub total: Option<i32>,
 }
-
 
 impl<E: Error> Into<Result<MessagesResponse, MessagesError<E>>> for MessagesResponse {
     fn into(self) -> Result<MessagesResponse, MessagesError<E>> {

@@ -1,15 +1,3 @@
-//! Get info on your team's Slack channels, create or archive channels, invite users, set the topic and purpose, and mark a channel as read.
-
-extern crate reqwest;
-extern crate serde;
-#[macro_use]
-extern crate serde_derive;
-extern crate serde_json;
-extern crate serde_qs;
-
-#[macro_use]
-extern crate requests;
-
 /// Checks API calling code.
 ///
 /// Wraps https://api.slack.com/methods/api.test
@@ -28,7 +16,7 @@ pub struct TestRequest<'a> {
 #[serde(deny_unknown_fields)]
 pub struct TestResponse {
     ok: bool,
-    pub args: std::collections::HashMap<String, String>,
+    pub args: ::std::collections::HashMap<String, String>,
 }
 
 #[cfg(test)]
@@ -38,7 +26,7 @@ mod tests {
 
     #[test]
     fn test_test() {
-        let client = requests::default_client().unwrap();
+        let client = ::requests::default_client().unwrap();
         let token = env::var("SLACK_API_TOKEN").unwrap();
 
         let req = TestRequest {

@@ -1,5 +1,3 @@
-
-
 #[allow(unused_imports)]
 use std::collections::HashMap;
 use std::convert::From;
@@ -14,29 +12,20 @@ use requests::SlackWebRequestSender;
 ///
 /// Wraps https://api.slack.com/methods/team.profile.get
 
-pub fn get<R>(
-    client: &R,
-    token: &str,
-    request: &GetRequest,
-) -> Result<GetResponse, GetError<R::Error>>
+pub fn get<R>(client: &R, token: &str, request: &GetRequest) -> Result<GetResponse, GetError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![
         Some(("token", token)),
-        request.visibility.map(
-            |visibility| ("visibility", visibility)
-        ),
+        request.visibility.map(|visibility| ("visibility", visibility)),
     ];
     let params = params.into_iter().filter_map(|x| x).collect::<Vec<_>>();
     let url = ::get_slack_url_for_method("team.profile.get");
     client
         .send(&url, &params[..])
         .map_err(GetError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<GetResponse>(&result).map_err(GetError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<GetResponse>(&result).map_err(GetError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -71,7 +60,6 @@ pub struct GetResponseProfileField {
     #[serde(rename = "type")]
     pub ty: Option<String>,
 }
-
 
 impl<E: Error> Into<Result<GetResponse, GetError<E>>> for GetResponse {
     fn into(self) -> Result<GetResponse, GetError<E>> {

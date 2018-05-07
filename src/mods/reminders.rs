@@ -1,5 +1,3 @@
-
-
 #[allow(unused_imports)]
 use std::collections::HashMap;
 use std::convert::From;
@@ -14,11 +12,7 @@ use requests::SlackWebRequestSender;
 ///
 /// Wraps https://api.slack.com/methods/reminders.add
 
-pub fn add<R>(
-    client: &R,
-    token: &str,
-    request: &AddRequest,
-) -> Result<AddResponse, AddError<R::Error>>
+pub fn add<R>(client: &R, token: &str, request: &AddRequest) -> Result<AddResponse, AddError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
@@ -34,9 +28,7 @@ where
     client
         .send(&url, &params[..])
         .map_err(AddError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<AddResponse>(&result).map_err(AddError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<AddResponse>(&result).map_err(AddError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -57,7 +49,6 @@ pub struct AddResponse {
     ok: bool,
     pub reminder: Option<::Reminder>,
 }
-
 
 impl<E: Error> Into<Result<AddResponse, AddError<E>>> for AddResponse {
     fn into(self) -> Result<AddResponse, AddError<E>> {
@@ -220,18 +211,13 @@ pub fn complete<R>(
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![Some(("token", token)), Some(("reminder", request.reminder))];
     let params = params.into_iter().filter_map(|x| x).collect::<Vec<_>>();
     let url = ::get_slack_url_for_method("reminders.complete");
     client
         .send(&url, &params[..])
         .map_err(CompleteError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<CompleteResponse>(&result).map_err(
-                CompleteError::MalformedResponse,
-            )
-        })
+        .and_then(|result| serde_json::from_str::<CompleteResponse>(&result).map_err(CompleteError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -247,7 +233,6 @@ pub struct CompleteResponse {
     #[serde(default)]
     ok: bool,
 }
-
 
 impl<E: Error> Into<Result<CompleteResponse, CompleteError<E>>> for CompleteResponse {
     fn into(self) -> Result<CompleteResponse, CompleteError<E>> {
@@ -386,24 +371,17 @@ impl<E: Error> Error for CompleteError<E> {
 ///
 /// Wraps https://api.slack.com/methods/reminders.delete
 
-pub fn delete<R>(
-    client: &R,
-    token: &str,
-    request: &DeleteRequest,
-) -> Result<DeleteResponse, DeleteError<R::Error>>
+pub fn delete<R>(client: &R, token: &str, request: &DeleteRequest) -> Result<DeleteResponse, DeleteError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![Some(("token", token)), Some(("reminder", request.reminder))];
     let params = params.into_iter().filter_map(|x| x).collect::<Vec<_>>();
     let url = ::get_slack_url_for_method("reminders.delete");
     client
         .send(&url, &params[..])
         .map_err(DeleteError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<DeleteResponse>(&result).map_err(DeleteError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<DeleteResponse>(&result).map_err(DeleteError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -419,7 +397,6 @@ pub struct DeleteResponse {
     #[serde(default)]
     ok: bool,
 }
-
 
 impl<E: Error> Into<Result<DeleteResponse, DeleteError<E>>> for DeleteResponse {
     fn into(self) -> Result<DeleteResponse, DeleteError<E>> {
@@ -546,24 +523,17 @@ impl<E: Error> Error for DeleteError<E> {
 ///
 /// Wraps https://api.slack.com/methods/reminders.info
 
-pub fn info<R>(
-    client: &R,
-    token: &str,
-    request: &InfoRequest,
-) -> Result<InfoResponse, InfoError<R::Error>>
+pub fn info<R>(client: &R, token: &str, request: &InfoRequest) -> Result<InfoResponse, InfoError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![Some(("token", token)), Some(("reminder", request.reminder))];
     let params = params.into_iter().filter_map(|x| x).collect::<Vec<_>>();
     let url = ::get_slack_url_for_method("reminders.info");
     client
         .send(&url, &params[..])
         .map_err(InfoError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<InfoResponse>(&result).map_err(InfoError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<InfoResponse>(&result).map_err(InfoError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -580,7 +550,6 @@ pub struct InfoResponse {
     ok: bool,
     pub reminder: Option<::Reminder>,
 }
-
 
 impl<E: Error> Into<Result<InfoResponse, InfoError<E>>> for InfoResponse {
     fn into(self) -> Result<InfoResponse, InfoError<E>> {
@@ -716,9 +685,7 @@ where
     client
         .send(&url, &params[..])
         .map_err(ListError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<ListResponse>(&result).map_err(ListError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<ListResponse>(&result).map_err(ListError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -729,7 +696,6 @@ pub struct ListResponse {
     ok: bool,
     pub reminders: Option<Vec<::Reminder>>,
 }
-
 
 impl<E: Error> Into<Result<ListResponse, ListError<E>>> for ListResponse {
     fn into(self) -> Result<ListResponse, ListError<E>> {

@@ -1,7 +1,12 @@
+pub mod api;
+pub mod auth;
+pub mod bots;
+pub mod channels;
+pub mod chat;
 pub mod dnd;
 pub mod emoji;
-pub mod files_comments;
 pub mod files;
+pub mod files_comments;
 pub mod groups;
 pub mod im;
 pub mod mpim;

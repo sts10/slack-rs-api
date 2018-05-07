@@ -1,12 +1,6 @@
 //! Functionality for sending requests to Slack.
-extern crate reqwest;
-extern crate serde;
-extern crate serde_qs;
-extern crate serde_json;
-
-use std::error;
-
 pub use reqwest::Client;
+use std::error;
 
 /// Functionality for sending authenticated and unauthenticated requests to Slack via HTTP.
 ///
@@ -33,7 +27,11 @@ impl SlackWebRequestSender for ::reqwest::Client {
 }
 
 /// Make an API call to Slack. Takes a struct that describes the request params
-pub fn send_structured<T: ::serde::Serialize>(client: &::reqwest::Client, method_url: &str, params: &T) -> Result<String, ::reqwest::Error> {
+pub fn send_structured<T: ::serde::Serialize>(
+    client: &::reqwest::Client,
+    method_url: &str,
+    params: &T,
+) -> Result<String, ::reqwest::Error> {
     let url_text = method_url.to_string() + &::serde_qs::to_string(params).unwrap();
     let url = ::reqwest::Url::parse(&url_text).unwrap();
     client.get(url).send()?.text()
@@ -52,16 +50,10 @@ pub fn default_client() -> Result<::reqwest::Client, ::reqwest::Error> {
     ::reqwest::Client::builder().build()
 }
 
-#[macro_export]
 macro_rules! api_call {
     ($name:ident, $strname:expr, $reqty:ty, $okty:ty) => {
-        pub fn $name (
-            client: &::reqwest::Client,
-            token: &str,
-            request: &$reqty,
-        ) -> Result<$okty, ::requests::Error>
-        {
-            use ::requests::Error;
+        pub fn $name(client: &::reqwest::Client, token: &str, request: &$reqty) -> Result<$okty, ::requests::Error> {
+            use requests::Error;
             #[derive(Deserialize)]
             struct IsError {
                 ok: bool,
@@ -71,22 +63,20 @@ macro_rules! api_call {
             let url = ::requests::get_slack_url_for_method($strname) + "?token=" + token + "&";
             let bytes = ::requests::send_structured(client, &url, &request).map_err(Error::Client)?;
 
-            let is_error = serde_json::from_str::<IsError>(&bytes);
+            let is_error = ::serde_json::from_str::<IsError>(&bytes);
             match is_error {
                 // Complete failure, can't do anything with the bytes
                 Err(e) => Err(Error::CannotParse(e, bytes)),
                 // Slack sent us an error
-                Ok(IsError{ok: false, error}) => Err(Error::Slack(error.unwrap_or_default())),
+                Ok(IsError { ok: false, error }) => Err(Error::Slack(error.unwrap_or_default())),
                 // Slack sent us an success result
-                Ok(IsError{ok: true, ..}) => {
-                    match serde_json::from_str::<$okty>(&bytes) {
-                        Ok(res) => Ok(res),
-                        Err(e) => Err(Error::CannotParse(e, bytes)),
-                    }
-                }
+                Ok(IsError { ok: true, .. }) => match ::serde_json::from_str::<$okty>(&bytes) {
+                    Ok(res) => Ok(res),
+                    Err(e) => Err(Error::CannotParse(e, bytes)),
+                },
             }
         }
-    }
+    };
 }
 
 pub fn get_slack_url_for_method(method: &str) -> String {
@@ -96,12 +86,12 @@ pub fn get_slack_url_for_method(method: &str) -> String {
 #[derive(Debug)]
 pub enum Error {
     Slack(String),
-    CannotParse(serde_json::error::Error, String),
+    CannotParse(::serde_json::error::Error, String),
     Client(::reqwest::Error),
 }
 
-impl std::fmt::Display for Error {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+impl ::std::fmt::Display for Error {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         match *self {
             Error::Slack(ref reason) => write!(f, "{}", reason),
             Error::CannotParse(..) => write!(f, "Could not parse as specified result type"),
@@ -110,7 +100,7 @@ impl std::fmt::Display for Error {
     }
 }
 
-impl std::error::Error for Error {
+impl ::std::error::Error for Error {
     fn description(&self) -> &str {
         match *self {
             Error::Slack(ref reason) => reason,

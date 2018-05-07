@@ -1,5 +1,3 @@
-
-
 #[allow(unused_imports)]
 use std::collections::HashMap;
 use std::convert::From;
@@ -14,30 +12,22 @@ use requests::SlackWebRequestSender;
 ///
 /// Wraps https://api.slack.com/methods/oauth.access
 
-pub fn access<R>(
-    client: &R,
-    request: &AccessRequest,
-) -> Result<AccessResponse, AccessError<R::Error>>
+pub fn access<R>(client: &R, request: &AccessRequest) -> Result<AccessResponse, AccessError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![
         Some(("client_id", request.client_id)),
         Some(("client_secret", request.client_secret)),
         Some(("code", request.code)),
-        request.redirect_uri.map(|redirect_uri| {
-            ("redirect_uri", redirect_uri)
-        }),
+        request.redirect_uri.map(|redirect_uri| ("redirect_uri", redirect_uri)),
     ];
     let params = params.into_iter().filter_map(|x| x).collect::<Vec<_>>();
     let url = ::get_slack_url_for_method("oauth.access");
     client
         .send(&url, &params[..])
         .map_err(AccessError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<AccessResponse>(&result).map_err(AccessError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<AccessResponse>(&result).map_err(AccessError::MalformedResponse))
 }
 
 #[derive(Clone, Default, Debug)]
@@ -57,8 +47,6 @@ pub struct AccessResponse {
     pub access_token: Option<String>,
     pub scope: Option<String>,
 }
-
-
 
 #[derive(Debug)]
 pub enum AccessError<E: Error> {

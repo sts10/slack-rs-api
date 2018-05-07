@@ -1,16 +1,5 @@
 //! Post chat messages to Slack.
 
-extern crate reqwest;
-extern crate serde;
-#[macro_use]
-extern crate serde_derive;
-extern crate serde_json;
-extern crate serde_qs;
-
-#[macro_use]
-extern crate requests;
-
-extern crate types;
 use types::*;
 
 /// Deletes a message.
@@ -62,7 +51,12 @@ pub struct MeMessageResponse {
 ///
 /// Wraps https://api.slack.com/methods/chat.postMessage
 
-api_call!(post_message, "chat.postMessage", PostMessageRequest, PostMessageResponse);
+api_call!(
+    post_message,
+    "chat.postMessage",
+    PostMessageRequest,
+    PostMessageResponse
+);
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct PostMessageRequest<'a> {

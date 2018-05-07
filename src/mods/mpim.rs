@@ -1,6 +1,5 @@
 //! Get info on your multiparty direct messages.
 
-
 #[allow(unused_imports)]
 use std::collections::HashMap;
 use std::convert::From;
@@ -15,24 +14,17 @@ use requests::SlackWebRequestSender;
 ///
 /// Wraps https://api.slack.com/methods/mpim.close
 
-pub fn close<R>(
-    client: &R,
-    token: &str,
-    request: &CloseRequest,
-) -> Result<CloseResponse, CloseError<R::Error>>
+pub fn close<R>(client: &R, token: &str, request: &CloseRequest) -> Result<CloseResponse, CloseError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![Some(("token", token)), Some(("channel", request.channel))];
     let params = params.into_iter().filter_map(|x| x).collect::<Vec<_>>();
     let url = ::get_slack_url_for_method("mpim.close");
     client
         .send(&url, &params[..])
         .map_err(CloseError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<CloseResponse>(&result).map_err(CloseError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<CloseResponse>(&result).map_err(CloseError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -48,7 +40,6 @@ pub struct CloseResponse {
     #[serde(default)]
     ok: bool,
 }
-
 
 impl<E: Error> Into<Result<CloseResponse, CloseError<E>>> for CloseResponse {
     fn into(self) -> Result<CloseResponse, CloseError<E>> {
@@ -173,11 +164,7 @@ impl<E: Error> Error for CloseError<E> {
 ///
 /// Wraps https://api.slack.com/methods/mpim.history
 
-pub fn history<R>(
-    client: &R,
-    token: &str,
-    request: &HistoryRequest,
-) -> Result<HistoryResponse, HistoryError<R::Error>>
+pub fn history<R>(client: &R, token: &str, request: &HistoryRequest) -> Result<HistoryResponse, HistoryError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
@@ -187,24 +174,20 @@ where
         Some(("channel", request.channel)),
         request.latest.map(|latest| ("latest", latest)),
         request.oldest.map(|oldest| ("oldest", oldest)),
-        request.inclusive.map(|inclusive| {
-            ("inclusive", if inclusive { "1" } else { "0" })
-        }),
+        request
+            .inclusive
+            .map(|inclusive| ("inclusive", if inclusive { "1" } else { "0" })),
         count.as_ref().map(|count| ("count", &count[..])),
-        request.unreads.map(|unreads| {
-            ("unreads", if unreads { "1" } else { "0" })
-        }),
+        request
+            .unreads
+            .map(|unreads| ("unreads", if unreads { "1" } else { "0" })),
     ];
     let params = params.into_iter().filter_map(|x| x).collect::<Vec<_>>();
     let url = ::get_slack_url_for_method("mpim.history");
     client
         .send(&url, &params[..])
         .map_err(HistoryError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<HistoryResponse>(&result).map_err(
-                HistoryError::MalformedResponse,
-            )
-        })
+        .and_then(|result| serde_json::from_str::<HistoryResponse>(&result).map_err(HistoryError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -233,7 +216,6 @@ pub struct HistoryResponse {
     #[serde(default)]
     ok: bool,
 }
-
 
 impl<E: Error> Into<Result<HistoryResponse, HistoryError<E>>> for HistoryResponse {
     fn into(self) -> Result<HistoryResponse, HistoryError<E>> {
@@ -379,9 +361,7 @@ where
     client
         .send(&url, &params[..])
         .map_err(ListError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<ListResponse>(&result).map_err(ListError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<ListResponse>(&result).map_err(ListError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -392,7 +372,6 @@ pub struct ListResponse {
     #[serde(default)]
     ok: bool,
 }
-
 
 impl<E: Error> Into<Result<ListResponse, ListError<E>>> for ListResponse {
     fn into(self) -> Result<ListResponse, ListError<E>> {
@@ -511,15 +490,10 @@ impl<E: Error> Error for ListError<E> {
 ///
 /// Wraps https://api.slack.com/methods/mpim.mark
 
-pub fn mark<R>(
-    client: &R,
-    token: &str,
-    request: &MarkRequest,
-) -> Result<MarkResponse, MarkError<R::Error>>
+pub fn mark<R>(client: &R, token: &str, request: &MarkRequest) -> Result<MarkResponse, MarkError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![
         Some(("token", token)),
         Some(("channel", request.channel)),
@@ -530,9 +504,7 @@ where
     client
         .send(&url, &params[..])
         .map_err(MarkError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<MarkResponse>(&result).map_err(MarkError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<MarkResponse>(&result).map_err(MarkError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -550,7 +522,6 @@ pub struct MarkResponse {
     #[serde(default)]
     ok: bool,
 }
-
 
 impl<E: Error> Into<Result<MarkResponse, MarkError<E>>> for MarkResponse {
     fn into(self) -> Result<MarkResponse, MarkError<E>> {
@@ -681,24 +652,17 @@ impl<E: Error> Error for MarkError<E> {
 ///
 /// Wraps https://api.slack.com/methods/mpim.open
 
-pub fn open<R>(
-    client: &R,
-    token: &str,
-    request: &OpenRequest,
-) -> Result<OpenResponse, OpenError<R::Error>>
+pub fn open<R>(client: &R, token: &str, request: &OpenRequest) -> Result<OpenResponse, OpenError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![Some(("token", token)), Some(("users", request.users))];
     let params = params.into_iter().filter_map(|x| x).collect::<Vec<_>>();
     let url = ::get_slack_url_for_method("mpim.open");
     client
         .send(&url, &params[..])
         .map_err(OpenError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<OpenResponse>(&result).map_err(OpenError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<OpenResponse>(&result).map_err(OpenError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -715,7 +679,6 @@ pub struct OpenResponse {
     #[serde(default)]
     ok: bool,
 }
-
 
 impl<E: Error> Into<Result<OpenResponse, OpenError<E>>> for OpenResponse {
     fn into(self) -> Result<OpenResponse, OpenError<E>> {
@@ -846,15 +809,10 @@ impl<E: Error> Error for OpenError<E> {
 ///
 /// Wraps https://api.slack.com/methods/mpim.replies
 
-pub fn replies<R>(
-    client: &R,
-    token: &str,
-    request: &RepliesRequest,
-) -> Result<RepliesResponse, RepliesError<R::Error>>
+pub fn replies<R>(client: &R, token: &str, request: &RepliesRequest) -> Result<RepliesResponse, RepliesError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![
         Some(("token", token)),
         Some(("channel", request.channel)),
@@ -865,11 +823,7 @@ where
     client
         .send(&url, &params[..])
         .map_err(RepliesError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<RepliesResponse>(&result).map_err(
-                RepliesError::MalformedResponse,
-            )
-        })
+        .and_then(|result| serde_json::from_str::<RepliesResponse>(&result).map_err(RepliesError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -889,7 +843,6 @@ pub struct RepliesResponse {
     ok: bool,
     pub thread_info: Option<::ThreadInfo>,
 }
-
 
 impl<E: Error> Into<Result<RepliesResponse, RepliesError<E>>> for RepliesResponse {
     fn into(self) -> Result<RepliesResponse, RepliesError<E>> {

@@ -1,6 +1,5 @@
 //! Get info on files uploaded to Slack, upload new files to Slack.
 
-
 #[allow(unused_imports)]
 use std::collections::HashMap;
 use std::convert::From;
@@ -15,24 +14,17 @@ use requests::SlackWebRequestSender;
 ///
 /// Wraps https://api.slack.com/methods/files.delete
 
-pub fn delete<R>(
-    client: &R,
-    token: &str,
-    request: &DeleteRequest,
-) -> Result<DeleteResponse, DeleteError<R::Error>>
+pub fn delete<R>(client: &R, token: &str, request: &DeleteRequest) -> Result<DeleteResponse, DeleteError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![Some(("token", token)), Some(("file", request.file))];
     let params = params.into_iter().filter_map(|x| x).collect::<Vec<_>>();
     let url = ::get_slack_url_for_method("files.delete");
     client
         .send(&url, &params[..])
         .map_err(DeleteError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<DeleteResponse>(&result).map_err(DeleteError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<DeleteResponse>(&result).map_err(DeleteError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -48,7 +40,6 @@ pub struct DeleteResponse {
     #[serde(default)]
     ok: bool,
 }
-
 
 impl<E: Error> Into<Result<DeleteResponse, DeleteError<E>>> for DeleteResponse {
     fn into(self) -> Result<DeleteResponse, DeleteError<E>> {
@@ -183,11 +174,7 @@ impl<E: Error> Error for DeleteError<E> {
 ///
 /// Wraps https://api.slack.com/methods/files.info
 
-pub fn info<R>(
-    client: &R,
-    token: &str,
-    request: &InfoRequest,
-) -> Result<InfoResponse, InfoError<R::Error>>
+pub fn info<R>(client: &R, token: &str, request: &InfoRequest) -> Result<InfoResponse, InfoError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
@@ -204,9 +191,7 @@ where
     client
         .send(&url, &params[..])
         .map_err(InfoError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<InfoResponse>(&result).map_err(InfoError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<InfoResponse>(&result).map_err(InfoError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -229,7 +214,6 @@ pub struct InfoResponse {
     ok: bool,
     pub paging: Option<::Paging>,
 }
-
 
 impl<E: Error> Into<Result<InfoResponse, InfoError<E>>> for InfoResponse {
     fn into(self) -> Result<InfoResponse, InfoError<E>> {
@@ -356,11 +340,7 @@ impl<E: Error> Error for InfoError<E> {
 ///
 /// Wraps https://api.slack.com/methods/files.list
 
-pub fn list<R>(
-    client: &R,
-    token: &str,
-    request: &ListRequest,
-) -> Result<ListResponse, ListError<R::Error>>
+pub fn list<R>(client: &R, token: &str, request: &ListRequest) -> Result<ListResponse, ListError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
@@ -383,9 +363,7 @@ where
     client
         .send(&url, &params[..])
         .map_err(ListError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<ListResponse>(&result).map_err(ListError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<ListResponse>(&result).map_err(ListError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -427,7 +405,6 @@ pub struct ListResponse {
     ok: bool,
     pub paging: Option<::Paging>,
 }
-
 
 impl<E: Error> Into<Result<ListResponse, ListError<E>>> for ListResponse {
     fn into(self) -> Result<ListResponse, ListError<E>> {
@@ -566,7 +543,6 @@ pub fn revoke_public_url<R>(
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![Some(("token", token)), Some(("file", request.file))];
     let params = params.into_iter().filter_map(|x| x).collect::<Vec<_>>();
     let url = ::get_slack_url_for_method("files.revokePublicURL");
@@ -574,8 +550,7 @@ where
         .send(&url, &params[..])
         .map_err(RevokePublicURLError::Client)
         .and_then(|result| {
-            serde_json::from_str::<RevokePublicURLResponse>(&result)
-                .map_err(RevokePublicURLError::MalformedResponse)
+            serde_json::from_str::<RevokePublicURLResponse>(&result).map_err(RevokePublicURLError::MalformedResponse)
         })
         .and_then(|o| o.into())
 }
@@ -594,9 +569,7 @@ pub struct RevokePublicURLResponse {
     ok: bool,
 }
 
-
-impl<E: Error> Into<Result<RevokePublicURLResponse, RevokePublicURLError<E>>>
-    for RevokePublicURLResponse {
+impl<E: Error> Into<Result<RevokePublicURLResponse, RevokePublicURLError<E>>> for RevokePublicURLResponse {
     fn into(self) -> Result<RevokePublicURLResponse, RevokePublicURLError<E>> {
         if self.ok {
             Ok(self)
@@ -739,7 +712,6 @@ pub fn shared_public_url<R>(
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![Some(("token", token)), Some(("file", request.file))];
     let params = params.into_iter().filter_map(|x| x).collect::<Vec<_>>();
     let url = ::get_slack_url_for_method("files.sharedPublicURL");
@@ -747,8 +719,7 @@ where
         .send(&url, &params[..])
         .map_err(SharedPublicURLError::Client)
         .and_then(|result| {
-            serde_json::from_str::<SharedPublicURLResponse>(&result)
-                .map_err(SharedPublicURLError::MalformedResponse)
+            serde_json::from_str::<SharedPublicURLResponse>(&result).map_err(SharedPublicURLError::MalformedResponse)
         })
         .and_then(|o| o.into())
 }
@@ -767,9 +738,7 @@ pub struct SharedPublicURLResponse {
     ok: bool,
 }
 
-
-impl<E: Error> Into<Result<SharedPublicURLResponse, SharedPublicURLError<E>>>
-    for SharedPublicURLResponse {
+impl<E: Error> Into<Result<SharedPublicURLResponse, SharedPublicURLError<E>>> for SharedPublicURLResponse {
     fn into(self) -> Result<SharedPublicURLResponse, SharedPublicURLError<E>> {
         if self.ok {
             Ok(self)

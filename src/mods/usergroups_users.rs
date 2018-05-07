@@ -1,5 +1,3 @@
-
-
 #[allow(unused_imports)]
 use std::collections::HashMap;
 use std::convert::From;
@@ -14,30 +12,23 @@ use requests::SlackWebRequestSender;
 ///
 /// Wraps https://api.slack.com/methods/usergroups.users.list
 
-pub fn list<R>(
-    client: &R,
-    token: &str,
-    request: &ListRequest,
-) -> Result<ListResponse, ListError<R::Error>>
+pub fn list<R>(client: &R, token: &str, request: &ListRequest) -> Result<ListResponse, ListError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![
         Some(("token", token)),
         Some(("usergroup", request.usergroup)),
-        request.include_disabled.map(|include_disabled| {
-            ("include_disabled", if include_disabled { "1" } else { "0" })
-        }),
+        request
+            .include_disabled
+            .map(|include_disabled| ("include_disabled", if include_disabled { "1" } else { "0" })),
     ];
     let params = params.into_iter().filter_map(|x| x).collect::<Vec<_>>();
     let url = ::get_slack_url_for_method("usergroups.users.list");
     client
         .send(&url, &params[..])
         .map_err(ListError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<ListResponse>(&result).map_err(ListError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<ListResponse>(&result).map_err(ListError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -56,7 +47,6 @@ pub struct ListResponse {
     ok: bool,
     pub users: Option<Vec<String>>,
 }
-
 
 impl<E: Error> Into<Result<ListResponse, ListError<E>>> for ListResponse {
     fn into(self) -> Result<ListResponse, ListError<E>> {
@@ -185,31 +175,24 @@ impl<E: Error> Error for ListError<E> {
 ///
 /// Wraps https://api.slack.com/methods/usergroups.users.update
 
-pub fn update<R>(
-    client: &R,
-    token: &str,
-    request: &UpdateRequest,
-) -> Result<UpdateResponse, UpdateError<R::Error>>
+pub fn update<R>(client: &R, token: &str, request: &UpdateRequest) -> Result<UpdateResponse, UpdateError<R::Error>>
 where
     R: SlackWebRequestSender,
 {
-
     let params = vec![
         Some(("token", token)),
         Some(("usergroup", request.usergroup)),
         Some(("users", request.users)),
-        request.include_count.map(|include_count| {
-            ("include_count", if include_count { "1" } else { "0" })
-        }),
+        request
+            .include_count
+            .map(|include_count| ("include_count", if include_count { "1" } else { "0" })),
     ];
     let params = params.into_iter().filter_map(|x| x).collect::<Vec<_>>();
     let url = ::get_slack_url_for_method("usergroups.users.update");
     client
         .send(&url, &params[..])
         .map_err(UpdateError::Client)
-        .and_then(|result| {
-            serde_json::from_str::<UpdateResponse>(&result).map_err(UpdateError::MalformedResponse)
-        })
+        .and_then(|result| serde_json::from_str::<UpdateResponse>(&result).map_err(UpdateError::MalformedResponse))
         .and_then(|o| o.into())
 }
 
@@ -230,7 +213,6 @@ pub struct UpdateResponse {
     ok: bool,
     pub usergroup: Option<::Usergroup>,
 }
-
 
 impl<E: Error> Into<Result<UpdateResponse, UpdateError<E>>> for UpdateResponse {
     fn into(self) -> Result<UpdateResponse, UpdateError<E>> {
