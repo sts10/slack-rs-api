@@ -37,6 +37,12 @@ pub fn send_structured<T: ::serde::Serialize>(
     client.get(url).send()?.text()
 }
 
+/// Make an API call to Slack that has no parameters
+pub fn send_simple(client: &::reqwest::Client, method_url: &str) -> Result<String, ::reqwest::Error> {
+    let url = ::reqwest::Url::parse(method_url).unwrap();
+    client.get(url).send()?.text()
+}
+
 /// Provides a default `reqwest` client to give to the API functions to send requests.
 ///
 /// # Examples
@@ -50,6 +56,59 @@ pub fn default_client() -> Result<::reqwest::Client, ::reqwest::Error> {
     ::reqwest::Client::builder().build()
 }
 
+macro_rules! slack {
+    {
+        $(#[$attr:meta])*
+        $name:ident,
+        $strname:expr,
+        $reqname:ident {
+            $($(#[$req_item_attr:meta])* $reqattr:ident: $reqtyp:ty),*,
+        },
+        $resname:ident {
+            $($resattr:ident: $restyp:ty),*,
+        },
+    } => {
+        $(#[$attr])*
+        pub fn $name(client: &::reqwest::Client, token: &str, request: &$reqname) -> Result<$resname, ::requests::Error> {
+            use requests::Error;
+            #[derive(Deserialize)]
+            struct IsError {
+                ok: bool,
+                error: Option<String>,
+            }
+
+            let url = ::requests::get_slack_url_for_method($strname) + "?token=" + token + "&";
+            let bytes = ::requests::send_structured(client, &url, &request).map_err(Error::Client)?;
+
+            let is_error = ::serde_json::from_str::<IsError>(&bytes);
+            match is_error {
+                // Complete failure, can't do anything with the bytes
+                Err(e) => Err(Error::CannotParse(e, bytes)),
+                // Slack sent us an error
+                Ok(IsError { ok: false, error }) => Err(Error::Slack(error.unwrap_or_default())),
+                // Slack sent us an success result
+                Ok(IsError { ok: true, .. }) => match ::serde_json::from_str::<$resname>(&bytes) {
+                    Ok(res) => Ok(res),
+                    Err(e) => Err(Error::CannotParse(e, bytes)),
+                },
+            }
+        }
+
+        #[derive(Clone, Default, Debug, Serialize)]
+        pub struct $reqname<'a> {
+            $($(#[$req_item_attr])* pub $reqattr: $reqtyp,)*
+        }
+
+        #[derive(Clone, Debug, Deserialize)]
+        #[serde(deny_unknown_fields)]
+        pub struct $resname {
+            ok: bool,
+            $(pub $resattr: $restyp,)*
+        }
+    };
+}
+
+
 macro_rules! api_call {
     ($name:ident, $strname:expr, $reqty:ty, $okty:ty) => {
         pub fn $name(client: &::reqwest::Client, token: &str, request: &$reqty) -> Result<$okty, ::requests::Error> {
@@ -62,6 +121,32 @@ macro_rules! api_call {
 
             let url = ::requests::get_slack_url_for_method($strname) + "?token=" + token + "&";
             let bytes = ::requests::send_structured(client, &url, &request).map_err(Error::Client)?;
+
+            let is_error = ::serde_json::from_str::<IsError>(&bytes);
+            match is_error {
+                // Complete failure, can't do anything with the bytes
+                Err(e) => Err(Error::CannotParse(e, bytes)),
+                // Slack sent us an error
+                Ok(IsError { ok: false, error }) => Err(Error::Slack(error.unwrap_or_default())),
+                // Slack sent us an success result
+                Ok(IsError { ok: true, .. }) => match ::serde_json::from_str::<$okty>(&bytes) {
+                    Ok(res) => Ok(res),
+                    Err(e) => Err(Error::CannotParse(e, bytes)),
+                },
+            }
+        }
+    };
+    ($name:ident, $strname:expr, $okty:ty) => {
+        pub fn $name(client: &::reqwest::Client, token: &str) -> Result<$okty, ::requests::Error> {
+            use requests::Error;
+            #[derive(Deserialize)]
+            struct IsError {
+                ok: bool,
+                error: Option<String>,
+            }
+
+            let url = ::requests::get_slack_url_for_method($strname) + "?token=" + token + "&";
+            let bytes = ::requests::send_simple(client, &url).map_err(Error::Client)?;
 
             let is_error = ::serde_json::from_str::<IsError>(&bytes);
             match is_error {

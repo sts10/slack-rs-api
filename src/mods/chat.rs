@@ -41,6 +41,7 @@ pub struct MeMessageRequest<'a> {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MeMessageResponse {
     ok: bool,
     pub channel: Option<String>,

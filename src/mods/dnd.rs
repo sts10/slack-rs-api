@@ -21,10 +21,7 @@ pub struct EndDndResponse {
 ///
 /// Wraps https://api.slack.com/methods/dnd.endSnooze
 
-api_call!(end_snooze, "dnd.endSnooze", EndSnoozeRequest, EndSnoozeResponse);
-
-#[derive(Clone, Default, Debug, Serialize)]
-pub struct EndSnoozeRequest;
+api_call!(end_snooze, "dnd.endSnooze", EndSnoozeResponse);
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -93,11 +90,10 @@ pub struct TeamInfoRequest<'a> {
     pub users: Option<&'a str>,
 }
 
+// TODO: idk what's going on here or how it ever worked
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct TeamInfoResponse {
-    error: Option<String>,
-    #[serde(default)]
     ok: bool,
     pub users: Option<HashMap<String, bool>>,
 }

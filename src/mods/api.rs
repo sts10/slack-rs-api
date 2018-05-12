@@ -1,22 +1,21 @@
-/// Checks API calling code.
-///
-/// Wraps https://api.slack.com/methods/api.test
+use std::collections::HashMap;
 
-api_call!(test, "api.test", TestRequest, TestResponse);
-
-#[derive(Clone, Default, Debug, Serialize)]
-pub struct TestRequest<'a> {
-    /// Error response to return
-    pub error: Option<&'a str>,
-    /// example property to return
-    pub foo: Option<&'a str>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct TestResponse {
-    ok: bool,
-    pub args: ::std::collections::HashMap<String, String>,
+// Experimental, not sure if I like this syntax, but it is almost free of boilerplate
+slack!{
+    /// Checks API calling code.
+    ///
+    /// Wraps https://api.slack.com/methods/api.test
+    test,
+    "api.test",
+    TestRequest {
+        /// Error response to return
+        error: Option<&'a str>,
+        /// example property to return
+        foo: Option<&'a str>,
+    },
+    TestResponse {
+        args: HashMap<String, String>,
+    },
 }
 
 #[cfg(test)]

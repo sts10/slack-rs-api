@@ -338,11 +338,16 @@ pub struct UnarchiveResponse {
 mod tests {
     use super::*;
     use std::env;
+    use ::requests;
 
     #[test]
     fn test_archive_unarchive() {
         let client = requests::default_client().unwrap();
         let token = env::var("SLACK_API_TOKEN").unwrap();
+
+        let mut req = UnarchiveRequest::default();
+        req.channel = "CAGMCM14K";
+        unarchive(&client, &token, &req);
 
         let mut req = ArchiveRequest::default();
         req.channel = "CAGMCM14K";
@@ -398,6 +403,11 @@ mod tests {
         let client = requests::default_client().unwrap();
         let token = env::var("SLACK_API_TOKEN").unwrap();
 
+        let mut req = KickRequest::default();
+        req.channel = "CAGMCM14K";
+        req.user = "UAJHFUB0C";
+        kick(&client, &token, &req);
+
         let mut req = InviteRequest::default();
         req.channel = "CAGMCM14K";
         req.user = "UAJHFUB0C";
@@ -413,6 +423,10 @@ mod tests {
     fn test_join_leave() {
         let client = requests::default_client().unwrap();
         let token = env::var("SLACK_API_TOKEN").unwrap();
+
+        let mut req = LeaveRequest::default();
+        req.channel = "CAGMCM14K";
+        leave(&client, &token, &req);
 
         let mut req = JoinRequest::default();
         req.name = "#testchannel";
