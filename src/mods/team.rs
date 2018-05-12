@@ -66,7 +66,7 @@ pub struct BillableInfoResponse {
 ///
 /// Wraps https://api.slack.com/methods/team.info
 
-api_call!(info, "team.info", InfoResponse);
+api_call!(info, "team.info", () => InfoResponse);
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]

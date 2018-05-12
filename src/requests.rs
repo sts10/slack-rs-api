@@ -135,7 +135,7 @@ macro_rules! api_call {
             }
         }
     };
-    ($name:ident, $strname:expr, $okty:ty) => {
+    ($name:ident, $strname:expr, () => $okty:ty) => {
         pub fn $name(client: &::reqwest::Client, token: &str) -> Result<$okty, ::requests::Error> {
             use requests::Error;
             #[derive(Deserialize)]
@@ -160,6 +160,71 @@ macro_rules! api_call {
                 },
             }
         }
+    };
+    ($name:ident, $strname:expr, $reqty:ty => ()) => {
+        pub fn $name(client: &::reqwest::Client, token: &str, request: &$reqty) -> Result<(), ::requests::Error> {
+            use requests::Error;
+            #[derive(Deserialize)]
+            struct IsError {
+                ok: bool,
+                error: Option<String>,
+            }
+            #[allow(dead_code)]
+            #[derive(Deserialize)]
+            #[serde(deny_unknown_fields)]
+            struct SimpleOk {
+                ok: bool,
+            }
+
+            let url = ::requests::get_slack_url_for_method($strname) + "?token=" + token + "&";
+            let bytes = ::requests::send_structured(client, &url, &request).map_err(Error::Client)?;
+
+            let is_error = ::serde_json::from_str::<IsError>(&bytes);
+            match is_error {
+                // Complete failure, can't do anything with the bytes
+                Err(e) => Err(Error::CannotParse(e, bytes)),
+                // Slack sent us an error
+                Ok(IsError { ok: false, error }) => Err(Error::Slack(error.unwrap_or_default())),
+                // Slack sent us an success result
+                Ok(IsError { ok: true, .. }) => match ::serde_json::from_str::<SimpleOk>(&bytes) {
+                    Ok(_) => Ok(()),
+                    Err(e) => Err(Error::CannotParse(e, bytes)),
+                },
+            }
+        }
+    };
+    ($name:ident, $strname:expr) => {
+        pub fn $name(client: &::reqwest::Client, token: &str) -> Result<(), ::requests::Error> {
+            use requests::Error;
+            #[derive(Deserialize)]
+            struct IsError {
+                ok: bool,
+                error: Option<String>,
+            }
+            #[allow(dead_code)]
+            #[derive(Deserialize)]
+            #[serde(deny_unknown_fields)]
+            struct SimpleOk {
+                ok: bool,
+            }
+
+            let url = ::requests::get_slack_url_for_method($strname) + "?token=" + token + "&";
+            let bytes = ::requests::send_simple(client, &url).map_err(Error::Client)?;
+
+            let is_error = ::serde_json::from_str::<IsError>(&bytes);
+            match is_error {
+                // Complete failure, can't do anything with the bytes
+                Err(e) => Err(Error::CannotParse(e, bytes)),
+                // Slack sent us an error
+                Ok(IsError { ok: false, error }) => Err(Error::Slack(error.unwrap_or_default())),
+                // Slack sent us an success result
+                Ok(IsError { ok: true, .. }) => match ::serde_json::from_str::<SimpleOk>(&bytes) {
+                    Ok(_) => Ok(()),
+                    Err(e) => Err(Error::CannotParse(e, bytes)),
+                },
+            }
+        }
+
     };
 }
 

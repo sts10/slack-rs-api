@@ -6,7 +6,7 @@ use types::*;
 ///
 /// Wraps https://api.slack.com/methods/groups.archive
 
-api_call!(archive, "groups.archive", ArchiveRequest, ArchiveResponse);
+api_call!(archive, "groups.archive", ArchiveRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct ArchiveRequest<'a> {
@@ -14,28 +14,16 @@ pub struct ArchiveRequest<'a> {
     pub channel: &'a str,
 }
 
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct ArchiveResponse {
-    ok: bool,
-}
-
 /// Closes a private channel.
 ///
 /// Wraps https://api.slack.com/methods/groups.close
 
-api_call!(close, "groups.close", CloseRequest, CloseResponse);
+api_call!(close, "groups.close", CloseRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct CloseRequest<'a> {
     /// Private channel to close.
     pub channel: &'a str,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct CloseResponse {
-    ok: bool,
 }
 
 /// Creates a private channel.
@@ -158,7 +146,7 @@ pub struct InviteResponse {
 ///
 /// Wraps https://api.slack.com/methods/groups.kick
 
-api_call!(kick, "groups.kick", KickRequest, KickResponse);
+api_call!(kick, "groups.kick", KickRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct KickRequest<'a> {
@@ -168,28 +156,16 @@ pub struct KickRequest<'a> {
     pub user: &'a str,
 }
 
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct KickResponse {
-    ok: bool,
-}
-
 /// Leaves a private channel.
 ///
 /// Wraps https://api.slack.com/methods/groups.leave
 
-api_call!(leave, "groups.leave", LeaveRequest, LeaveResponse);
+api_call!(leave, "groups.leave", LeaveRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct LeaveRequest<'a> {
     /// Private channel to leave
     pub channel: &'a str,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct LeaveResponse {
-    ok: bool,
 }
 
 /// Lists private channels that the calling user has access to.
@@ -215,7 +191,7 @@ pub struct ListResponse {
 ///
 /// Wraps https://api.slack.com/methods/groups.mark
 
-api_call!(mark, "groups.mark", MarkRequest, MarkResponse);
+api_call!(mark, "groups.mark", MarkRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct MarkRequest<'a> {
@@ -225,28 +201,16 @@ pub struct MarkRequest<'a> {
     pub ts: &'a str,
 }
 
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MarkResponse {
-    ok: bool,
-}
-
 /// Opens a private channel.
 ///
 /// Wraps https://api.slack.com/methods/groups.open
 
-api_call!(open, "groups.open", OpenRequest, OpenResponse);
+api_call!(open, "groups.open", OpenRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct OpenRequest<'a> {
     /// Private channel to open.
     pub channel: &'a str,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct OpenResponse {
-    ok: bool,
 }
 
 /// Renames a private channel.
@@ -349,16 +313,10 @@ pub struct SetTopicResponse {
 ///
 /// Wraps https://api.slack.com/methods/groups.unarchive
 
-api_call!(unarchive, "groups.unarchive", UnarchiveRequest, UnarchiveResponse);
+api_call!(unarchive, "groups.unarchive", UnarchiveRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct UnarchiveRequest<'a> {
     /// Private channel to unarchive
     pub channel: &'a str,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct UnarchiveResponse {
-    ok: bool,
 }

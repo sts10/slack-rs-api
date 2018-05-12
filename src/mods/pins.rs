@@ -2,7 +2,7 @@
 ///
 /// Wraps https://api.slack.com/methods/pins.add
 
-api_call!(add, "pins.add", AddRequest, AddResponse);
+api_call!(add, "pins.add", AddRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct AddRequest<'a> {
@@ -14,12 +14,6 @@ pub struct AddRequest<'a> {
     pub file_comment: Option<&'a str>,
     /// Timestamp of the message to pin.
     pub timestamp: Option<&'a str>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct AddResponse {
-    ok: bool,
 }
 
 /// Lists items pinned to a channel.
@@ -79,7 +73,7 @@ pub struct ListResponseItemMessage {
 ///
 /// Wraps https://api.slack.com/methods/pins.remove
 
-api_call!(remove, "pins.remove", RemoveRequest, RemoveResponse);
+api_call!(remove, "pins.remove", RemoveRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct RemoveRequest<'a> {
@@ -91,10 +85,4 @@ pub struct RemoveRequest<'a> {
     pub file_comment: Option<&'a str>,
     /// Timestamp of the message to un-pin.
     pub timestamp: Option<&'a str>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct RemoveResponse {
-    ok: bool,
 }

@@ -2,7 +2,7 @@
 ///
 /// Wraps https://api.slack.com/methods/reactions.add
 
-api_call!(add, "reactions.add", AddRequest, AddResponse);
+api_call!(add, "reactions.add", AddRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct AddRequest<'a> {
@@ -16,12 +16,6 @@ pub struct AddRequest<'a> {
     pub channel: Option<&'a str>,
     /// Timestamp of the message to add reaction to.
     pub timestamp: Option<&'a str>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct AddResponse {
-    ok: bool,
 }
 
 /// Gets reactions for an item.
@@ -132,7 +126,7 @@ pub struct ListResponseItemMessage {
 ///
 /// Wraps https://api.slack.com/methods/reactions.remove
 
-api_call!(remove, "reactions.remove", RemoveRequest, RemoveResponse);
+api_call!(remove, "reactions.remove", RemoveRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct RemoveRequest<'a> {
@@ -146,10 +140,4 @@ pub struct RemoveRequest<'a> {
     pub channel: Option<&'a str>,
     /// Timestamp of the message to remove reaction from.
     pub timestamp: Option<&'a str>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct RemoveResponse {
-    ok: bool,
 }

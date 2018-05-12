@@ -2,7 +2,7 @@
 ///
 /// Wraps https://api.slack.com/methods/stars.add
 
-api_call!(add, "stars.add", AddRequest, AddResponse);
+api_call!(add, "stars.add", AddRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct AddRequest<'a> {
@@ -14,12 +14,6 @@ pub struct AddRequest<'a> {
     pub channel: Option<&'a str>,
     /// Timestamp of the message to add star to.
     pub timestamp: Option<&'a str>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct AddResponse {
-    ok: bool,
 }
 
 /// Lists stars for a user.
@@ -59,7 +53,7 @@ pub enum ListResponseItem {
 ///
 /// Wraps https://api.slack.com/methods/stars.remove
 
-api_call!(remove, "stars.remove", RemoveRequest, RemoveResponse);
+api_call!(remove, "stars.remove", RemoveRequest, => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct RemoveRequest<'a> {
@@ -71,10 +65,4 @@ pub struct RemoveRequest<'a> {
     pub channel: Option<&'a str>,
     /// Timestamp of the message to remove star from.
     pub timestamp: Option<&'a str>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct RemoveResponse {
-    ok: bool,
 }

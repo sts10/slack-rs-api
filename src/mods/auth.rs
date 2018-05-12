@@ -21,7 +21,7 @@ pub struct RevokeResponse {
 ///
 /// Wraps https://api.slack.com/methods/auth.test
 
-api_call!(test, "auth.test", TestResponse);
+api_call!(test, "auth.test", () => TestResponse);
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]

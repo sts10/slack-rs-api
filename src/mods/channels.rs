@@ -5,18 +5,12 @@ use types::*;
 /// Archives a channel.
 ///
 /// Wraps https://api.slack.com/methods/channels.archive
-api_call!(archive, "channels.archive", ArchiveRequest, ArchiveResponse);
+api_call!(archive, "channels.archive", ArchiveRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct ArchiveRequest<'a> {
     /// Channel to archive
     pub channel: &'a str,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct ArchiveResponse {
-    ok: bool,
 }
 
 /// Creates a channel.
@@ -139,7 +133,7 @@ pub struct JoinResponse {
 ///
 /// Wraps https://api.slack.com/methods/channels.kick
 
-api_call!(kick, "channels.kick", KickRequest, KickResponse);
+api_call!(kick, "channels.kick", KickRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct KickRequest<'a> {
@@ -147,12 +141,6 @@ pub struct KickRequest<'a> {
     pub channel: &'a str,
     /// User to remove from channel.
     pub user: &'a str,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct KickResponse {
-    ok: bool,
 }
 
 /// Leaves a channel.
@@ -207,7 +195,7 @@ pub struct ResponseMetadata {
 ///
 /// Wraps https://api.slack.com/methods/channels.mark
 
-api_call!(mark, "channels.mark", MarkRequest, MarkResponse);
+api_call!(mark, "channels.mark", MarkRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct MarkRequest<'a> {
@@ -215,12 +203,6 @@ pub struct MarkRequest<'a> {
     pub channel: &'a str,
     /// Timestamp of the most recently seen message.
     pub ts: &'a str,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MarkResponse {
-    ok: bool,
 }
 
 /// Renames a channel.
@@ -320,18 +302,12 @@ pub struct SetTopicResponse {
 ///
 /// Wraps https://api.slack.com/methods/channels.unarchive
 
-api_call!(unarchive, "channels.unarchive", UnarchiveRequest, UnarchiveResponse);
+api_call!(unarchive, "channels.unarchive", UnarchiveRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct UnarchiveRequest<'a> {
     /// Channel to unarchive
     pub channel: &'a str,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct UnarchiveResponse {
-    ok: bool,
 }
 
 #[cfg(test)]

@@ -25,7 +25,7 @@ pub struct AddResponse {
 ///
 /// Wraps https://api.slack.com/methods/files.comments.delete
 
-api_call!(delete, "files.comments.delete", DeleteRequest, DeleteResponse);
+api_call!(delete, "files.comments.delete", DeleteRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct DeleteRequest<'a> {
@@ -33,12 +33,6 @@ pub struct DeleteRequest<'a> {
     pub file: &'a str,
     /// The comment to delete.
     pub id: &'a str,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct DeleteResponse {
-    ok: bool,
 }
 
 /// Edit an existing file comment.

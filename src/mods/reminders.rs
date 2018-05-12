@@ -25,7 +25,7 @@ pub struct AddResponse {
 ///
 /// Wraps https://api.slack.com/methods/reminders.complete
 
-api_call!(complete, "reminders.complete", CompleteRequest, CompleteResponse);
+api_call!(complete, "reminders.complete", CompleteRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct CompleteRequest<'a> {
@@ -33,28 +33,16 @@ pub struct CompleteRequest<'a> {
     pub reminder: &'a str,
 }
 
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct CompleteResponse {
-    ok: bool,
-}
-
 /// Deletes a reminder.
 ///
 /// Wraps https://api.slack.com/methods/reminders.delete
 
-api_call!(delete, "reminders.delete", DeleteRequest, DeleteResponse);
+api_call!(delete, "reminders.delete", DeleteRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct DeleteRequest<'a> {
     /// The ID of the reminder
     pub reminder: &'a str,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct DeleteResponse {
-    ok: bool,
 }
 
 /// Gets information about a reminder.
@@ -80,7 +68,7 @@ pub struct InfoResponse {
 ///
 /// Wraps https://api.slack.com/methods/reminders.list
 // TOOD: This seems like it should have a Request struct
-api_call!(list, "reminders.list", ListResponse);
+api_call!(list, "reminders.list", () => ListResponse);
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct ListResponse {

@@ -6,18 +6,12 @@ use types::*;
 ///
 /// Wraps https://api.slack.com/methods/files.delete
 
-api_call!(delete, "files.delete", DeleteRequest, DeleteResponse);
+api_call!(delete, "files.delete", DeleteRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct DeleteRequest<'a> {
     /// ID of file to delete.
     pub file: &'a str,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct DeleteResponse {
-    ok: bool,
 }
 
 /// Gets information about a team file.

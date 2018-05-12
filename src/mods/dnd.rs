@@ -6,22 +6,13 @@ use std::collections::HashMap;
 ///
 /// Wraps https://api.slack.com/methods/dnd.endDnd
 
-api_call!(end_dnd, "dnd.endDnd", EndDndRequest, EndDndResponse);
-
-#[derive(Clone, Default, Debug, Serialize)]
-pub struct EndDndRequest;
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EndDndResponse {
-    ok: bool,
-}
+api_call!(end_dnd, "dnd.endDnd");
 
 /// Ends the current user's snooze mode immediately.
 ///
 /// Wraps https://api.slack.com/methods/dnd.endSnooze
 
-api_call!(end_snooze, "dnd.endSnooze", EndSnoozeResponse);
+api_call!(end_snooze, "dnd.endSnooze", () => EndSnoozeResponse);
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]

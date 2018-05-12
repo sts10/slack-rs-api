@@ -5,18 +5,12 @@
 ///
 /// Wraps https://api.slack.com/methods/im.close
 
-api_call!(close, "im.close", CloseRequest, CloseResponse);
+api_call!(close, "im.close", CloseRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct CloseRequest<'a> {
     /// Direct message channel to close.
     pub channel: &'a str,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct CloseResponse {
-    ok: bool,
 }
 
 /// Fetches history of messages and events from direct message channel.
@@ -75,7 +69,7 @@ pub struct ListResponse {
 ///
 /// Wraps https://api.slack.com/methods/im.mark
 
-api_call!(mark, "im.mark", MarkRequest, MarkResponse);
+api_call!(mark, "im.mark", MarkRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct MarkRequest<'a> {
@@ -83,12 +77,6 @@ pub struct MarkRequest<'a> {
     pub channel: &'a str,
     /// Timestamp of the most recently seen message.
     pub ts: &'a str,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MarkResponse {
-    ok: bool,
 }
 
 /// Opens a direct message channel.

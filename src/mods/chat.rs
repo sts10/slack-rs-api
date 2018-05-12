@@ -104,7 +104,7 @@ pub struct PostMessageResponse {
 ///
 /// Wraps https://api.slack.com/methods/chat.unfurl
 
-api_call!(unfurl, "chat.unfurl", UnfurlRequest, UnfurlResponse);
+api_call!(unfurl, "chat.unfurl", UnfurlRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct UnfurlRequest<'a> {
@@ -120,12 +120,6 @@ pub struct UnfurlRequest<'a> {
     pub user_auth_message: Option<&'a str>,
     /// Send users to this custom URL where they will complete authentication in your app to fully trigger unfurling. Value should be properly URL-encoded.
     pub user_auth_url: Option<&'a str>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct UnfurlResponse {
-    ok: bool,
 }
 
 /// Updates a message.

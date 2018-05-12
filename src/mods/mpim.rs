@@ -7,18 +7,12 @@ use types::*;
 ///
 /// Wraps https://api.slack.com/methods/mpim.close
 
-api_call!(close, "mpim.close", CloseRequest, CloseResponse);
+api_call!(close, "mpim.close", CloseRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct CloseRequest<'a> {
     /// MPIM to close.
     pub channel: &'a str,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct CloseResponse {
-    ok: bool,
 }
 
 /// Fetches history of messages and events from a multiparty direct message.
@@ -56,7 +50,7 @@ pub struct HistoryResponse {
 ///
 /// Wraps https://api.slack.com/methods/mpim.list
 
-api_call!(list, "mpim.list", ListResponse);
+api_call!(list, "mpim.list", () => ListResponse);
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct ListResponse {
@@ -68,7 +62,7 @@ pub struct ListResponse {
 ///
 /// Wraps https://api.slack.com/methods/mpim.mark
 
-api_call!(mark, "mpim.mark", MarkRequest, MarkResponse);
+api_call!(mark, "mpim.mark", MarkRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct MarkRequest<'a> {
@@ -76,12 +70,6 @@ pub struct MarkRequest<'a> {
     pub channel: &'a str,
     /// Timestamp of the most recently seen message.
     pub ts: &'a str,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MarkResponse {
-    ok: bool,
 }
 
 /// This method opens a multiparty direct message.
