@@ -87,4 +87,3 @@ pub struct ListResponse {
     ok: bool,
     pub reminders: Option<Vec<::Reminder>>,
 }
-

@@ -45,7 +45,7 @@ pub struct GetRequest<'a> {
 }
 
 #[derive(Clone, Debug, Deserialize)]
-#[serde(tag="type")]
+#[serde(tag = "type")]
 pub enum GetResponse {
     Message(GetResponseMessage),
     File(GetResponseFile),
@@ -100,7 +100,7 @@ pub struct ListResponse {
 }
 
 #[derive(Clone, Debug, Deserialize)]
-#[serde(tag="type")]
+#[serde(tag = "type")]
 #[serde(deny_unknown_fields)]
 pub enum ListResponseItem {
     Message(ListResponseItemMessage),
@@ -153,4 +153,3 @@ pub struct RemoveRequest<'a> {
 pub struct RemoveResponse {
     ok: bool,
 }
-

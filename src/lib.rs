@@ -23,8 +23,8 @@ extern crate serde_qs;
 
 #[macro_use]
 pub mod requests;
-use requests::*;
 pub use requests::default_client;
+use requests::*;
 
 mod types;
 pub use types::*;

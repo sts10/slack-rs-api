@@ -108,7 +108,6 @@ macro_rules! slack {
     };
 }
 
-
 macro_rules! api_call {
     ($name:ident, $strname:expr, $reqty:ty, $okty:ty) => {
         pub fn $name(client: &::reqwest::Client, token: &str, request: &$reqty) -> Result<$okty, ::requests::Error> {

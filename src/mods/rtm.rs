@@ -68,4 +68,3 @@ pub struct StartResponse {
     pub url: Option<String>,
     pub users: Option<Vec<::User>>,
 }
-

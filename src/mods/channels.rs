@@ -337,8 +337,8 @@ pub struct UnarchiveResponse {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use requests;
     use std::env;
-    use ::requests;
 
     #[test]
     fn test_archive_unarchive() {
