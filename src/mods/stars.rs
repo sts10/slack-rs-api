@@ -53,7 +53,7 @@ pub enum ListResponseItem {
 ///
 /// Wraps https://api.slack.com/methods/stars.remove
 
-api_call!(remove, "stars.remove", RemoveRequest, => ());
+api_call!(remove, "stars.remove", RemoveRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct RemoveRequest<'a> {

@@ -10,7 +10,12 @@ api_call!(delete_photo, "users.deletePhoto");
 ///
 /// Wraps https://api.slack.com/methods/users.getPresence
 
-api_call!(get_presence, "users.getPresence", GetPresenceRequest, GetPresenceResponse);
+api_call!(
+    get_presence,
+    "users.getPresence",
+    GetPresenceRequest,
+    GetPresenceResponse
+);
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct GetPresenceRequest<'a> {

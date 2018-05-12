@@ -135,7 +135,7 @@ macro_rules! api_call {
             }
         }
     };
-    ($name:ident, $strname:expr, () => $okty:ty) => {
+    ($name:ident, $strname:expr,() => $okty:ty) => {
         pub fn $name(client: &::reqwest::Client, token: &str) -> Result<$okty, ::requests::Error> {
             use requests::Error;
             #[derive(Deserialize)]
@@ -224,7 +224,6 @@ macro_rules! api_call {
                 },
             }
         }
-
     };
 }
 
