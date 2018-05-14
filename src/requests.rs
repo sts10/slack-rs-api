@@ -240,9 +240,9 @@ pub enum Error {
 
 impl ::std::fmt::Display for Error {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-        match *self {
-            Error::Slack(ref reason) => write!(f, "{}", reason),
-            Error::CannotParse(..) => write!(f, "Could not parse as specified result type"),
+        match self {
+            Error::Slack(reason) => write!(f, "{}", reason),
+            Error::CannotParse(e, _json) => write!(f, "Could not parse as specified result type: {}", e),
             Error::Client(..) => write!(f, "The requests client failed"),
         }
     }

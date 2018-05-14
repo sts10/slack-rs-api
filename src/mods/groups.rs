@@ -100,6 +100,7 @@ pub struct HistoryResponse {
     pub has_more: bool,
     pub latest: Option<Timestamp>,
     pub messages: Vec<Message>,
+    pub is_limited: Option<bool>,
 }
 
 /// Gets information about a private channel.
