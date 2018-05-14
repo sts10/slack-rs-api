@@ -1,5 +1,7 @@
 //! Get info on members of your Slack team.
 
+use types::*;
+
 /// Delete the user profile photo
 ///
 /// Wraps https://api.slack.com/methods/users.deletePhoto
@@ -88,7 +90,7 @@ pub struct ListRequest {
 #[serde(deny_unknown_fields)]
 pub struct ListResponse {
     pub members: Vec<::User>,
-    pub cache_ts: ::types::Timestamp,
+    pub cache_ts: Option<Timestamp>,
     pub response_metadata: Option<ResponseMetadata>,
 }
 

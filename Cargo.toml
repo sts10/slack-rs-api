@@ -13,4 +13,3 @@ serde_derive = "1.0"
 serde_json = "1.0"
 serde_qs = "0.4"
 reqwest = "0.8"
-

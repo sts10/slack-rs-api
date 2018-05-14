@@ -18,6 +18,18 @@ impl fmt::Display for Timestamp {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+pub struct UserId(String);
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct TeamId(String);
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct AppId(String);
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct BotId(String);
+
+#[derive(Clone, Debug, Deserialize)]
 pub struct Bot {
     pub app_id: Option<String>,
     pub deleted: Option<bool>,
