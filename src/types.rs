@@ -18,18 +18,6 @@ impl fmt::Display for Timestamp {
 }
 
 #[derive(Clone, Debug, Deserialize)]
-pub struct UserId(String);
-
-#[derive(Clone, Debug, Deserialize)]
-pub struct TeamId(String);
-
-#[derive(Clone, Debug, Deserialize)]
-pub struct AppId(String);
-
-#[derive(Clone, Debug, Deserialize)]
-pub struct BotId(String);
-
-#[derive(Clone, Debug, Deserialize)]
 pub struct Bot {
     pub app_id: Option<String>,
     pub deleted: Option<bool>,
@@ -50,7 +38,7 @@ pub struct Channel {
     pub accepted_user: Option<String>,
     pub created: Option<i32>,
     pub creator: Option<String>,
-    pub id: Option<String>,
+    pub id: String,
     pub is_archived: Option<bool>,
     pub is_channel: Option<bool>,
     pub is_general: Option<bool>,
@@ -65,7 +53,7 @@ pub struct Channel {
     pub last_read: Option<String>,
     pub latest: Option<::Message>,
     pub members: Option<Vec<String>>,
-    pub name: Option<String>,
+    pub name: String,
     pub name_normalized: Option<String>,
     pub num_members: Option<i32>,
     pub previous_names: Option<Vec<String>>,
@@ -154,14 +142,14 @@ pub struct FileComment {
 pub struct Group {
     pub created: Option<i32>,
     pub creator: Option<String>,
-    pub id: Option<String>,
+    pub id: String,
     pub is_archived: Option<bool>,
     pub is_group: Option<bool>,
     pub is_mpim: Option<bool>,
     pub last_read: Option<String>,
     pub latest: Option<::Message>,
     pub members: Option<Vec<String>>,
-    pub name: Option<String>,
+    pub name: String,
     pub purpose: Option<GroupPurpose>,
     pub topic: Option<GroupTopic>,
     pub unread_count: Option<i32>,
@@ -1004,7 +992,7 @@ pub struct User {
     pub color: Option<String>,
     pub deleted: Option<bool>,
     pub has_2fa: Option<bool>,
-    pub id: Option<String>,
+    pub id: String,
     pub is_admin: Option<bool>,
     pub is_app_user: Option<bool>,
     pub is_bot: Option<bool>,
@@ -1013,7 +1001,7 @@ pub struct User {
     pub is_restricted: Option<bool>,
     pub is_ultra_restricted: Option<bool>,
     pub locale: Option<String>,
-    pub name: Option<String>,
+    pub name: String,
     pub profile: Option<::UserProfile>,
     pub real_name: Option<String>,
     pub team_id: Option<String>,
