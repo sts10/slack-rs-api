@@ -22,8 +22,8 @@ pub struct Bot {
     pub app_id: Option<String>,
     pub deleted: Option<bool>,
     pub icons: Option<BotIcons>,
-    pub id: Option<String>,
-    pub name: Option<String>,
+    pub id: String,
+    pub name: String,
 }
 
 #[derive(Clone, Debug, Deserialize)]

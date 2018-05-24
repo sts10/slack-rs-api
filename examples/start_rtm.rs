@@ -14,13 +14,13 @@ fn main() {
 
         if let Ok(response) = response {
             if let Some(channels) = response.channels {
-                let channels = channels.iter().filter_map(|c| c.name.clone()).collect::<Vec<_>>();
+                let channels = channels.into_iter().map(|c| c.name).collect::<Vec<_>>();
 
                 println!("Got channels: {}", channels.join(", "));
             }
 
             if let Some(users) = response.users {
-                let users = users.iter().filter_map(|u| u.name.clone()).collect::<Vec<_>>();
+                let users = users.into_iter().map(|u| u.name).collect::<Vec<_>>();
 
                 println!("Got users: {}", users.join(", "));
             }
