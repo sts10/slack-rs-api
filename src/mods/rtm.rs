@@ -11,7 +11,9 @@ pub struct ConnectRequest {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct ConnectResponse {
+    ok: bool,
     #[serde(rename = "self")]
     pub slf: ConnectResponseSelf,
     pub team: ConnectResponseTeam,
@@ -19,12 +21,14 @@ pub struct ConnectResponse {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct ConnectResponseSelf {
     pub id: String,
     pub name: String,
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct ConnectResponseTeam {
     pub domain: Option<String>,
     pub enterprise_id: Option<String>,
