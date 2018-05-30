@@ -7,6 +7,7 @@ pub enum Timestamp {
     Number(::serde_json::Number),
     String(String),
 }
+// Bet these are actually 17 bytes every time
 
 impl fmt::Display for Timestamp {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -16,6 +17,92 @@ impl fmt::Display for Timestamp {
         }
     }
 }
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash, From)]
+struct Id([u8; 9]);
+
+use serde::de::{self, Deserialize, Deserializer, Visitor};
+impl<'de> Deserialize<'de> for Id {
+    fn deserialize<D>(deserializer: D) -> Result<Id, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        deserializer.deserialize_str(IdVisitor)
+    }
+}
+
+struct IdVisitor;
+
+impl<'de> Visitor<'de> for IdVisitor {
+    type Value = Id;
+
+    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter.write_str("an 8-byte str")
+    }
+
+    fn visit_str<E>(self, value: &str) -> Result<Id, E>
+    where
+        E: de::Error,
+    {
+        if value.len() <= 9 {
+            Ok(value.as_bytes().into())
+        } else {
+            Err(E::custom(format!(
+                "Ids must be a 9-byte string, found {} with length {}",
+                value,
+                value.len()
+            )))
+        }
+    }
+}
+
+use serde::ser::{Serialize, Serializer};
+impl Serialize for Id {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_str(::std::str::from_utf8(&self.0).unwrap())
+    }
+}
+
+impl fmt::Display for Id {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", ::std::str::from_utf8(&self.0).unwrap())
+    }
+}
+
+impl<'a> From<&'a [u8]> for Id {
+    fn from(source: &'a [u8]) -> Id {
+        let mut ret = Id::default();
+        // TODO: There must be a better way
+        for i in 0..source.len() {
+            ret.0[i] = source[i];
+        }
+        ret
+    }
+}
+
+#[derive(Clone, Copy, Display, Debug, Default, Deserialize, PartialEq, Eq, Hash, Serialize)]
+pub struct BotId(Id);
+
+#[derive(Clone, Copy, Display, Debug, Default, Deserialize, PartialEq, Eq, Hash, Serialize)]
+pub struct ChannelId(Id);
+
+#[derive(Clone, Copy, Display, Debug, Default, Deserialize, PartialEq, Eq, Hash, Serialize)]
+pub struct TeamId(Id);
+
+#[derive(Clone, Copy, Display, Debug, Default, Deserialize, PartialEq, Eq, Hash, Serialize)]
+pub struct UserId(Id);
+
+impl<'a> From<&'a [u8]> for UserId {
+    fn from(source: &'a [u8]) -> UserId {
+        UserId(Id::from(source))
+    }
+}
+
+#[derive(Clone, Copy, Display, Debug, Default, Deserialize, PartialEq, Eq, Hash, Serialize)]
+pub struct GroupId(Id);
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct Bot {
@@ -38,7 +125,7 @@ pub struct Channel {
     pub accepted_user: Option<String>,
     pub created: Option<i32>,
     pub creator: Option<String>,
-    pub id: String,
+    pub id: ChannelId,
     pub is_archived: Option<bool>,
     pub is_channel: Option<bool>,
     pub is_general: Option<bool>,
@@ -142,7 +229,7 @@ pub struct FileComment {
 pub struct Group {
     pub created: Option<i32>,
     pub creator: Option<String>,
-    pub id: String,
+    pub id: GroupId,
     pub is_archived: Option<bool>,
     pub is_group: Option<bool>,
     pub is_mpim: Option<bool>,
@@ -367,6 +454,20 @@ impl<'de> ::serde::Deserialize<'de> for Message {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+pub struct MessageChannelMarked {
+    #[serde(rename = "type")]
+    pub ty: Option<String>,
+    pub channel: Option<ChannelId>,
+    pub ts: Option<Timestamp>,
+    pub unread_count: Option<i32>,
+    pub unread_count_display: Option<i32>,
+    pub num_mentions: Option<i32>,
+    pub num_mentions_display: Option<i32>,
+    pub mention_count: Option<i32>,
+    pub event_ts: Option<Timestamp>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
 pub struct MessageBotAdd {
     pub bot_id: Option<String>,
     pub bot_link: Option<String>,
@@ -392,16 +493,16 @@ pub struct MessageBotRemove {
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageBotMessage {
-    pub bot_id: Option<String>,
+    pub bot_id: Option<BotId>,
     pub icons: Option<MessageBotMessageIcons>,
     pub subtype: Option<String>,
     pub text: Option<String>,
-    pub ts: Option<String>,
+    pub ts: Option<Timestamp>,
     #[serde(rename = "type")]
     pub ty: Option<String>,
     pub username: Option<String>,
-    pub channel: Option<String>,
-    pub team: Option<String>,
+    pub channel: Option<ChannelId>,
+    pub team: Option<TeamId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -510,15 +611,15 @@ pub struct MessageFileMention {
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageFileShare {
-    pub channel: Option<String>,
+    pub channel: Option<ChannelId>,
     pub file: Option<::File>,
     pub subtype: Option<String>,
     pub text: Option<String>,
-    pub ts: Option<String>,
+    pub ts: Option<Timestamp>,
     #[serde(rename = "type")]
     pub ty: Option<String>,
     pub upload: Option<bool>,
-    pub user: Option<String>,
+    pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -824,19 +925,19 @@ pub struct MessageReplyBroadcastAttachment {
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageStandard {
     pub attachments: Option<Vec<MessageStandardAttachment>>,
-    pub bot_id: Option<String>,
-    pub channel: Option<String>,
+    pub bot_id: Option<BotId>,
+    pub channel: Option<ChannelId>,
     pub edited: Option<MessageStandardEdited>,
-    pub event_ts: Option<String>,
+    pub event_ts: Option<Timestamp>,
     pub reply_broadcast: Option<bool>,
-    pub source_team: Option<String>,
-    pub team: Option<String>,
+    pub source_team: Option<TeamId>,
+    pub team: Option<TeamId>,
     pub text: Option<String>,
-    pub thread_ts: Option<String>,
-    pub ts: Option<String>,
+    pub thread_ts: Option<Timestamp>,
+    pub ts: Option<Timestamp>,
     #[serde(rename = "type")]
     pub ty: Option<String>,
-    pub user: Option<String>,
+    pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -890,12 +991,12 @@ pub struct MessageUnpinnedItemItem {}
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageSlackbotResponse {
     pub text: Option<String>,
-    pub ts: Option<String>,
+    pub ts: Option<Timestamp>,
     #[serde(rename = "type")]
     pub ty: Option<String>,
     pub subtype: Option<String>,
-    pub user: Option<String>,
-    pub channel: Option<String>,
+    pub user: Option<UserId>,
+    pub channel: Option<ChannelId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -992,7 +1093,7 @@ pub struct User {
     pub color: Option<String>,
     pub deleted: Option<bool>,
     pub has_2fa: Option<bool>,
-    pub id: String,
+    pub id: UserId,
     pub is_admin: Option<bool>,
     pub is_app_user: Option<bool>,
     pub is_bot: Option<bool>,

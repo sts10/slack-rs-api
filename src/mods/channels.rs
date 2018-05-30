@@ -8,9 +8,9 @@ use types::*;
 api_call!(archive, "channels.archive", ArchiveRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
-pub struct ArchiveRequest<'a> {
+pub struct ArchiveRequest {
     /// Channel to archive
-    pub channel: &'a str,
+    pub channel: ChannelId,
 }
 
 /// Creates a channel.
@@ -43,7 +43,7 @@ api_call!(history, "channels.history", HistoryRequest, HistoryResponse);
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct HistoryRequest<'a> {
     /// Channel to fetch history for.
-    pub channel: &'a str,
+    pub channel: ChannelId,
     /// End of time range of messages to include in results.
     pub latest: Option<&'a str>,
     /// Start of time range of messages to include in results.
@@ -73,9 +73,9 @@ pub struct HistoryResponse {
 api_call!(info, "channels.info", InfoRequest, InfoResponse);
 
 #[derive(Clone, Default, Debug, Serialize)]
-pub struct InfoRequest<'a> {
+pub struct InfoRequest {
     /// Channel to get info on
-    pub channel: &'a str,
+    pub channel: ChannelId,
     pub include_locale: Option<bool>,
 }
 
@@ -93,11 +93,11 @@ pub struct InfoResponse {
 api_call!(invite, "channels.invite", InviteRequest, InviteResponse);
 
 #[derive(Clone, Default, Debug, Serialize)]
-pub struct InviteRequest<'a> {
+pub struct InviteRequest {
     /// Channel to invite user to.
-    pub channel: &'a str,
+    pub channel: ChannelId,
     /// User to invite to channel.
-    pub user: &'a str,
+    pub user: UserId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -114,9 +114,9 @@ pub struct InviteResponse {
 api_call!(join, "channels.join", JoinRequest, JoinResponse);
 
 #[derive(Clone, Default, Debug, Serialize)]
-pub struct JoinRequest<'a> {
+pub struct JoinRequest {
     /// Name of channel to join
-    pub name: &'a str,
+    pub name: ChannelId,
     /// Whether to return errors on invalid channel name instead of modifying it to meet the specified criteria.
     pub validate: Option<bool>,
 }
@@ -136,11 +136,11 @@ pub struct JoinResponse {
 api_call!(kick, "channels.kick", KickRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
-pub struct KickRequest<'a> {
+pub struct KickRequest {
     /// Channel to remove user from.
-    pub channel: &'a str,
+    pub channel: ChannelId,
     /// User to remove from channel.
-    pub user: &'a str,
+    pub user: UserId,
 }
 
 /// Leaves a channel.
@@ -150,9 +150,9 @@ pub struct KickRequest<'a> {
 api_call!(leave, "channels.leave", LeaveRequest, LeaveResponse);
 
 #[derive(Clone, Default, Debug, Serialize)]
-pub struct LeaveRequest<'a> {
+pub struct LeaveRequest {
     /// Channel to leave
-    pub channel: &'a str,
+    pub channel: ChannelId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -200,7 +200,7 @@ api_call!(mark, "channels.mark", MarkRequest => ());
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct MarkRequest<'a> {
     /// Channel to set reading cursor in.
-    pub channel: &'a str,
+    pub channel: ChannelId,
     /// Timestamp of the most recently seen message.
     pub ts: &'a str,
 }
@@ -214,7 +214,7 @@ api_call!(rename, "channels.rename", RenameRequest, RenameResponse);
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct RenameRequest<'a> {
     /// Channel to rename
-    pub channel: &'a str,
+    pub channel: ChannelId,
     /// New name for channel.
     pub name: &'a str,
     /// Whether to return errors on invalid channel name instead of modifying it to meet the specified criteria.
@@ -237,7 +237,7 @@ api_call!(replies, "channels.replies", RepliesRequest, RepliesResponse);
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct RepliesRequest<'a> {
     /// Channel to fetch thread from
-    pub channel: &'a str,
+    pub channel: ChannelId,
     /// Unique identifier of a thread's parent message
     pub thread_ts: &'a str,
 }
@@ -265,7 +265,7 @@ api_call!(
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct SetPurposeRequest<'a> {
     /// Channel to set the purpose of
-    pub channel: &'a str,
+    pub channel: ChannelId,
     /// The new purpose
     pub purpose: &'a str,
 }
@@ -286,7 +286,7 @@ api_call!(set_topic, "channels.setTopic", SetTopicRequest, SetTopicResponse);
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct SetTopicRequest<'a> {
     /// Channel to set the topic of
-    pub channel: &'a str,
+    pub channel: ChannelId,
     /// The new topic
     pub topic: &'a str,
 }
@@ -305,9 +305,9 @@ pub struct SetTopicResponse {
 api_call!(unarchive, "channels.unarchive", UnarchiveRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
-pub struct UnarchiveRequest<'a> {
+pub struct UnarchiveRequest {
     /// Channel to unarchive
-    pub channel: &'a str,
+    pub channel: ChannelId,
 }
 
 #[cfg(test)]

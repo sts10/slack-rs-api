@@ -9,9 +9,9 @@ use types::*;
 api_call!(archive, "groups.archive", ArchiveRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
-pub struct ArchiveRequest<'a> {
+pub struct ArchiveRequest {
     /// Private channel to archive
-    pub channel: &'a str,
+    pub channel: GroupId,
 }
 
 /// Closes a private channel.
@@ -21,9 +21,9 @@ pub struct ArchiveRequest<'a> {
 api_call!(close, "groups.close", CloseRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
-pub struct CloseRequest<'a> {
+pub struct CloseRequest {
     /// Private channel to close.
-    pub channel: &'a str,
+    pub channel: GroupId,
 }
 
 /// Creates a private channel.
@@ -59,9 +59,9 @@ api_call!(
 );
 
 #[derive(Clone, Default, Debug, Serialize)]
-pub struct CreateChildRequest<'a> {
+pub struct CreateChildRequest {
     /// Private channel to clone and archive.
-    pub channel: &'a str,
+    pub channel: GroupId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -80,7 +80,7 @@ api_call!(history, "groups.history", HistoryRequest, HistoryResponse);
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct HistoryRequest<'a> {
     /// Private channel to fetch history for.
-    pub channel: &'a str,
+    pub channel: GroupId,
     /// End of time range of messages to include in results.
     pub latest: Option<&'a str>,
     /// Start of time range of messages to include in results.
@@ -110,9 +110,9 @@ pub struct HistoryResponse {
 api_call!(info, "groups.info", InfoRequest, InfoResponse);
 
 #[derive(Clone, Default, Debug, Serialize)]
-pub struct InfoRequest<'a> {
+pub struct InfoRequest {
     /// Private channel to get info on
-    pub channel: &'a str,
+    pub channel: GroupId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -129,11 +129,11 @@ pub struct InfoResponse {
 api_call!(invite, "groups.invite", InviteRequest, InviteResponse);
 
 #[derive(Clone, Default, Debug, Serialize)]
-pub struct InviteRequest<'a> {
+pub struct InviteRequest {
     /// Private channel to invite user to.
-    pub channel: &'a str,
+    pub channel: GroupId,
     /// User to invite.
-    pub user: &'a str,
+    pub user: UserId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -150,11 +150,11 @@ pub struct InviteResponse {
 api_call!(kick, "groups.kick", KickRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
-pub struct KickRequest<'a> {
+pub struct KickRequest {
     /// Private channel to remove user from.
-    pub channel: &'a str,
+    pub channel: GroupId,
     /// User to remove from private channel.
-    pub user: &'a str,
+    pub user: UserId,
 }
 
 /// Leaves a private channel.
@@ -164,9 +164,9 @@ pub struct KickRequest<'a> {
 api_call!(leave, "groups.leave", LeaveRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
-pub struct LeaveRequest<'a> {
+pub struct LeaveRequest {
     /// Private channel to leave
-    pub channel: &'a str,
+    pub channel: GroupId,
 }
 
 /// Lists private channels that the calling user has access to.
@@ -197,7 +197,7 @@ api_call!(mark, "groups.mark", MarkRequest => ());
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct MarkRequest<'a> {
     /// Private channel to set reading cursor in.
-    pub channel: &'a str,
+    pub channel: GroupId,
     /// Timestamp of the most recently seen message.
     pub ts: &'a str,
 }

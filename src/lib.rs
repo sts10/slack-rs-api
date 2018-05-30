@@ -20,6 +20,8 @@ extern crate serde_derive;
 extern crate reqwest;
 extern crate serde_json;
 extern crate serde_qs;
+#[macro_use]
+extern crate derive_more;
 
 #[macro_use]
 pub mod requests;
