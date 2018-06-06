@@ -1,7 +1,5 @@
 //! Get info on your team's Slack channels, create or archive channels, invite users, set the topic and purpose, and mark a channel as read.
 
-use types::*;
-
 /// Archives a channel.
 ///
 /// Wraps https://api.slack.com/methods/channels.archive
@@ -10,7 +8,7 @@ api_call!(archive, "channels.archive", ArchiveRequest => ());
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct ArchiveRequest {
     /// Channel to archive
-    pub channel: ChannelId,
+    pub channel: ::ChannelId,
 }
 
 /// Creates a channel.
@@ -31,7 +29,7 @@ pub struct CreateRequest<'a> {
 #[serde(deny_unknown_fields)]
 pub struct CreateResponse {
     ok: bool,
-    pub channel: Channel,
+    pub channel: ::Channel,
 }
 
 /// Fetches history of messages and events from a channel.
@@ -43,7 +41,7 @@ api_call!(history, "channels.history", HistoryRequest, HistoryResponse);
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct HistoryRequest<'a> {
     /// Channel to fetch history for.
-    pub channel: ChannelId,
+    pub channel: ::ChannelId,
     /// End of time range of messages to include in results.
     pub latest: Option<&'a str>,
     /// Start of time range of messages to include in results.
@@ -75,7 +73,7 @@ api_call!(info, "channels.info", InfoRequest, InfoResponse);
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct InfoRequest {
     /// Channel to get info on
-    pub channel: ChannelId,
+    pub channel: ::ChannelId,
     pub include_locale: Option<bool>,
 }
 
@@ -83,7 +81,7 @@ pub struct InfoRequest {
 #[serde(deny_unknown_fields)]
 pub struct InfoResponse {
     ok: bool,
-    pub channel: Channel,
+    pub channel: ::Channel,
 }
 
 /// Invites a user to a channel.
@@ -95,16 +93,16 @@ api_call!(invite, "channels.invite", InviteRequest, InviteResponse);
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct InviteRequest {
     /// Channel to invite user to.
-    pub channel: ChannelId,
+    pub channel: ::ChannelId,
     /// User to invite to channel.
-    pub user: UserId,
+    pub user: ::UserId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct InviteResponse {
     ok: bool,
-    pub channel: Channel,
+    pub channel: ::Channel,
 }
 
 /// Joins a channel, creating it if needed.
@@ -116,7 +114,7 @@ api_call!(join, "channels.join", JoinRequest, JoinResponse);
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct JoinRequest {
     /// Name of channel to join
-    pub name: ChannelId,
+    pub name: ::ChannelId,
     /// Whether to return errors on invalid channel name instead of modifying it to meet the specified criteria.
     pub validate: Option<bool>,
 }
@@ -125,7 +123,7 @@ pub struct JoinRequest {
 #[serde(deny_unknown_fields)]
 pub struct JoinResponse {
     ok: bool,
-    pub channel: Channel, //TODO: This is actually an Either based on already_in_channel
+    pub channel: ::Channel, //TODO: This is actually an Either based on already_in_channel
     pub already_in_channel: Option<bool>,
 }
 
@@ -138,9 +136,9 @@ api_call!(kick, "channels.kick", KickRequest => ());
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct KickRequest {
     /// Channel to remove user from.
-    pub channel: ChannelId,
+    pub channel: ::ChannelId,
     /// User to remove from channel.
-    pub user: UserId,
+    pub user: ::UserId,
 }
 
 /// Leaves a channel.
@@ -152,7 +150,7 @@ api_call!(leave, "channels.leave", LeaveRequest, LeaveResponse);
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct LeaveRequest {
     /// Channel to leave
-    pub channel: ChannelId,
+    pub channel: ::ChannelId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -200,7 +198,7 @@ api_call!(mark, "channels.mark", MarkRequest => ());
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct MarkRequest<'a> {
     /// Channel to set reading cursor in.
-    pub channel: ChannelId,
+    pub channel: ::ChannelId,
     /// Timestamp of the most recently seen message.
     pub ts: &'a str,
 }
@@ -214,7 +212,7 @@ api_call!(rename, "channels.rename", RenameRequest, RenameResponse);
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct RenameRequest<'a> {
     /// Channel to rename
-    pub channel: ChannelId,
+    pub channel: ::ChannelId,
     /// New name for channel.
     pub name: &'a str,
     /// Whether to return errors on invalid channel name instead of modifying it to meet the specified criteria.
@@ -225,7 +223,7 @@ pub struct RenameRequest<'a> {
 #[serde(deny_unknown_fields)]
 pub struct RenameResponse {
     ok: bool,
-    pub channel: Channel,
+    pub channel: ::Channel,
 }
 
 /// Retrieve a thread of messages posted to a channel
@@ -237,7 +235,7 @@ api_call!(replies, "channels.replies", RepliesRequest, RepliesResponse);
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct RepliesRequest<'a> {
     /// Channel to fetch thread from
-    pub channel: ChannelId,
+    pub channel: ::ChannelId,
     /// Unique identifier of a thread's parent message
     pub thread_ts: &'a str,
 }
@@ -265,7 +263,7 @@ api_call!(
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct SetPurposeRequest<'a> {
     /// Channel to set the purpose of
-    pub channel: ChannelId,
+    pub channel: ::ChannelId,
     /// The new purpose
     pub purpose: &'a str,
 }
@@ -286,7 +284,7 @@ api_call!(set_topic, "channels.setTopic", SetTopicRequest, SetTopicResponse);
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct SetTopicRequest<'a> {
     /// Channel to set the topic of
-    pub channel: ChannelId,
+    pub channel: ::ChannelId,
     /// The new topic
     pub topic: &'a str,
 }
@@ -307,7 +305,7 @@ api_call!(unarchive, "channels.unarchive", UnarchiveRequest => ());
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct UnarchiveRequest {
     /// Channel to unarchive
-    pub channel: ChannelId,
+    pub channel: ::ChannelId,
 }
 
 #[cfg(test)]

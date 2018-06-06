@@ -11,7 +11,7 @@ fn main() {
         &client,
         &token,
         &slack::channels::HistoryRequest {
-            channel: &env::args().nth(1).unwrap(),
+            channel: env::args().nth(1).unwrap().into(),
             ..slack::channels::HistoryRequest::default()
         },
     );

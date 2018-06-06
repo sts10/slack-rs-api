@@ -28,10 +28,10 @@ api_call!(test, "auth.test", () => TestResponse);
 pub struct TestResponse {
     ok: bool,
     pub team: String,
-    pub team_id: String,
+    pub team_id: ::TeamId,
     pub url: String,
     pub user: String,
-    pub user_id: String,
+    pub user_id: ::UserId,
 }
 
 #[cfg(test)]
