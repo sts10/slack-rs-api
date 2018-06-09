@@ -371,9 +371,6 @@ pub enum Message {
     ThreadBroadcast(MessageThreadBroadcast),
     UnpinnedItem(MessageUnpinnedItem),
 }
-#[derive(Deserialize)]
-#[serde(field_identifier, rename_all = "snake_case")]
-enum MessageTag {}
 
 macro_rules! intern_tag {
     {
