@@ -14,3 +14,5 @@ serde_json = "1.0"
 serde_qs = "0.4"
 reqwest = "0.8"
 derive_more = "0.11"
+mashup = "0.1"
+

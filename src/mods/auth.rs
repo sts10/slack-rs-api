@@ -44,9 +44,7 @@ mod tests {
         let client = ::requests::default_client().unwrap();
         let token = env::var("SLACK_API_TOKEN").unwrap();
 
-        let req = RevokeRequest {
-            test: Some(true),
-        };
+        let req = RevokeRequest { test: Some(true) };
         assert_eq!(revoke(&client, &token, &req).unwrap().revoked, false);
     }
 
