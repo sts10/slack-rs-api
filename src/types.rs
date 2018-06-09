@@ -341,38 +341,89 @@ enum EventTag {
     UserTyping,
 }
 
-#[derive(Clone, Debug)]
-pub enum Message {
-    Standard(MessageStandard),
-    BotMessage(MessageBotMessage),
-    ChannelArchive(MessageChannelArchive),
-    ChannelJoin(MessageChannelJoin),
-    ChannelLeave(MessageChannelLeave),
-    ChannelName(MessageChannelName),
-    ChannelPurpose(MessageChannelPurpose),
-    ChannelTopic(MessageChannelTopic),
-    ChannelUnarchive(MessageChannelUnarchive),
-    FileComment(MessageFileComment),
-    FileMention(MessageFileMention),
-    FileShare(MessageFileShare),
-    GroupArchive(MessageGroupArchive),
-    GroupJoin(MessageGroupJoin),
-    GroupLeave(MessageGroupLeave),
-    GroupName(MessageGroupName),
-    GroupPurpose(MessageGroupPurpose),
-    GroupTopic(MessageGroupTopic),
-    GroupUnarchive(MessageGroupUnarchive),
-    MeMessage(MessageMeMessage),
-    MessageChanged(MessageMessageChanged),
-    MessageDeleted(MessageMessageDeleted),
-    MessageReplied(MessageMessageReplied),
-    PinnedItem(MessagePinnedItem),
-    ReplyBroadcast(MessageReplyBroadcast),
-    ThreadBroadcast(MessageThreadBroadcast),
-    UnpinnedItem(MessageUnpinnedItem),
+macro_rules! deserialize_internally_tagged {
+    {
+        tag_field = $tagfield:expr,
+        default_variant = $default_variant:ident,
+        default_struct = $default_struct:ident,
+        $(#[$attr:meta])*
+        pub enum $enumname:ident {
+            $($variant_name:ident($struct_name:ident)),*,
+        }
+   } => {
+        
+        $(#[$attr])*
+        pub enum $enumname {
+            $($variant_name($struct_name),)*
+        }
+        
+        impl<'de> ::serde::Deserialize<'de> for $enumname {
+            fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+                where
+                D: ::serde::Deserializer<'de>,
+            {
+                let v = ::serde_json::Value::deserialize(deserializer)?;
+                
+                #[derive(Deserialize)]
+                #[serde(field_identifier, rename_all = "snake_case")]
+                enum Tag {
+                    $($variant_name,)* 
+                }
+                    
+                match Option::deserialize(&v[$tagfield]).map_err(::serde::de::Error::custom)? {
+                    $(
+                    Some(Tag::$variant_name) => $struct_name::deserialize(v)
+                        .map($enumname::$variant_name)
+                        .map_err(::serde::de::Error::custom),
+                    )*
+                    None => $default_struct::deserialize(v)
+                        .map($enumname::$default_variant)
+                        .map_err(::serde::de::Error::custom),
+                }
+            }
+        }
+    }
 }
 
-macro_rules! intern_tag {
+deserialize_internally_tagged! {
+    tag_field = "subtype",
+    default_variant = Standard,
+    default_struct = MessageStandard,
+    #[derive(Clone, Debug)]
+    pub enum Message {
+        Standard(MessageStandard),
+        BotMessage(MessageBotMessage),
+        ChannelArchive(MessageChannelArchive),
+        ChannelJoin(MessageChannelJoin),
+        ChannelLeave(MessageChannelLeave),
+        ChannelName(MessageChannelName),
+        ChannelPurpose(MessageChannelPurpose),
+        ChannelTopic(MessageChannelTopic),
+        ChannelUnarchive(MessageChannelUnarchive),
+        FileComment(MessageFileComment),
+        FileMention(MessageFileMention),
+        FileShare(MessageFileShare),
+        GroupArchive(MessageGroupArchive),
+        GroupJoin(MessageGroupJoin),
+        GroupLeave(MessageGroupLeave),
+        GroupName(MessageGroupName),
+        GroupPurpose(MessageGroupPurpose),
+        GroupTopic(MessageGroupTopic),
+        GroupUnarchive(MessageGroupUnarchive),
+        MeMessage(MessageMeMessage),
+        MessageChanged(MessageMessageChanged),
+        MessageDeleted(MessageMessageDeleted),
+        MessageReplied(MessageMessageReplied),
+        PinnedItem(MessagePinnedItem),
+        ReplyBroadcast(MessageReplyBroadcast),
+        ThreadBroadcast(MessageThreadBroadcast),
+        UnpinnedItem(MessageUnpinnedItem),
+    }
+}
+
+
+/*
+macro_rules! deserialize_internally_tagged {
     {
         enum_name = $enumname:ident,
         tag_field = $tagfield:expr,
@@ -405,15 +456,20 @@ macro_rules! intern_tag {
                             .map($enumname::$name)
                             .map_err(::serde::de::Error::custom),
                         )*
-                        None => unreachable!(),
+                        None => MessageStandard::deserialize(v)
+                            .map(Message::Standard)
+                            .map_err(::serde::de::Error::custom),
                     }
                 }
             }
         }
     }
 }
+*/
 
-intern_tag! {
+
+/*
+deserialize_internally_tagged! {
     enum_name = Message,
     tag_field = "subtype",
     Standard,
@@ -444,6 +500,8 @@ intern_tag! {
     ThreadBroadcast,
     UnpinnedItem,
 }
+*/
+
 
 /*
 impl<'de> ::serde::Deserialize<'de> for Message {

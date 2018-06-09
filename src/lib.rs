@@ -14,7 +14,6 @@
 
 //! Low-level, direct interface for the [Slack Web
 //! API](https://api.slack.com/methods).
-#![recursion_limit = "1024"]
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
@@ -23,9 +22,6 @@ extern crate serde_json;
 extern crate serde_qs;
 #[macro_use]
 extern crate derive_more;
-
-#[macro_use]
-extern crate mashup;
 
 #[macro_use]
 pub mod requests;
