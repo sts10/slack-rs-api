@@ -17,7 +17,7 @@
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
-extern crate reqwest;
+extern crate hyper;
 extern crate serde_json;
 extern crate serde_qs;
 #[macro_use]
@@ -26,7 +26,6 @@ extern crate derive_more;
 #[macro_use]
 pub mod requests;
 pub use requests::default_client;
-use requests::*;
 
 mod types;
 pub use types::*;

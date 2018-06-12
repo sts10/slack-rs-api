@@ -1,49 +1,28 @@
 //! Functionality for sending requests to Slack.
-pub use reqwest::Client;
-use std::error;
-
-/// Functionality for sending authenticated and unauthenticated requests to Slack via HTTP.
-///
-/// If you do not have a custom client to integrate with and just want to send requests, use
-/// the [`default_client()`] function to get a simple request sender.
-pub trait SlackWebRequestSender {
-    type Error: error::Error;
-
-    /// Make an API call to Slack. Takes a map of parameters that get appended to the request as query
-    /// params.
-    fn send(&self, method: &str, params: &[(&str, &str)]) -> Result<String, Self::Error>;
-}
-
-impl SlackWebRequestSender for ::reqwest::Client {
-    type Error = ::reqwest::Error;
-
-    fn send(&self, method_url: &str, params: &[(&str, &str)]) -> Result<String, Self::Error> {
-        let mut url = ::reqwest::Url::parse(method_url).expect("Unable to parse url");
-
-        url.query_pairs_mut().extend_pairs(params);
-
-        self.get(url).send()?.text()
-    }
-}
+pub use hyper::Client;
+//use std::error;
+use hyper::rt::Future;
+use std::str::FromStr;
+use hyper::rt::Stream;
 
 /// Make an API call to Slack. Takes a struct that describes the request params
 pub fn send_structured<T: ::serde::Serialize>(
-    client: &::reqwest::Client,
+    client: &::hyper::Client<::hyper::client::HttpConnector, ::hyper::Body>,
     method_url: &str,
     params: &T,
-) -> Result<String, ::reqwest::Error> {
+) -> Result<String, ::hyper::Error> {
     let url_text = method_url.to_string() + &::serde_qs::to_string(params).unwrap();
-    let url = ::reqwest::Url::parse(&url_text).unwrap();
-    client.get(url).send()?.text()
+    let url = ::hyper::Uri::from_str(&url_text).unwrap();
+    client.get(url).wait().and_then(|r| r.into_body().concat2().wait().map(|s| String::from_utf8(s.into_bytes().to_vec()).unwrap()))
 }
 
 /// Make an API call to Slack that has no parameters
-pub fn send_simple(client: &::reqwest::Client, method_url: &str) -> Result<String, ::reqwest::Error> {
-    let url = ::reqwest::Url::parse(method_url).unwrap();
-    client.get(url).send()?.text()
+pub fn send_simple(client: &::hyper::Client<::hyper::client::HttpConnector, ::hyper::Body>, method_url: &str) -> Result<String, ::hyper::Error> {
+    let url = ::hyper::Uri::from_str(&method_url).unwrap();
+	client.get(url).wait().and_then(|r| r.into_body().concat2().wait().map(|s| String::from_utf8(s.into_bytes().to_vec()).unwrap()))
 }
 
-/// Provides a default `reqwest` client to give to the API functions to send requests.
+/// Provides a default `hyper` client to give to the API functions to send requests.
 ///
 /// # Examples
 ///
@@ -52,8 +31,8 @@ pub fn send_simple(client: &::reqwest::Client, method_url: &str) -> Result<Strin
 /// let client = slack_api::requests::default_client().unwrap();
 /// let response = slack_api::channels::list(&client, &token, &Default::default());
 /// ```
-pub fn default_client() -> Result<::reqwest::Client, ::reqwest::Error> {
-    ::reqwest::Client::builder().build()
+pub fn default_client() -> ::hyper::Client<::hyper::client::HttpConnector, ::hyper::Body> {
+    ::hyper::Client::builder().build(::hyper::client::HttpConnector::new(1))
 }
 
 macro_rules! slack {
@@ -69,7 +48,7 @@ macro_rules! slack {
         },
     } => {
         $(#[$attr])*
-        pub fn $name(client: &::reqwest::Client, token: &str, request: &$reqname) -> Result<$resname, ::requests::Error> {
+        pub fn $name(client: &::hyper::Client<::hyper::client::HttpConnector, ::hyper::Body>, token: &str, request: &$reqname) -> Result<$resname, ::requests::Error> {
             use requests::Error;
             #[derive(Deserialize)]
             struct IsError {
@@ -110,7 +89,7 @@ macro_rules! slack {
 
 macro_rules! api_call {
     ($name:ident, $strname:expr, $reqty:ty, $okty:ty) => {
-        pub fn $name(client: &::reqwest::Client, token: &str, request: &$reqty) -> Result<$okty, ::requests::Error> {
+        pub fn $name(client: &::hyper::Client<::hyper::client::HttpConnector, ::hyper::Body>, token: &str, request: &$reqty) -> Result<$okty, ::requests::Error> {
             use requests::Error;
             #[derive(Deserialize)]
             struct IsError {
@@ -136,7 +115,7 @@ macro_rules! api_call {
         }
     };
     ($name:ident, $strname:expr,() => $okty:ty) => {
-        pub fn $name(client: &::reqwest::Client, token: &str) -> Result<$okty, ::requests::Error> {
+        pub fn $name(client: &::hyper::Client<::hyper::client::HttpConnector, ::hyper::Body>, token: &str) -> Result<$okty, ::requests::Error> {
             use requests::Error;
             #[derive(Deserialize)]
             struct IsError {
@@ -162,7 +141,7 @@ macro_rules! api_call {
         }
     };
     ($name:ident, $strname:expr, $reqty:ty => ()) => {
-        pub fn $name(client: &::reqwest::Client, token: &str, request: &$reqty) -> Result<(), ::requests::Error> {
+        pub fn $name(client: &::hyper::Client<::hyper::client::HttpConnector, ::hyper::Body>, token: &str, request: &$reqty) -> Result<(), ::requests::Error> {
             use requests::Error;
             #[derive(Deserialize)]
             struct IsError {
@@ -194,7 +173,7 @@ macro_rules! api_call {
         }
     };
     ($name:ident, $strname:expr) => {
-        pub fn $name(client: &::reqwest::Client, token: &str) -> Result<(), ::requests::Error> {
+        pub fn $name(client: &::hyper::Client<::hyper::client::HttpConnector, ::hyper::Body>, token: &str) -> Result<(), ::requests::Error> {
             use requests::Error;
             #[derive(Deserialize)]
             struct IsError {
@@ -235,7 +214,7 @@ pub fn get_slack_url_for_method(method: &str) -> String {
 pub enum Error {
     Slack(String),
     CannotParse(::serde_json::error::Error, String),
-    Client(::reqwest::Error),
+    Client(::hyper::Error),
 }
 
 impl ::std::fmt::Display for Error {
