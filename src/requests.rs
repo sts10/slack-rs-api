@@ -1,9 +1,10 @@
 //! Functionality for sending requests to Slack.
-pub use hyper::Client;
 //use std::error;
 use hyper::rt::Future;
 use std::str::FromStr;
 use hyper::rt::Stream;
+
+pub type Client = ::hyper::Client<::hyper::client::HttpConnector, ::hyper::Body>;
 
 /// Make an API call to Slack. Takes a struct that describes the request params
 pub fn send_structured<T: ::serde::Serialize>(
