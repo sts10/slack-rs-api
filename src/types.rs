@@ -351,25 +351,25 @@ macro_rules! deserialize_internally_tagged {
             $($variant_name:ident($struct_name:ident)),*,
         }
    } => {
-        
+
         $(#[$attr])*
         pub enum $enumname {
             $($variant_name($struct_name),)*
         }
-        
+
         impl<'de> ::serde::Deserialize<'de> for $enumname {
             fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
                 where
                 D: ::serde::Deserializer<'de>,
             {
                 let v = ::serde_json::Value::deserialize(deserializer)?;
-                
+
                 #[derive(Deserialize)]
                 #[serde(field_identifier, rename_all = "snake_case")]
                 enum Tag {
-                    $($variant_name,)* 
+                    $($variant_name,)*
                 }
-                    
+
                 match Option::deserialize(&v[$tagfield]).map_err(::serde::de::Error::custom)? {
                     $(
                     Some(Tag::$variant_name) => $struct_name::deserialize(v)

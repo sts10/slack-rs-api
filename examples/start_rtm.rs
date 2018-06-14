@@ -1,12 +1,13 @@
-extern crate reqwest;
+extern crate futures;
 extern crate slack_api as slack;
+use futures::Future;
 
 use std::default::Default;
 use std::env;
 
 fn main() {
     let token = env::var("SLACK_API_TOKEN").expect("SLACK_API_TOKEN not set.");
-    let client = slack::default_client().unwrap();
+    let client = slack::default_client();
 
     {
         let request = slack::rtm::StartRequest::default();
