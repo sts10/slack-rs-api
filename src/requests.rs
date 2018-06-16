@@ -83,7 +83,7 @@ macro_rules! api_call {
             api_call_internal!(client, token, $strname, request, $okty)
         }
     };
-    ($name:ident, $strname:expr, () => $okty:ty) => {
+    ($name:ident, $strname:expr,() => $okty:ty) => {
         pub fn $name(client: &::requests::Client, token: &str) -> Result<$okty, ::requests::Error> {
             api_call_internal!(client, token, $strname, (), $okty)
         }
@@ -115,8 +115,8 @@ macro_rules! api_call {
 }
 
 macro_rules! api_call_internal {
-    ($client:expr, $token:expr, $strname:expr, $request:expr, $okty:ty) => {
-        {use requests::Error;
+    ($client:expr, $token:expr, $strname:expr, $request:expr, $okty:ty) => {{
+        use requests::Error;
         #[derive(Deserialize)]
         struct IsError {
             ok: bool,
@@ -137,8 +137,8 @@ macro_rules! api_call_internal {
                 Ok(r) => Ok(r),
                 Err(e) => Err(Error::CannotParse(e, bytes)),
             },
-        }}
-    }
+        }
+    }};
 }
 
 pub fn get_slack_url_for_method(method: &str) -> String {
@@ -168,6 +168,14 @@ impl ::std::error::Error for Error {
             Error::Slack(ref reason) => reason,
             Error::CannotParse(..) => "Could not parse as specified result type",
             Error::Client(..) => "The requests client failed",
+        }
+    }
+
+    fn cause(&self) -> Option<&::std::error::Error> {
+        match *self {
+            Error::Slack(_) => None,
+            Error::CannotParse(ref cause, _) => Some(cause),
+            Error::Client(ref cause) => Some(cause),
         }
     }
 }
