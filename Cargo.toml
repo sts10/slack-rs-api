@@ -14,3 +14,5 @@ serde_json = "1.0"
 serde_qs = "0.4"
 derive_more = "0.11"
 reqwest = "0.8"
+uuid = { version = "0.6", features = ["serde", "v4"] }
+

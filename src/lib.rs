@@ -22,6 +22,7 @@ extern crate serde_qs;
 #[macro_use]
 extern crate derive_more;
 extern crate reqwest;
+extern crate uuid;
 
 #[macro_use]
 mod requests;

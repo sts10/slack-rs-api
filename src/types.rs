@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::fmt;
+use uuid::Uuid;
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(untagged)]
@@ -18,98 +19,85 @@ impl fmt::Display for Timestamp {
     }
 }
 
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash, From)]
-struct Id([u8; 9]);
-
 use serde::de::{self, Deserialize, Deserializer, Visitor};
-impl<'de> Deserialize<'de> for Id {
-    fn deserialize<D>(deserializer: D) -> Result<Id, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        deserializer.deserialize_str(IdVisitor)
-    }
-}
-
-struct IdVisitor;
-
-impl<'de> Visitor<'de> for IdVisitor {
-    type Value = Id;
-
-    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        formatter.write_str("an 8-byte str")
-    }
-
-    fn visit_str<E>(self, value: &str) -> Result<Id, E>
-    where
-        E: de::Error,
-    {
-        if value.len() <= 9 {
-            Ok(value.as_bytes().into())
-        } else {
-            Err(E::custom(format!(
-                "Ids must be a 9-byte string, found {} with length {}",
-                value,
-                value.len()
-            )))
-        }
-    }
-}
-
 use serde::ser::{Serialize, Serializer};
-impl Serialize for Id {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        serializer.serialize_str(::std::str::from_utf8(&self.0).unwrap())
-    }
-}
 
-impl fmt::Display for Id {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", ::std::str::from_utf8(&self.0).unwrap())
-    }
-}
+macro_rules! make_id {
+    ($name:ident, $firstchar:expr, $visname:ident) => {
+        #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash, From)]
+        pub struct $name([u8; 8]);
 
-impl<'a> From<&'a [u8]> for Id {
-    fn from(source: &'a [u8]) -> Id {
-        let mut ret = Id::default();
-        // TODO: There must be a better way
-        for i in 0..source.len() {
-            ret.0[i] = source[i];
+        struct $visname;
+        
+        impl<'de> Visitor<'de> for $visname {
+            type Value = $name;
+
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("a 9-byte str")
+            }
+
+            fn visit_str<E>(self, value: &str) -> Result<$name, E>
+            where
+                E: de::Error,
+            {
+                if value.as_bytes()[0] == b'A' || value.as_bytes()[0] == b'B' {
+                    eprintln!("{}", value);
+                }
+                if value.len() <= 9 && value.as_bytes()[0] == $firstchar {
+                    let mut buf: [u8; 8] = [0; 8];
+                    buf[..value.len()-1].copy_from_slice(&value.as_bytes()[1..]);
+                    Ok($name(buf))
+                } else {
+                    Err(E::custom(format!(
+                        "{} must be a 9-byte string starting with {}, found {}",
+                        stringify!($name),
+                        $firstchar as char,
+                        value,
+                    )))
+                }
+            }
         }
-        ret
+
+
+        impl<'de> Deserialize<'de> for $name {
+            
+        fn deserialize<D>(deserializer: D) -> Result<$name, D::Error>
+            where
+                D: Deserializer<'de>,
+            {
+
+                deserializer.deserialize_str($visname)
+            }
+        }
+
+        impl Serialize for $name {
+            fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+            where
+                S: Serializer,
+            {
+                let mut output_buffer: [u8; 9] = [0; 9];
+                output_buffer[0] = $firstchar;
+                output_buffer[1..].copy_from_slice(&self.0); 
+                serializer.serialize_str(::std::str::from_utf8(&output_buffer).unwrap())
+            }
+        }
+
     }
 }
 
-#[derive(Clone, Copy, Display, Debug, Default, Deserialize, PartialEq, Eq, Hash, Serialize)]
-pub struct BotId(Id);
-
-#[derive(Clone, Copy, Display, Debug, Default, Deserialize, PartialEq, Eq, Hash, Serialize)]
-pub struct ChannelId(Id);
-
-#[derive(Clone, Copy, Display, Debug, Default, Deserialize, PartialEq, Eq, Hash, Serialize)]
-pub struct TeamId(Id);
-
-#[derive(Clone, Copy, Display, Debug, Default, Deserialize, PartialEq, Eq, Hash, Serialize)]
-pub struct UserId(Id);
-
-impl<'a> From<&'a [u8]> for UserId {
-    fn from(source: &'a [u8]) -> UserId {
-        UserId(Id::from(source))
-    }
-}
-
-#[derive(Clone, Copy, Display, Debug, Default, Deserialize, PartialEq, Eq, Hash, Serialize)]
-pub struct GroupId(Id);
+make_id!(BotId, b'B', BotIdVisitor);
+make_id!(UserId, b'U', UserIdVisitor);
+make_id!(ChannelId, b'C', ChannelIdVisitor);
+make_id!(GroupId, b'G', GroupIdVisitor);
+make_id!(TeamId, b'T', TeamIdVisitor);
+make_id!(AppId, b'A', AppIdVisitor);
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct Bot {
-    pub app_id: Option<String>,
+    pub app_id: Option<AppId>,
     pub deleted: Option<bool>,
     pub icons: Option<BotIcons>,
-    pub id: String,
+    pub id: BotId,
     pub name: String,
 }
 
@@ -266,89 +254,95 @@ pub struct Im {
     pub user: Option<String>,
 }
 
-#[derive(Deserialize)]
-#[serde(field_identifier, rename_all = "snake_case")]
-enum EventTag {
-    AccountsChanged,
-    BotAdded,
-    BotChanged,
-    ChannelArchive,
-    ChannelCreated,
-    ChannelDeleted,
-    ChannelHistoryChanged,
-    ChannelJoined,
-    ChannelLeft,
-    ChannelMarked,
-    ChannelRename,
-    ChannelUnarchive,
-    CommandsChanged,
-    DndUpdated,
-    EmailDomainChanged,
-    FileChange,
-    FileCommentAdded,
-    FileCommentDeleted,
-    FileCommentEdited,
-    FileCreated,
-    FileDeleted,
-    FilePublic,
-    FileShared,
-    FileUnshared,
-    Goodbye,
-    GroupArchive,
-    GroupClose,
-    GroupHistoryChanged,
-    GroupJoined,
-    GroupLeft,
-    GroupMarked,
-    GroupOpen,
-    GroupRename,
-    GroupUnarchive,
-    Hello,
-    ImClose,
-    ImCreated,
-    ImHistoryChanged,
-    ImMarked,
-    ImOpen,
-    ManualPresenceChange,
-    MemberJoinedChannel,
-    MemberLeftChannel,
-    Message,
-    PinAdded,
-    PinRemoved,
-    PrefChange,
-    PresenceChange,
-    PresenceQuery,
-    PresenceSub,
-    ReactionAdded,
-    ReactionRemoved,
-    ReconnectUrl, // Experimental?
-    StarAdded,
-    StarRemoved,
-    SubteamCreated,
-    SubteamMembersChanged,
-    SubteamSelfAdded,
-    SubteamUpdated,
-    TeamDomainChange,
-    TeamJoin,
-    TeamMigrationStarted,
-    TeamPlanChange,
-    TeamPrefChange,
-    TeamProfileChange,
-    TeamProfileDelete,
-    TeamProfileReorder,
-    TeamRename,
-    UserChange,
-    UserTyping,
+/*
+deserialize_internally_tagged! {
+    tag_field = "type",
+    default_variant = Standard,
+    default_struct = EventStandard,
+    #[derive(Clone, Debug)]
+    pub enum Event {
+        AccountsChanged,
+        BotAdded,
+        BotChanged,
+        ChannelArchive,
+        ChannelCreated,
+        ChannelDeleted,
+        ChannelHistoryChanged,
+        ChannelJoined,
+        ChannelLeft,
+        ChannelMarked,
+        ChannelRename,
+        ChannelUnarchive,
+        CommandsChanged,
+        DndUpdated,
+        EmailDomainChanged,
+        FileChange,
+        FileCommentAdded,
+        FileCommentDeleted,
+        FileCommentEdited,
+        FileCreated,
+        FileDeleted,
+        FilePublic,
+        FileShared,
+        FileUnshared,
+        Goodbye,
+        GroupArchive,
+        GroupClose,
+        GroupHistoryChanged,
+        GroupJoined,
+        GroupLeft,
+        GroupMarked,
+        GroupOpen,
+        GroupRename,
+        GroupUnarchive,
+        Hello,
+        ImClose,
+        ImCreated,
+        ImHistoryChanged,
+        ImMarked,
+        ImOpen,
+        ManualPresenceChange,
+        MemberJoinedChannel,
+        MemberLeftChannel,
+        Message,
+        PinAdded,
+        PinRemoved,
+        PrefChange,
+        PresenceChange,
+        PresenceQuery,
+        PresenceSub,
+        ReactionAdded,
+        ReactionRemoved,
+        ReconnectUrl, // Experimental?
+        StarAdded,
+        StarRemoved,
+        SubteamCreated,
+        SubteamMembersChanged,
+        SubteamSelfAdded,
+        SubteamUpdated,
+        TeamDomainChange,
+        TeamJoin,
+        TeamMigrationStarted,
+        TeamPlanChange,
+        TeamPrefChange,
+        TeamProfileChange,
+        TeamProfileDelete,
+        TeamProfileReorder,
+        TeamRename,
+        UserChange,
+        UserTyping,
+    }
 }
+*/
 
 macro_rules! deserialize_internally_tagged {
     {
         tag_field = $tagfield:expr,
         default_variant = $default_variant:ident,
-        default_struct = $default_struct:ident,
+        default_struct = $default_struct:ty,
         $(#[$attr:meta])*
         pub enum $enumname:ident {
-            $($variant_name:ident($struct_name:ident)),*,
+            $($variant_name:ident($struct_name:ty)),*,
         }
    } => {
 
@@ -372,11 +366,13 @@ macro_rules! deserialize_internally_tagged {
 
                 match Option::deserialize(&v[$tagfield]).map_err(::serde::de::Error::custom)? {
                     $(
-                    Some(Tag::$variant_name) => $struct_name::deserialize(v)
+                    Some(Tag::$variant_name) => ::serde_json::from_value::<$struct_name>(v)
+                    //$struct_name::deserialize(v)
                         .map($enumname::$variant_name)
                         .map_err(::serde::de::Error::custom),
                     )*
-                    None => $default_struct::deserialize(v)
+                    None => ::serde_json::from_value::<$default_struct>(v)
+                    //$default_struct::deserialize(v)
                         .map($enumname::$default_variant)
                         .map_err(::serde::de::Error::custom),
                 }
@@ -400,9 +396,9 @@ deserialize_internally_tagged! {
         ChannelPurpose(MessageChannelPurpose),
         ChannelTopic(MessageChannelTopic),
         ChannelUnarchive(MessageChannelUnarchive),
-        FileComment(MessageFileComment),
-        FileMention(MessageFileMention),
-        FileShare(MessageFileShare),
+        FileComment(Box<MessageFileComment>),
+        FileMention(Box<MessageFileMention>),
+        FileShare(Box<MessageFileShare>),
         GroupArchive(MessageGroupArchive),
         GroupJoin(MessageGroupJoin),
         GroupLeave(MessageGroupLeave),
@@ -416,7 +412,8 @@ deserialize_internally_tagged! {
         MessageReplied(MessageMessageReplied),
         PinnedItem(MessagePinnedItem),
         ReplyBroadcast(MessageReplyBroadcast),
-        ThreadBroadcast(MessageThreadBroadcast),
+        SlackbotResponse(MessageSlackbotResponse),
+        ThreadBroadcast(Box<MessageThreadBroadcast>),
         UnpinnedItem(MessageUnpinnedItem),
     }
 }
@@ -471,6 +468,8 @@ pub struct MessageBotMessage {
     pub username: Option<String>,
     pub channel: Option<ChannelId>,
     pub team: Option<TeamId>,
+    pub reactions: Option<Vec<Reaction>>,
+    pub attachments: Option<Vec<MessageStandardAttachment>>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -678,75 +677,75 @@ pub struct MessageMeMessage {
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageMessageChanged {
-    pub channel: Option<String>,
+    pub channel: ChannelId,
     pub event_ts: Option<String>,
     pub hidden: Option<bool>,
     pub message: Option<MessageMessageChangedMessage>,
     pub previous_message: Option<MessageMessageChangedPreviousMessage>,
-    pub subtype: Option<String>,
+    //pub subtype: Option<String>,
     pub ts: Option<String>,
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
+    //#[serde(rename = "type")]
+    //pub ty: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageMessageChangedMessage {
-    pub bot_id: Option<String>,
+    pub bot_id: Option<BotId>,
     pub edited: Option<MessageMessageChangedMessageEdited>,
     pub last_read: Option<String>,
-    pub parent_user_id: Option<String>,
+    pub parent_user_id: Option<UserId>,
     pub replies: Option<Vec<MessageMessageChangedMessageReply>>,
     pub reply_count: Option<i32>,
     pub subscribed: Option<bool>,
     pub text: Option<String>,
     pub thread_ts: Option<String>,
     pub ts: Option<String>,
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
+    //#[serde(rename = "type")]
+    //pub ty: Option<String>,
     pub unread_count: Option<i32>,
-    pub user: Option<String>,
+    pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageMessageChangedMessageEdited {
     pub ts: Option<String>,
-    pub user: Option<String>,
+    pub user: UserId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageMessageChangedMessageReply {
     pub ts: Option<String>,
-    pub user: Option<String>,
+    pub user: UserId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageMessageChangedPreviousMessage {
-    pub bot_id: Option<String>,
+    pub bot_id: Option<BotId>,
     pub edited: Option<MessageMessageChangedPreviousMessageEdited>,
     pub last_read: Option<String>,
-    pub parent_user_id: Option<String>,
+    pub parent_user_id: Option<UserId>,
     pub replies: Option<Vec<MessageMessageChangedPreviousMessageReply>>,
     pub reply_count: Option<i32>,
     pub subscribed: Option<bool>,
     pub text: Option<String>,
     pub thread_ts: Option<String>,
     pub ts: Option<String>,
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
+    //#[serde(rename = "type")]
+    //pub ty: Option<String>,
     pub unread_count: Option<i32>,
-    pub user: Option<String>,
+    pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageMessageChangedPreviousMessageEdited {
     pub ts: Option<String>,
-    pub user: Option<String>,
+    pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageMessageChangedPreviousMessageReply {
     pub ts: Option<String>,
-    pub user: Option<String>,
+    pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -891,6 +890,7 @@ pub struct MessageReplyBroadcastAttachment {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageStandard {
     pub attachments: Option<Vec<MessageStandardAttachment>>,
     pub bot_id: Option<BotId>,
@@ -903,10 +903,21 @@ pub struct MessageStandard {
     pub text: Option<String>,
     pub thread_ts: Option<Timestamp>,
     pub ts: Option<Timestamp>,
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
     pub user: Option<UserId>,
+    pub client_msg_id: Option<Uuid>,
+    pub reactions: Option<Vec<Reaction>>,
+    pub parent_user_id: Option<UserId>,
+    pub replies: Option<Vec<MessageStandardReply>>,
+    pub reply_count: Option<i32>,
+    pub last_read: Option<Timestamp>,
+    pub subscribed: Option<bool>,
+    pub pinned_info: Option<MessagePinnedItem>,
+    pub unread_count: Option<i32>,
+    pub pinned_to: Option<Vec<String>>,
 }
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct MessageStandardReply {}
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageStandardAttachment {
@@ -973,7 +984,7 @@ pub struct MessageThreadBroadcast {
     pub root: Option<MessageStandard>,
     pub text: Option<String>,
     pub thread_ts: Option<String>,
-    pub user: Option<String>,
+    pub user: Option<UserId>,
     pub ts: Option<String>,
 }
 
