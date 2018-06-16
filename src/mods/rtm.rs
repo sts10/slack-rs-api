@@ -30,10 +30,10 @@ pub struct ConnectResponseSelf {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ConnectResponseTeam {
-    pub domain: Option<String>,
+    pub domain: String,
     pub enterprise_id: Option<String>,
     pub enterprise_name: Option<String>,
-    pub id: Option<String>,
+    pub id: ::TeamId,
     pub name: String,
 }
 
@@ -71,4 +71,31 @@ pub struct StartResponse {
     pub team: Option<::Team>,
     pub url: Option<String>,
     pub users: Option<Vec<::User>>,
+    pub latest_event_ts: Option<::Timestamp>,
+    pub cache_ts: Option<::Timestamp>,
+    pub read_only_channels: Option<Vec<::Channel>>,
+    pub non_threadable_channels: Option<Vec<::Channel>>,
+    pub thread_only_channels: Option<Vec<::Channel>>,
+    pub can_manage_shared_channels: Option<bool>,
+    pub cache_version: Option<String>,
+    pub cache_ts_version: Option<String>,
+    pub dnd: Option<Dnd>,
+    pub subteams: Option<Subteams>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Dnd {
+    pub dnd_enabled: bool,
+    pub next_dnd_end_ts: ::Timestamp,
+    pub next_dnd_start_ts: ::Timestamp,
+    pub snooze_enabled: bool,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Subteams {
+    pub all: Option<Vec<::Team>>,
+    #[serde(rename = "self")]
+    pub slf: Option<Vec<String>>,
 }
