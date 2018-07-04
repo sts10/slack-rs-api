@@ -1,34 +1,38 @@
+use serde::de::{self, Deserialize, Deserializer, Visitor};
+use serde::ser::{Serialize, Serializer};
 use std::collections::HashMap;
 use std::fmt;
 use uuid::Uuid;
 
-#[derive(Clone, Debug, Deserialize)]
-#[serde(untagged)]
-pub enum Timestamp {
-    Number(::serde_json::Number),
-    String(String),
-}
-// Bet these are actually 17 bytes every time
+use timestamp::Timestamp;
 
-impl fmt::Display for Timestamp {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-            Timestamp::Number(ref n) => write!(f, "{}", n),
-            Timestamp::String(ref s) => write!(f, "{}", s),
-        }
-    }
-}
-
-use serde::de::{self, Deserialize, Deserializer, Visitor};
-use serde::ser::{Serialize, Serializer};
+use std::num::NonZeroU8;
 
 macro_rules! make_id {
     ($name:ident, $firstchar:expr, $visname:ident) => {
-        #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash, From)]
-        pub struct $name([u8; 8]);
+        #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+        pub struct $name([NonZeroU8; 8]);
+
+        impl Default for $name {
+            fn default() -> Self {
+                unsafe {
+                    $name([NonZeroU8::new_unchecked(1); 8])
+                }
+            }
+        }
+
+        impl<'a> From<&'a str> for $name {
+            fn from(input: &'a str) -> Self {
+                let mut output = Self::default();
+                for (o, b) in output.0.iter_mut().zip(input.bytes()) {
+                    *o = NonZeroU8::new(b).unwrap();
+                }
+                output
+            }
+        }
 
         struct $visname;
-        
+
         impl<'de> Visitor<'de> for $visname {
             type Value = $name;
 
@@ -40,16 +44,12 @@ macro_rules! make_id {
             where
                 E: de::Error,
             {
-                if value.as_bytes()[0] == b'A' || value.as_bytes()[0] == b'B' {
-                    eprintln!("{}", value);
-                }
-                if value.len() <= 9 && value.as_bytes()[0] == $firstchar {
-                    let mut buf: [u8; 8] = [0; 8];
-                    buf[..value.len()-1].copy_from_slice(&value.as_bytes()[1..]);
-                    Ok($name(buf))
+                println!("{}", value);
+                if value.len() > 0 && value.len() <= 9 && value.as_bytes()[0] == $firstchar {
+                    Ok($name::from(value))
                 } else {
                     Err(E::custom(format!(
-                        "{} must be a 9-byte string starting with {}, found {}",
+                        "{} must be a 9-byte string starting with {}, found {:?}",
                         stringify!($name),
                         $firstchar as char,
                         value,
@@ -58,14 +58,11 @@ macro_rules! make_id {
             }
         }
 
-
         impl<'de> Deserialize<'de> for $name {
-            
-        fn deserialize<D>(deserializer: D) -> Result<$name, D::Error>
+            fn deserialize<D>(deserializer: D) -> Result<$name, D::Error>
             where
                 D: Deserializer<'de>,
             {
-
                 deserializer.deserialize_str($visname)
             }
         }
@@ -77,12 +74,22 @@ macro_rules! make_id {
             {
                 let mut output_buffer: [u8; 9] = [0; 9];
                 output_buffer[0] = $firstchar;
-                output_buffer[1..].copy_from_slice(&self.0); 
+                for i in 1..8 {
+                    output_buffer[i] = self.0[i].get();
+                }
                 serializer.serialize_str(::std::str::from_utf8(&output_buffer).unwrap())
             }
         }
 
-    }
+        impl ::std::fmt::Display for $name {
+            fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+                for c in self.0.iter() {
+                    write!(f, "{}", c.get())?
+                }
+                Ok(())
+            }
+        }
+    };
 }
 
 make_id!(BotId, b'B', BotIdVisitor);
@@ -112,7 +119,7 @@ pub struct BotIcons {
 pub struct Channel {
     pub accepted_user: Option<String>,
     pub created: Option<i32>,
-    pub creator: Option<String>,
+    pub creator: Option<UserId>,
     pub id: ChannelId,
     pub is_archived: Option<bool>,
     pub is_channel: Option<bool>,
@@ -142,14 +149,14 @@ pub struct Channel {
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct ChannelPurpose {
-    pub creator: Option<String>,
+    pub creator: Option<UserId>,
     pub last_set: Option<i32>,
     pub value: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct ChannelTopic {
-    pub creator: Option<String>,
+    pub creator: Option<UserId>,
     pub last_set: Option<i32>,
     pub value: Option<String>,
 }
@@ -200,7 +207,7 @@ pub struct File {
     pub title: Option<String>,
     pub url_private: Option<String>,
     pub url_private_download: Option<String>,
-    pub user: Option<String>,
+    pub user: Option<UserId>,
     pub username: Option<String>,
 }
 
@@ -210,13 +217,13 @@ pub struct FileComment {
     pub id: Option<String>,
     pub reactions: Option<Vec<::Reaction>>,
     pub timestamp: Option<i32>,
-    pub user: Option<String>,
+    pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct Group {
     pub created: Option<i32>,
-    pub creator: Option<String>,
+    pub creator: Option<UserId>,
     pub id: GroupId,
     pub is_archived: Option<bool>,
     pub is_group: Option<bool>,
@@ -233,14 +240,14 @@ pub struct Group {
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct GroupPurpose {
-    pub creator: Option<String>,
+    pub creator: Option<UserId>,
     pub last_set: Option<i32>,
     pub value: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct GroupTopic {
-    pub creator: Option<String>,
+    pub creator: Option<UserId>,
     pub last_set: Option<i32>,
     pub value: Option<String>,
 }
@@ -251,7 +258,7 @@ pub struct Im {
     pub id: Option<String>,
     pub is_im: Option<bool>,
     pub is_user_deleted: Option<bool>,
-    pub user: Option<String>,
+    pub user: Option<UserId>,
 }
 
 /*
@@ -356,7 +363,9 @@ macro_rules! deserialize_internally_tagged {
                 where
                 D: ::serde::Deserializer<'de>,
             {
-                let v = ::serde_json::Value::deserialize(deserializer)?;
+                ::flame::start("Message->Value"); 
+                let v: ::serde_json::Value = ::serde::Deserialize::deserialize(deserializer)?;
+                ::flame::end("Message->Value");
 
                 #[derive(Deserialize)]
                 #[serde(field_identifier, rename_all = "snake_case")]
@@ -366,15 +375,19 @@ macro_rules! deserialize_internally_tagged {
 
                 match Option::deserialize(&v[$tagfield]).map_err(::serde::de::Error::custom)? {
                     $(
-                    Some(Tag::$variant_name) => ::serde_json::from_value::<$struct_name>(v)
-                    //$struct_name::deserialize(v)
+                    Some(Tag::$variant_name) => {
+                        let _guard = ::flame::start_guard(stringify!($variant_name));
+                        ::serde::Deserialize::deserialize(v)
                         .map($enumname::$variant_name)
-                        .map_err(::serde::de::Error::custom),
+                        .map_err(|e| ::serde::de::Error::custom(format!("{} while deserializing {}", e, stringify!($struct_name))))
+                    }
                     )*
-                    None => ::serde_json::from_value::<$default_struct>(v)
-                    //$default_struct::deserialize(v)
-                        .map($enumname::$default_variant)
-                        .map_err(::serde::de::Error::custom),
+                    None => {
+                        let _guard = ::flame::start_guard(stringify!($default_variant));
+                        ::serde::Deserialize::deserialize(v)
+                            .map($enumname::$default_variant)
+                            .map_err(|e| ::serde::de::Error::custom(format!("{} while deserializing {}", e, stringify!($default_struct))))
+                    }
                 }
             }
         }
@@ -434,26 +447,26 @@ pub struct MessageChannelMarked {
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageBotAdd {
-    pub bot_id: Option<String>,
+    pub bot_id: Option<BotId>,
     pub bot_link: Option<String>,
     pub subtype: Option<String>,
     pub text: Option<String>,
-    pub ts: Option<String>,
+    pub ts: Option<Timestamp>,
     #[serde(rename = "type")]
     pub ty: Option<String>,
-    pub user: Option<String>,
+    pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageBotRemove {
-    pub bot_id: Option<String>,
+    pub bot_id: Option<BotId>,
     pub bot_link: Option<String>,
     pub subtype: Option<String>,
     pub text: Option<String>,
-    pub ts: Option<String>,
+    pub ts: Option<Timestamp>,
     #[serde(rename = "type")]
     pub ty: Option<String>,
-    pub user: Option<String>,
+    pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -484,30 +497,30 @@ pub struct MessageChannelArchive {
     pub members: Option<Vec<String>>,
     pub subtype: Option<String>,
     pub text: Option<String>,
-    pub ts: Option<String>,
+    pub ts: Option<Timestamp>,
     #[serde(rename = "type")]
     pub ty: Option<String>,
-    pub user: Option<String>,
+    pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageChannelJoin {
     pub subtype: Option<String>,
     pub text: Option<String>,
-    pub ts: Option<String>,
+    pub ts: Option<Timestamp>,
     #[serde(rename = "type")]
     pub ty: Option<String>,
-    pub user: Option<String>,
+    pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageChannelLeave {
     pub subtype: Option<String>,
     pub text: Option<String>,
-    pub ts: Option<String>,
+    pub ts: Option<Timestamp>,
     #[serde(rename = "type")]
     pub ty: Option<String>,
-    pub user: Option<String>,
+    pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -516,10 +529,10 @@ pub struct MessageChannelName {
     pub old_name: Option<String>,
     pub subtype: Option<String>,
     pub text: Option<String>,
-    pub ts: Option<String>,
+    pub ts: Option<Timestamp>,
     #[serde(rename = "type")]
     pub ty: Option<String>,
-    pub user: Option<String>,
+    pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -527,10 +540,10 @@ pub struct MessageChannelPurpose {
     pub purpose: Option<String>,
     pub subtype: Option<String>,
     pub text: Option<String>,
-    pub ts: Option<String>,
+    pub ts: Option<Timestamp>,
     #[serde(rename = "type")]
     pub ty: Option<String>,
-    pub user: Option<String>,
+    pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -538,20 +551,20 @@ pub struct MessageChannelTopic {
     pub subtype: Option<String>,
     pub text: Option<String>,
     pub topic: Option<String>,
-    pub ts: Option<String>,
+    pub ts: Option<Timestamp>,
     #[serde(rename = "type")]
     pub ty: Option<String>,
-    pub user: Option<String>,
+    pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageChannelUnarchive {
     pub subtype: Option<String>,
     pub text: Option<String>,
-    pub ts: Option<String>,
+    pub ts: Option<Timestamp>,
     #[serde(rename = "type")]
     pub ty: Option<String>,
-    pub user: Option<String>,
+    pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -560,7 +573,7 @@ pub struct MessageFileComment {
     pub file: Option<::File>,
     pub subtype: Option<String>,
     pub text: Option<String>,
-    pub ts: Option<String>,
+    pub ts: Option<Timestamp>,
     #[serde(rename = "type")]
     pub ty: Option<String>,
 }
@@ -570,10 +583,10 @@ pub struct MessageFileMention {
     pub file: Option<::File>,
     pub subtype: Option<String>,
     pub text: Option<String>,
-    pub ts: Option<String>,
+    pub ts: Option<Timestamp>,
     #[serde(rename = "type")]
     pub ty: Option<String>,
-    pub user: Option<String>,
+    pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -594,30 +607,30 @@ pub struct MessageGroupArchive {
     pub members: Option<Vec<String>>,
     pub subtype: Option<String>,
     pub text: Option<String>,
-    pub ts: Option<String>,
+    pub ts: Option<Timestamp>,
     #[serde(rename = "type")]
     pub ty: Option<String>,
-    pub user: Option<String>,
+    pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageGroupJoin {
     pub subtype: Option<String>,
     pub text: Option<String>,
-    pub ts: Option<String>,
+    pub ts: Option<Timestamp>,
     #[serde(rename = "type")]
     pub ty: Option<String>,
-    pub user: Option<String>,
+    pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageGroupLeave {
     pub subtype: Option<String>,
     pub text: Option<String>,
-    pub ts: Option<String>,
+    pub ts: Option<Timestamp>,
     #[serde(rename = "type")]
     pub ty: Option<String>,
-    pub user: Option<String>,
+    pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -626,10 +639,10 @@ pub struct MessageGroupName {
     pub old_name: Option<String>,
     pub subtype: Option<String>,
     pub text: Option<String>,
-    pub ts: Option<String>,
+    pub ts: Option<Timestamp>,
     #[serde(rename = "type")]
     pub ty: Option<String>,
-    pub user: Option<String>,
+    pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -637,10 +650,10 @@ pub struct MessageGroupPurpose {
     pub purpose: Option<String>,
     pub subtype: Option<String>,
     pub text: Option<String>,
-    pub ts: Option<String>,
+    pub ts: Option<Timestamp>,
     #[serde(rename = "type")]
     pub ty: Option<String>,
-    pub user: Option<String>,
+    pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -648,42 +661,42 @@ pub struct MessageGroupTopic {
     pub subtype: Option<String>,
     pub text: Option<String>,
     pub topic: Option<String>,
-    pub ts: Option<String>,
+    pub ts: Option<Timestamp>,
     #[serde(rename = "type")]
     pub ty: Option<String>,
-    pub user: Option<String>,
+    pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageGroupUnarchive {
     pub subtype: Option<String>,
     pub text: Option<String>,
-    pub ts: Option<String>,
+    pub ts: Option<Timestamp>,
     #[serde(rename = "type")]
     pub ty: Option<String>,
-    pub user: Option<String>,
+    pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageMeMessage {
-    pub channel: Option<String>,
+    pub channel: Option<ChannelId>,
     pub subtype: Option<String>,
     pub text: Option<String>,
-    pub ts: Option<String>,
+    pub ts: Option<Timestamp>,
     #[serde(rename = "type")]
     pub ty: Option<String>,
-    pub user: Option<String>,
+    pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageMessageChanged {
     pub channel: ChannelId,
-    pub event_ts: Option<String>,
+    pub event_ts: Timestamp,
     pub hidden: Option<bool>,
     pub message: Option<MessageMessageChangedMessage>,
     pub previous_message: Option<MessageMessageChangedPreviousMessage>,
     //pub subtype: Option<String>,
-    pub ts: Option<String>,
+    pub ts: Timestamp,
     //#[serde(rename = "type")]
     //pub ty: Option<String>,
 }
@@ -698,8 +711,8 @@ pub struct MessageMessageChangedMessage {
     pub reply_count: Option<i32>,
     pub subscribed: Option<bool>,
     pub text: Option<String>,
-    pub thread_ts: Option<String>,
-    pub ts: Option<String>,
+    pub thread_ts: Timestamp,
+    pub ts: Timestamp,
     //#[serde(rename = "type")]
     //pub ty: Option<String>,
     pub unread_count: Option<i32>,
@@ -708,13 +721,13 @@ pub struct MessageMessageChangedMessage {
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageMessageChangedMessageEdited {
-    pub ts: Option<String>,
+    pub ts: Timestamp,
     pub user: UserId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageMessageChangedMessageReply {
-    pub ts: Option<String>,
+    pub ts: Timestamp,
     pub user: UserId,
 }
 
@@ -722,30 +735,28 @@ pub struct MessageMessageChangedMessageReply {
 pub struct MessageMessageChangedPreviousMessage {
     pub bot_id: Option<BotId>,
     pub edited: Option<MessageMessageChangedPreviousMessageEdited>,
-    pub last_read: Option<String>,
+    pub last_read: Option<Timestamp>,
     pub parent_user_id: Option<UserId>,
     pub replies: Option<Vec<MessageMessageChangedPreviousMessageReply>>,
     pub reply_count: Option<i32>,
     pub subscribed: Option<bool>,
     pub text: Option<String>,
-    pub thread_ts: Option<String>,
-    pub ts: Option<String>,
-    //#[serde(rename = "type")]
-    //pub ty: Option<String>,
+    pub thread_ts: Timestamp,
+    pub ts: Timestamp,
     pub unread_count: Option<i32>,
     pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageMessageChangedPreviousMessageEdited {
-    pub ts: Option<String>,
-    pub user: Option<UserId>,
+    pub ts: Timestamp,
+    pub user: UserId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageMessageChangedPreviousMessageReply {
-    pub ts: Option<String>,
-    pub user: Option<UserId>,
+    pub ts: Timestamp,
+    pub user: UserId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -756,95 +767,85 @@ pub struct MessageMessageDeleted {
     pub hidden: Option<bool>,
     pub previous_message: Option<MessageMessageDeletedPreviousMessage>,
     pub subtype: Option<String>,
-    pub ts: Option<String>,
+    pub ts: Option<Timestamp>,
     #[serde(rename = "type")]
     pub ty: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageMessageDeletedPreviousMessage {
-    pub bot_id: Option<String>,
+    pub bot_id: Option<BotId>,
     pub edited: Option<MessageMessageDeletedPreviousMessageEdited>,
-    pub last_read: Option<String>,
+    pub last_read: Option<Timestamp>,
     pub parent_user_id: Option<String>,
     pub replies: Option<Vec<MessageMessageDeletedPreviousMessageReply>>,
     pub reply_count: Option<i32>,
     pub subscribed: Option<bool>,
     pub text: Option<String>,
-    pub thread_ts: Option<String>,
-    pub ts: Option<String>,
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
+    pub thread_ts: Timestamp,
+    pub ts: Timestamp,
     pub unread_count: Option<i32>,
-    pub user: Option<String>,
+    pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageMessageDeletedPreviousMessageEdited {
-    pub ts: Option<String>,
-    pub user: Option<String>,
+    pub ts: Timestamp,
+    pub user: UserId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageMessageDeletedPreviousMessageReply {
-    pub ts: Option<String>,
-    pub user: Option<String>,
+    pub ts: Timestamp,
+    pub user: UserId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageMessageReplied {
-    pub channel: Option<String>,
-    pub event_ts: Option<String>,
+    pub channel: Option<ChannelId>,
+    pub event_ts: Timestamp,
     pub hidden: Option<bool>,
     pub message: Option<MessageMessageRepliedMessage>,
-    pub subtype: Option<String>,
-    pub thread_ts: Option<String>,
-    pub ts: Option<String>,
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
+    pub thread_ts: Timestamp,
+    pub ts: Timestamp,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageMessageRepliedMessage {
-    pub bot_id: Option<String>,
+    pub bot_id: Option<BotId>,
     pub edited: Option<MessageMessageRepliedMessageEdited>,
-    pub last_read: Option<String>,
-    pub parent_user_id: Option<String>,
+    pub last_read: Option<Timestamp>,
+    pub parent_user_id: Option<UserId>,
     pub replies: Option<Vec<MessageMessageRepliedMessageReply>>,
     pub reply_count: Option<i32>,
     pub subscribed: Option<bool>,
     pub text: Option<String>,
-    pub thread_ts: Option<String>,
-    pub ts: Option<String>,
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
+    pub thread_ts: Timestamp,
+    pub ts: Timestamp,
     pub unread_count: Option<i32>,
-    pub user: Option<String>,
+    pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageMessageRepliedMessageEdited {
-    pub ts: Option<String>,
-    pub user: Option<String>,
+    pub ts: Timestamp,
+    pub user: UserId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageMessageRepliedMessageReply {
-    pub ts: Option<String>,
-    pub user: Option<String>,
+    pub ts: Timestamp,
+    pub user: UserId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessagePinnedItem {
-    pub channel: Option<String>,
+    pub channel: Option<ChannelId>,
     pub item: Option<MessagePinnedItemItem>,
     pub item_type: Option<String>,
-    pub subtype: Option<String>,
     pub text: Option<String>,
-    pub ts: Option<String>,
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
-    pub user: Option<String>,
+    pub ts: Option<Timestamp>,
+    pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -853,11 +854,11 @@ pub struct MessagePinnedItemItem {}
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageReminderAdd {
     pub message: Option<String>,
-    pub ts: Option<String>,
+    pub ts: Option<Timestamp>,
     pub subtype: Option<String>,
     #[serde(rename = "type")]
     pub ty: Option<String>,
-    pub user: Option<String>,
+    pub user: Option<UserId>,
     pub channel: Option<String>,
 }
 
@@ -867,10 +868,10 @@ pub struct MessageReplyBroadcast {
     pub channel: Option<String>,
     pub event_ts: Option<String>,
     pub subtype: Option<String>,
-    pub ts: Option<String>,
+    pub ts: Option<Timestamp>,
     #[serde(rename = "type")]
     pub ty: Option<String>,
-    pub user: Option<String>,
+    pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -886,10 +887,10 @@ pub struct MessageReplyBroadcastAttachment {
     pub id: Option<i32>,
     pub mrkdwn_in: Option<Vec<String>>,
     pub text: Option<String>,
-    pub ts: Option<String>,
+    pub ts: Option<Timestamp>,
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Default, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct MessageStandard {
     pub attachments: Option<Vec<MessageStandardAttachment>>,
@@ -914,6 +915,8 @@ pub struct MessageStandard {
     pub pinned_info: Option<MessagePinnedItem>,
     pub unread_count: Option<i32>,
     pub pinned_to: Option<Vec<String>>,
+    #[serde(rename = "type")]
+    ty: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -947,21 +950,21 @@ pub struct MessageStandardAttachmentField {
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageStandardEdited {
-    pub ts: Option<String>,
-    pub user: Option<String>,
+    pub ts: Option<Timestamp>,
+    pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageUnpinnedItem {
-    pub channel: Option<String>,
+    pub channel: Option<ChannelId>,
     pub item: Option<MessageUnpinnedItemItem>,
-    pub item_type: Option<String>,
-    pub subtype: Option<String>,
+    //pub item_type: Option<String>,
+    //pub subtype: Option<String>,
     pub text: Option<String>,
-    pub ts: Option<String>,
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
-    pub user: Option<String>,
+    pub ts: Option<Timestamp>,
+    //#[serde(rename = "type")]
+    //pub ty: Option<String>,
+    pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -985,7 +988,7 @@ pub struct MessageThreadBroadcast {
     pub text: Option<String>,
     pub thread_ts: Option<String>,
     pub user: Option<UserId>,
-    pub ts: Option<String>,
+    pub ts: Option<Timestamp>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -1003,13 +1006,13 @@ pub struct MessageThreadBroadcastAttachment {
 #[derive(Clone, Debug, Deserialize)]
 pub struct Mpim {
     pub created: Option<i32>,
-    pub creator: Option<String>,
+    pub creator: Option<UserId>,
     pub id: Option<String>,
     pub is_group: Option<bool>,
     pub is_mpim: Option<bool>,
-    pub last_read: Option<String>,
+    pub last_read: Option<Timestamp>,
     pub latest: Option<::Message>,
-    pub members: Option<Vec<String>>,
+    pub members: Option<Vec<UserId>>,
     pub name: Option<String>,
     pub unread_count: Option<i32>,
     pub unread_count_display: Option<i32>,
@@ -1027,18 +1030,18 @@ pub struct Paging {
 pub struct Reaction {
     pub count: Option<i32>,
     pub name: Option<String>,
-    pub users: Option<Vec<String>>,
+    pub users: Option<Vec<UserId>>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct Reminder {
     pub complete_ts: Option<f32>,
-    pub creator: Option<String>,
+    pub creator: Option<UserId>,
     pub id: Option<String>,
     pub recurring: Option<bool>,
     pub text: Option<String>,
     pub time: Option<f32>,
-    pub user: Option<String>,
+    pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]

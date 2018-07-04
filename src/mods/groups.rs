@@ -98,7 +98,7 @@ pub struct HistoryRequest<'a> {
 pub struct HistoryResponse {
     ok: bool,
     pub has_more: bool,
-    pub latest: Option<Timestamp>,
+    pub latest: Option<::Timestamp>,
     pub messages: Vec<Message>,
     pub is_limited: Option<bool>,
 }

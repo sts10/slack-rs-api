@@ -22,8 +22,8 @@ pub struct DeleteRequest<'a> {
 #[serde(deny_unknown_fields)]
 pub struct DeleteResponse {
     ok: bool,
-    pub channel: String,
-    pub ts: String,
+    pub channel: ::ChannelId,
+    pub ts: ::Timestamp,
 }
 
 /// Share a me message into a channel.
@@ -45,7 +45,7 @@ pub struct MeMessageRequest<'a> {
 pub struct MeMessageResponse {
     ok: bool,
     pub channel: Option<String>,
-    pub ts: Option<String>,
+    pub ts: Option<::Timestamp>,
 }
 
 /// Sends a message to a channel.
@@ -84,7 +84,7 @@ pub struct PostMessageRequest<'a> {
     /// Emoji to use as the icon for this message. Overrides icon_url. Must be used in conjunction with as_user set to false, otherwise ignored. See authorship below.
     pub icon_emoji: Option<&'a str>,
     /// Provide another message's ts value to make this message a reply. Avoid using a reply's ts value; use its parent instead.
-    pub thread_ts: Option<&'a str>,
+    pub thread_ts: Option<::Timestamp>,
     /// Used in conjunction with thread_ts and indicates whether reply should be made visible to everyone in the channel or conversation. Defaults to false.
     pub reply_broadcast: Option<bool>,
     /// Disable Slack markup parsing by setting to false. Enabled by default.
@@ -95,9 +95,9 @@ pub struct PostMessageRequest<'a> {
 #[serde(deny_unknown_fields)]
 pub struct PostMessageResponse {
     ok: bool,
-    pub channel: String,
+    pub channel: String, // TODO: This needs to be an enum for all the possible Id types
     pub message: Message,
-    pub ts: String,
+    pub ts: Timestamp,
 }
 
 /// Unfurl a URL that a user posted

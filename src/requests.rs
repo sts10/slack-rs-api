@@ -156,7 +156,7 @@ impl ::std::fmt::Display for Error {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         match self {
             Error::Slack(reason) => write!(f, "{}", reason),
-            Error::CannotParse(e, _json) => write!(f, "Could not parse as specified result type: {}", e),
+            Error::CannotParse(e, _json) => write!(f, "{}", e),
             Error::Client(..) => write!(f, "The requests client failed"),
         }
     }
@@ -164,7 +164,7 @@ impl ::std::fmt::Display for Error {
 
 impl ::std::error::Error for Error {
     fn description(&self) -> &str {
-        match *self {
+        match self {
             Error::Slack(ref reason) => reason,
             Error::CannotParse(..) => "Could not parse as specified result type",
             Error::Client(..) => "The requests client failed",
@@ -172,7 +172,7 @@ impl ::std::error::Error for Error {
     }
 
     fn cause(&self) -> Option<&::std::error::Error> {
-        match *self {
+        match self {
             Error::Slack(_) => None,
             Error::CannotParse(ref cause, _) => Some(cause),
             Error::Client(ref cause) => Some(cause),

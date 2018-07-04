@@ -15,16 +15,16 @@ pub struct InfoRequest<'a> {
 #[serde(deny_unknown_fields)]
 pub struct InfoResponse {
     ok: bool,
-    pub bot: InfoResponseBot,
+    pub bot: Option<InfoResponseBot>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct InfoResponseBot {
-    pub app_id: String,
+    pub app_id: ::AppId,
     pub deleted: bool,
     pub icons: InfoResponseBotIcons,
-    pub id: String,
+    pub id: ::BotId,
     pub name: String,
 }
 
