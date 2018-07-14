@@ -17,10 +17,11 @@
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
-extern crate serde_json;
-extern crate serde_qs;
+extern crate chrono;
 pub extern crate flame;
 extern crate reqwest;
+extern crate serde_json;
+extern crate serde_qs;
 extern crate uuid;
 
 #[macro_use]
@@ -36,3 +37,6 @@ pub use mods::*;
 
 mod timestamp;
 pub use timestamp::Timestamp;
+
+mod id;
+pub use id::*;

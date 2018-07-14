@@ -1,15 +1,19 @@
+extern crate openssl_probe;
 extern crate slack_api as slack;
 
 use std::env;
 
 fn main() {
+    openssl_probe::init_ssl_cert_env_vars();
+
     let token = env::var("SLACK_API_TOKEN").expect("SLACK_API_TOKEN not set.");
     let client = slack::default_client();
 
-    let response = slack::channels::list(&client, &token, &slack::channels::ListRequest::default());
+    let response = slack::channels::list(&client, &token, &slack::channels::ListRequest::default()).unwrap();
 
-    for channel in response.unwrap().channels {
-        let response = slack::channels::history(
+    for channel in response.channels {
+        println!("{}, {}", channel.id, channel.name);
+        slack::channels::history(
             &client,
             &token,
             &slack::channels::HistoryRequest {
@@ -18,12 +22,9 @@ fn main() {
                 ..slack::channels::HistoryRequest::default()
             },
         );
-
-        if let Err(response) = response {
-            println!("{}", response);
-        }
     }
 
+    /*
     use std::collections::BTreeMap;
     let mut total_time = 0;
     let mut total_messages = 0;
@@ -43,4 +44,5 @@ fn main() {
         println!("{} messages", v.1);
     }
     println!("{:.2} ms, {} messages", total_time as f64 / 1e6, total_messages);
+    */
 }

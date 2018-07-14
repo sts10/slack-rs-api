@@ -1,103 +1,67 @@
 use serde::de::{self, Deserialize, Deserializer, Visitor};
-use serde::ser::{Serialize, Serializer};
 use std::collections::HashMap;
 use std::fmt;
 use uuid::Uuid;
 
+use id::*;
 use timestamp::Timestamp;
 
-use std::num::NonZeroU8;
-
-macro_rules! make_id {
-    ($name:ident, $firstchar:expr, $visname:ident) => {
-        #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
-        pub struct $name([NonZeroU8; 8]);
-
-        impl Default for $name {
-            fn default() -> Self {
-                unsafe {
-                    $name([NonZeroU8::new_unchecked(1); 8])
-                }
-            }
-        }
-
-        impl<'a> From<&'a str> for $name {
-            fn from(input: &'a str) -> Self {
-                let mut output = Self::default();
-                for (o, b) in output.0.iter_mut().zip(input.bytes()) {
-                    *o = NonZeroU8::new(b).unwrap();
-                }
-                output
-            }
-        }
-
-        struct $visname;
-
-        impl<'de> Visitor<'de> for $visname {
-            type Value = $name;
-
-            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-                formatter.write_str("a 9-byte str")
-            }
-
-            fn visit_str<E>(self, value: &str) -> Result<$name, E>
-            where
-                E: de::Error,
-            {
-                println!("{}", value);
-                if value.len() > 0 && value.len() <= 9 && value.as_bytes()[0] == $firstchar {
-                    Ok($name::from(value))
-                } else {
-                    Err(E::custom(format!(
-                        "{} must be a 9-byte string starting with {}, found {:?}",
-                        stringify!($name),
-                        $firstchar as char,
-                        value,
-                    )))
-                }
-            }
-        }
-
-        impl<'de> Deserialize<'de> for $name {
-            fn deserialize<D>(deserializer: D) -> Result<$name, D::Error>
-            where
-                D: Deserializer<'de>,
-            {
-                deserializer.deserialize_str($visname)
-            }
-        }
-
-        impl Serialize for $name {
-            fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-            where
-                S: Serializer,
-            {
-                let mut output_buffer: [u8; 9] = [0; 9];
-                output_buffer[0] = $firstchar;
-                for i in 1..8 {
-                    output_buffer[i] = self.0[i].get();
-                }
-                serializer.serialize_str(::std::str::from_utf8(&output_buffer).unwrap())
-            }
-        }
-
-        impl ::std::fmt::Display for $name {
-            fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-                for c in self.0.iter() {
-                    write!(f, "{}", c.get())?
-                }
-                Ok(())
-            }
-        }
-    };
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Default)]
+pub struct ChannelName {
+    len: u8,
+    buf: [u8; 22],
 }
 
-make_id!(BotId, b'B', BotIdVisitor);
-make_id!(UserId, b'U', UserIdVisitor);
-make_id!(ChannelId, b'C', ChannelIdVisitor);
-make_id!(GroupId, b'G', GroupIdVisitor);
-make_id!(TeamId, b'T', TeamIdVisitor);
-make_id!(AppId, b'A', AppIdVisitor);
+impl ::std::fmt::Display for ChannelName {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        for c in self.buf.iter().take(self.len as usize) {
+            write!(f, "{}", *c as char)?;
+        }
+        Ok(())
+    }
+}
+
+impl ::std::fmt::Debug for ChannelName {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        write!(f, "\"{}\"", self).map(|_| ())
+    }
+}
+
+struct ChannelNameVisitor;
+
+impl<'de> Visitor<'de> for ChannelNameVisitor {
+    type Value = ChannelName;
+
+    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter.write_str("a 9-byte str")
+    }
+
+    fn visit_str<E>(self, value: &str) -> Result<ChannelName, E>
+    where
+        E: de::Error,
+    {
+        if value.len() < 22 {
+            let mut ret = ChannelName::default();
+            ret.len = value.len() as u8;
+            ret.buf[..value.len()].copy_from_slice(value.as_bytes());
+            Ok(ret)
+        } else {
+            Err(E::custom(format!(
+                "Channel names must be shorter than 22 characters,found {:?}",
+                value,
+            )))
+        }
+    }
+}
+
+impl<'de> Deserialize<'de> for ChannelName {
+    fn deserialize<D>(deserializer: D) -> Result<ChannelName, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        deserializer.deserialize_str(ChannelNameVisitor)
+    }
+}
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct Bot {
@@ -116,10 +80,11 @@ pub struct BotIcons {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Channel {
-    pub accepted_user: Option<String>,
-    pub created: Option<i32>,
-    pub creator: Option<UserId>,
+    pub accepted_user: Option<UserId>,
+    pub created: Option<Timestamp>,
+    pub creator: Option<String>,
     pub id: ChannelId,
     pub is_archived: Option<bool>,
     pub is_channel: Option<bool>,
@@ -132,9 +97,9 @@ pub struct Channel {
     pub is_private: Option<bool>,
     pub is_read_only: Option<bool>,
     pub is_shared: Option<bool>,
-    pub last_read: Option<String>,
+    pub last_read: Option<Timestamp>,
     pub latest: Option<::Message>,
-    pub members: Option<Vec<String>>,
+    pub members: Option<Vec<UserId>>,
     pub name: String,
     pub name_normalized: Option<String>,
     pub num_members: Option<i32>,
@@ -149,15 +114,15 @@ pub struct Channel {
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct ChannelPurpose {
-    pub creator: Option<UserId>,
-    pub last_set: Option<i32>,
+    pub creator: Option<String>,
+    pub last_set: Option<Timestamp>,
     pub value: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct ChannelTopic {
-    pub creator: Option<UserId>,
-    pub last_set: Option<i32>,
+    pub creator: Option<String>,
+    pub last_set: Option<Timestamp>,
     pub value: Option<String>,
 }
 
@@ -223,12 +188,12 @@ pub struct FileComment {
 #[derive(Clone, Debug, Deserialize)]
 pub struct Group {
     pub created: Option<i32>,
-    pub creator: Option<UserId>,
+    pub creator: Option<String>,
     pub id: GroupId,
     pub is_archived: Option<bool>,
     pub is_group: Option<bool>,
     pub is_mpim: Option<bool>,
-    pub last_read: Option<String>,
+    pub last_read: Option<Timestamp>,
     pub latest: Option<::Message>,
     pub members: Option<Vec<String>>,
     pub name: String,
@@ -240,14 +205,14 @@ pub struct Group {
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct GroupPurpose {
-    pub creator: Option<UserId>,
+    pub creator: Option<String>,
     pub last_set: Option<i32>,
     pub value: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct GroupTopic {
-    pub creator: Option<UserId>,
+    pub creator: Option<String>,
     pub last_set: Option<i32>,
     pub value: Option<String>,
 }
@@ -363,9 +328,18 @@ macro_rules! deserialize_internally_tagged {
                 where
                 D: ::serde::Deserializer<'de>,
             {
-                ::flame::start("Message->Value"); 
+                ::flame::start("Message->Value");
                 let v: ::serde_json::Value = ::serde::Deserialize::deserialize(deserializer)?;
                 ::flame::end("Message->Value");
+
+                /*
+                for (k, v) in v.as_object().unwrap().iter() {
+                    println!("{}", k.len());
+                    if let ::serde_json::Value::String(ref s) = v {
+                        println!("{}", s.len());
+                    }
+                }
+                */
 
                 #[derive(Deserialize)]
                 #[serde(field_identifier, rename_all = "snake_case")]
@@ -401,6 +375,8 @@ deserialize_internally_tagged! {
     #[derive(Clone, Debug)]
     pub enum Message {
         Standard(MessageStandard),
+        BotAdd(MessageBotAdd),
+        BotRemove(MessageBotRemove),
         BotMessage(MessageBotMessage),
         ChannelArchive(MessageChannelArchive),
         ChannelJoin(MessageChannelJoin),
@@ -420,15 +396,24 @@ deserialize_internally_tagged! {
         GroupTopic(MessageGroupTopic),
         GroupUnarchive(MessageGroupUnarchive),
         MeMessage(MessageMeMessage),
+        Message(MessageMessageChanged),
         MessageChanged(MessageMessageChanged),
         MessageDeleted(MessageMessageDeleted),
         MessageReplied(MessageMessageReplied),
         PinnedItem(MessagePinnedItem),
         ReplyBroadcast(MessageReplyBroadcast),
+        ReminderAdd(MessageReminderAdd),
         SlackbotResponse(MessageSlackbotResponse),
         ThreadBroadcast(Box<MessageThreadBroadcast>),
         UnpinnedItem(MessageUnpinnedItem),
     }
+}
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct UserChange {
+    pub user: User,
+    cache_ts: Timestamp,
+    event_ts: Timestamp,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -452,8 +437,8 @@ pub struct MessageBotAdd {
     pub subtype: Option<String>,
     pub text: Option<String>,
     pub ts: Option<Timestamp>,
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
+    //#[serde(rename = "type")]
+    //pub ty: Option<String>,
     pub user: Option<UserId>,
 }
 
@@ -464,8 +449,8 @@ pub struct MessageBotRemove {
     pub subtype: Option<String>,
     pub text: Option<String>,
     pub ts: Option<Timestamp>,
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
+    //#[serde(rename = "type")]
+    //pub ty: Option<String>,
     pub user: Option<UserId>,
 }
 
@@ -695,7 +680,7 @@ pub struct MessageMessageChanged {
     pub hidden: Option<bool>,
     pub message: Option<MessageMessageChangedMessage>,
     pub previous_message: Option<MessageMessageChangedPreviousMessage>,
-    //pub subtype: Option<String>,
+    pub subtype: Option<String>,
     pub ts: Timestamp,
     //#[serde(rename = "type")]
     //pub ty: Option<String>,
@@ -919,8 +904,13 @@ pub struct MessageStandard {
     ty: Option<String>,
 }
 
+// TODO: need to add the fields necessary here
 #[derive(Clone, Debug, Deserialize)]
-pub struct MessageStandardReply {}
+#[serde(deny_unknown_fields)]
+pub struct MessageStandardReply {
+    pub ts: Timestamp,
+    pub user: UserId,
+}
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageStandardAttachment {
@@ -995,7 +985,7 @@ pub struct MessageThreadBroadcast {
 pub struct MessageThreadBroadcastAttachment {
     pub fallback: Option<String>,
     pub from_url: Option<String>,
-    pub id: Option<i32>, //TODO: This looks like we may also need an ID type wtf really Slack
+    pub id: Option<i32>,
     pub service_icon: Option<String>,
     pub service_name: Option<String>,
     pub text: Option<String>,
@@ -1006,7 +996,7 @@ pub struct MessageThreadBroadcastAttachment {
 #[derive(Clone, Debug, Deserialize)]
 pub struct Mpim {
     pub created: Option<i32>,
-    pub creator: Option<UserId>,
+    pub creator: Option<String>,
     pub id: Option<String>,
     pub is_group: Option<bool>,
     pub is_mpim: Option<bool>,
@@ -1036,7 +1026,7 @@ pub struct Reaction {
 #[derive(Clone, Debug, Deserialize)]
 pub struct Reminder {
     pub complete_ts: Option<f32>,
-    pub creator: Option<UserId>,
+    pub creator: Option<String>,
     pub id: Option<String>,
     pub recurring: Option<bool>,
     pub text: Option<String>,
@@ -1071,6 +1061,7 @@ pub struct ThreadInfo {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct User {
     pub color: Option<String>,
     pub deleted: Option<bool>,

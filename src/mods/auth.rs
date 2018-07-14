@@ -41,7 +41,7 @@ mod tests {
 
     #[test]
     fn test_revoke() {
-        let client = ::requests::default_client().unwrap();
+        let client = ::requests::default_client();
         let token = env::var("SLACK_API_TOKEN").unwrap();
 
         let req = RevokeRequest { test: Some(true) };
@@ -50,7 +50,7 @@ mod tests {
 
     #[test]
     fn test_test() {
-        let client = ::requests::default_client().unwrap();
+        let client = ::requests::default_client();
         let token = env::var("SLACK_API_TOKEN").unwrap();
 
         test(&client, &token).unwrap();

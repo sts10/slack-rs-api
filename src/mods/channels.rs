@@ -112,9 +112,9 @@ pub struct InviteResponse {
 api_call!(join, "channels.join", JoinRequest, JoinResponse);
 
 #[derive(Clone, Default, Debug, Serialize)]
-pub struct JoinRequest {
+pub struct JoinRequest<'a> {
     /// Name of channel to join
-    pub name: ::ChannelId,
+    pub name: &'a str,
     /// Whether to return errors on invalid channel name instead of modifying it to meet the specified criteria.
     pub validate: Option<bool>,
 }
@@ -311,30 +311,31 @@ pub struct UnarchiveRequest {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use id::{ChannelId, UserId};
     use requests;
     use std::env;
 
     #[test]
     fn test_archive_unarchive() {
-        let client = requests::default_client().unwrap();
+        let client = requests::default_client();
         let token = env::var("SLACK_API_TOKEN").unwrap();
 
         let mut req = UnarchiveRequest::default();
-        req.channel = "CAGMCM14K";
+        req.channel = ChannelId::from("CAGMCM14K");
         unarchive(&client, &token, &req);
 
         let mut req = ArchiveRequest::default();
-        req.channel = "CAGMCM14K";
+        req.channel = ChannelId::from("CAGMCM14K");
         archive(&client, &token, &req).unwrap();
 
         let mut req = UnarchiveRequest::default();
-        req.channel = "CAGMCM14K";
+        req.channel = ChannelId::from("CAGMCM14K");
         unarchive(&client, &token, &req).unwrap();
     }
 
     #[test]
     fn test_create() {
-        let client = requests::default_client().unwrap();
+        let client = requests::default_client();
         let token = env::var("SLACK_API_TOKEN").unwrap();
         match create(
             &client,
@@ -356,50 +357,50 @@ mod tests {
 
     #[test]
     fn test_history() {
-        let client = requests::default_client().unwrap();
+        let client = requests::default_client();
         let token = env::var("SLACK_API_TOKEN").unwrap();
         let mut req = HistoryRequest::default();
-        req.channel = "CAGMCM14K";
+        req.channel = ChannelId::from("CAGMCM14K");
         history(&client, &token, &req).unwrap();
     }
 
     #[test]
     fn test_info() {
-        let client = requests::default_client().unwrap();
+        let client = requests::default_client();
         let token = env::var("SLACK_API_TOKEN").unwrap();
         let mut req = InfoRequest::default();
-        req.channel = "CAGMCM14K";
+        req.channel = ChannelId::from("CAGMCM14K");
         info(&client, &token, &req).unwrap();
     }
 
     #[test]
     fn test_invite_kick() {
-        let client = requests::default_client().unwrap();
+        let client = requests::default_client();
         let token = env::var("SLACK_API_TOKEN").unwrap();
 
         let mut req = KickRequest::default();
-        req.channel = "CAGMCM14K";
-        req.user = "UAJHFUB0C";
+        req.channel = ChannelId::from("CAGMCM14K");
+        req.user = UserId::from("UAJHFUB0C");
         kick(&client, &token, &req);
 
         let mut req = InviteRequest::default();
-        req.channel = "CAGMCM14K";
-        req.user = "UAJHFUB0C";
+        req.channel = ChannelId::from("CAGMCM14K");
+        req.user = UserId::from("UAJHFUB0C");
         invite(&client, &token, &req).unwrap();
 
         let mut req = KickRequest::default();
-        req.channel = "CAGMCM14K";
-        req.user = "UAJHFUB0C";
+        req.channel = ChannelId::from("CAGMCM14K");
+        req.user = UserId::from("UAJHFUB0C");
         kick(&client, &token, &req).unwrap();
     }
 
     #[test]
     fn test_join_leave() {
-        let client = requests::default_client().unwrap();
+        let client = requests::default_client();
         let token = env::var("SLACK_API_TOKEN").unwrap();
 
         let mut req = LeaveRequest::default();
-        req.channel = "CAGMCM14K";
+        req.channel = ChannelId::from("CAGMCM14K");
         leave(&client, &token, &req);
 
         let mut req = JoinRequest::default();
@@ -407,13 +408,13 @@ mod tests {
         join(&client, &token, &req).unwrap();
 
         let mut req = LeaveRequest::default();
-        req.channel = "CAGMCM14K";
+        req.channel = ChannelId::from("CAGMCM14K");
         leave(&client, &token, &req).unwrap();
     }
 
     #[test]
     fn test_list() {
-        let client = requests::default_client().unwrap();
+        let client = requests::default_client();
         let token = env::var("SLACK_API_TOKEN").unwrap();
         list(&client, &token, &ListRequest::default()).unwrap();
     }
@@ -426,11 +427,11 @@ mod tests {
         let since_the_epoch = start.duration_since(UNIX_EPOCH).unwrap();
         let time_string = format!("{}", since_the_epoch.as_secs());
 
-        let client = requests::default_client().unwrap();
+        let client = requests::default_client();
         let token = env::var("SLACK_API_TOKEN").unwrap();
 
         let req = MarkRequest {
-            channel: "C9VGPGBL4",
+            channel: ChannelId::from("C9VGPGBL4"),
             ts: &time_string,
         };
         mark(&client, &token, &req).unwrap();
@@ -438,10 +439,10 @@ mod tests {
 
     #[test]
     fn test_rename() {
-        let client = requests::default_client().unwrap();
+        let client = requests::default_client();
         let token = env::var("SLACK_API_TOKEN").unwrap();
         let mut req = RenameRequest::default();
-        req.channel = "CAGMCM14K";
+        req.channel = ChannelId::from("CAGMCM14K");
         req.name = "testchannel";
         rename(&client, &token, &req).unwrap();
 
@@ -454,20 +455,20 @@ mod tests {
 
     #[test]
     fn test_replies() {
-        let client = requests::default_client().unwrap();
+        let client = requests::default_client();
         let token = env::var("SLACK_API_TOKEN").unwrap();
         let mut req = RepliesRequest::default();
-        req.channel = "CAGMCM14K";
+        req.channel = ChannelId::from("CAGMCM14K");
         req.thread_ts = "1525306421.000207";
         replies(&client, &token, &req).unwrap();
     }
 
     #[test]
     fn test_set_purpose() {
-        let client = requests::default_client().unwrap();
+        let client = requests::default_client();
         let token = env::var("SLACK_API_TOKEN").unwrap();
         let mut req = SetPurposeRequest::default();
-        req.channel = "C9VGPGBL4";
+        req.channel = ChannelId::from("C9VGPGBL4");
         req.purpose = "test_purpose";
 
         let response = set_purpose(&client, &token, &req).unwrap();
@@ -480,10 +481,10 @@ mod tests {
 
     #[test]
     fn test_set_topic() {
-        let client = requests::default_client().unwrap();
+        let client = requests::default_client();
         let token = env::var("SLACK_API_TOKEN").unwrap();
         let mut req = SetTopicRequest::default();
-        req.channel = "C9VGPGBL4";
+        req.channel = ChannelId::from("C9VGPGBL4");
         req.topic = "test_topic";
 
         let response = set_topic(&client, &token, &req).unwrap();

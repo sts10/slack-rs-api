@@ -1,6 +1,5 @@
 //! Get info on your team's private channels.
 //TODO: Check signatures
-use types::*;
 
 /// Archives a private channel.
 ///
@@ -11,7 +10,7 @@ api_call!(archive, "groups.archive", ArchiveRequest => ());
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct ArchiveRequest {
     /// Private channel to archive
-    pub channel: GroupId,
+    pub channel: ::GroupId,
 }
 
 /// Closes a private channel.
@@ -23,7 +22,7 @@ api_call!(close, "groups.close", CloseRequest => ());
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct CloseRequest {
     /// Private channel to close.
-    pub channel: GroupId,
+    pub channel: ::GroupId,
 }
 
 /// Creates a private channel.
@@ -44,7 +43,7 @@ pub struct CreateRequest<'a> {
 #[serde(deny_unknown_fields)]
 pub struct CreateResponse {
     ok: bool,
-    pub group: Option<Group>,
+    pub group: Option<::Group>,
 }
 
 /// Clones and archives a private channel.
@@ -61,14 +60,14 @@ api_call!(
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct CreateChildRequest {
     /// Private channel to clone and archive.
-    pub channel: GroupId,
+    pub channel: ::GroupId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct CreateChildResponse {
     ok: bool,
-    pub group: Option<Group>,
+    pub group: Option<::Group>,
 }
 
 /// Fetches history of messages and events from a private channel.
@@ -80,7 +79,7 @@ api_call!(history, "groups.history", HistoryRequest, HistoryResponse);
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct HistoryRequest<'a> {
     /// Private channel to fetch history for.
-    pub channel: GroupId,
+    pub channel: ::GroupId,
     /// End of time range of messages to include in results.
     pub latest: Option<&'a str>,
     /// Start of time range of messages to include in results.
@@ -99,7 +98,7 @@ pub struct HistoryResponse {
     ok: bool,
     pub has_more: bool,
     pub latest: Option<::Timestamp>,
-    pub messages: Vec<Message>,
+    pub messages: Vec<::Message>,
     pub is_limited: Option<bool>,
 }
 
@@ -112,14 +111,14 @@ api_call!(info, "groups.info", InfoRequest, InfoResponse);
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct InfoRequest {
     /// Private channel to get info on
-    pub channel: GroupId,
+    pub channel: ::GroupId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct InfoResponse {
     ok: bool,
-    pub group: Group,
+    pub group: ::Group,
 }
 
 /// Invites a user to a private channel.
@@ -131,9 +130,9 @@ api_call!(invite, "groups.invite", InviteRequest, InviteResponse);
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct InviteRequest {
     /// Private channel to invite user to.
-    pub channel: GroupId,
+    pub channel: ::GroupId,
     /// User to invite.
-    pub user: UserId,
+    pub user: ::UserId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -152,9 +151,9 @@ api_call!(kick, "groups.kick", KickRequest => ());
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct KickRequest {
     /// Private channel to remove user from.
-    pub channel: GroupId,
+    pub channel: ::GroupId,
     /// User to remove from private channel.
-    pub user: UserId,
+    pub user: ::UserId,
 }
 
 /// Leaves a private channel.
@@ -166,7 +165,7 @@ api_call!(leave, "groups.leave", LeaveRequest => ());
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct LeaveRequest {
     /// Private channel to leave
-    pub channel: GroupId,
+    pub channel: ::GroupId,
 }
 
 /// Lists private channels that the calling user has access to.
@@ -185,7 +184,7 @@ pub struct ListRequest {
 #[serde(deny_unknown_fields)]
 pub struct ListResponse {
     ok: bool,
-    pub groups: Vec<Group>,
+    pub groups: Vec<::Group>,
 }
 
 /// Sets the read cursor in a private channel.
@@ -197,7 +196,7 @@ api_call!(mark, "groups.mark", MarkRequest => ());
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct MarkRequest<'a> {
     /// Private channel to set reading cursor in.
-    pub channel: GroupId,
+    pub channel: ::GroupId,
     /// Timestamp of the most recently seen message.
     pub ts: &'a str,
 }
@@ -240,8 +239,8 @@ pub struct RenameResponse {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct RenameResponseChannel {
-    pub created: Option<f32>,
-    pub id: Option<String>,
+    pub created: Option<::Timestamp>,
+    pub id: Option<::ChannelId>,
     pub is_group: Option<bool>,
     pub name: Option<String>,
 }

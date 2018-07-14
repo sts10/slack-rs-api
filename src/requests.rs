@@ -145,18 +145,27 @@ pub fn get_slack_url_for_method(method: &str) -> String {
     format!("https://slack.com/api/{}", method)
 }
 
-#[derive(Debug)]
 pub enum Error {
     Slack(String),
     CannotParse(::serde_json::error::Error, String),
     Client(::reqwest::Error),
 }
 
+impl ::std::fmt::Debug for Error {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        match self {
+            Error::Slack(reason) => write!(f, "{}", reason),
+            Error::CannotParse(e, json) => write!(f, "{}\n{}", e, json),
+            Error::Client(..) => write!(f, "The requests client failed"),
+        }
+    }
+}
+
 impl ::std::fmt::Display for Error {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         match self {
             Error::Slack(reason) => write!(f, "{}", reason),
-            Error::CannotParse(e, _json) => write!(f, "{}", e),
+            Error::CannotParse(e, json) => write!(f, "{}\n{}", e, json),
             Error::Client(..) => write!(f, "The requests client failed"),
         }
     }

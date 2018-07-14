@@ -10,9 +10,22 @@ version = "0.19.0"
 [dependencies]
 serde = "1.0"
 serde_derive = "1.0"
-serde_json = {version="1.0", features=['arbitrary_precision']}
+serde_json = "1.0"
 serde_qs = "0.4"
 reqwest = "0.8"
 uuid = { version = "0.6", features = ["serde", "v4"] }
 flame = "0.2"
+chrono = "0.4"
+
+[dev-dependencies]
+openssl-probe = "*"
+criterion = "0.2"
+
+[[bench]]
+name = "id"
+harness = false
+
+[[bench]]
+name = "history"
+harness = false
 

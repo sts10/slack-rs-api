@@ -100,6 +100,25 @@ pub struct ResponseMetadata {
     next_cursor: Option<String>,
 }
 
+/// Gets a users's preferences
+///
+/// Wraps https://api.slack.com/methods/users.prefs.get
+
+api_call!(prefs_get, "users.prefs.get", () => PrefsResponse);
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct PrefsResponse {
+    ok: bool,
+    pub prefs: UserPrefs,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct UserPrefs {
+    muted_channels: Vec<::ChannelId>,
+}
+
 /// Marks a user as active.
 ///
 /// Wraps https://api.slack.com/methods/users.setActive

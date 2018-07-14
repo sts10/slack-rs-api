@@ -25,7 +25,7 @@ mod tests {
 
     #[test]
     fn test_test() {
-        let client = ::requests::default_client().unwrap();
+        let client = ::requests::default_client();
         let token = env::var("SLACK_API_TOKEN").unwrap();
 
         let req = TestRequest {
