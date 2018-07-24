@@ -900,6 +900,7 @@ pub struct MessageStandard {
     pub pinned_info: Option<MessagePinnedItem>,
     pub unread_count: Option<i32>,
     pub pinned_to: Option<Vec<String>>,
+    pub is_starred: Option<bool>,
     #[serde(rename = "type")]
     ty: Option<String>,
 }
