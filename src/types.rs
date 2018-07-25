@@ -901,6 +901,7 @@ pub struct MessageStandard {
     pub unread_count: Option<i32>,
     pub pinned_to: Option<Vec<String>>,
     pub is_starred: Option<bool>,
+    pub display_as_bot: Option<bool>,
     #[serde(rename = "type")]
     ty: Option<String>,
 }
