@@ -78,3 +78,5 @@ make_id!(ChannelId, b'C', ChannelIdVisitor);
 make_id!(GroupId, b'G', GroupIdVisitor);
 make_id!(TeamId, b'T', TeamIdVisitor);
 make_id!(AppId, b'A', AppIdVisitor);
+make_id!(FileId, b'F', FileIdVisitor);
+

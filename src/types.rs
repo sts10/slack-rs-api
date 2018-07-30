@@ -902,6 +902,11 @@ pub struct MessageStandard {
     pub pinned_to: Option<Vec<String>>,
     pub is_starred: Option<bool>,
     pub display_as_bot: Option<bool>,
+    // TODO: These fields should belong to a flattened struct
+    pub files: Option<Vec<File>>,
+    pub upload: Option<bool>,
+    pub upload_reply_to: Option<String>,
+    pub x_files: Option<Vec<FileId>>,
     #[serde(rename = "type")]
     ty: Option<String>,
 }
