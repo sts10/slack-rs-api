@@ -226,8 +226,6 @@ pub struct Im {
     pub user: Option<UserId>,
 }
 
-
-
 macro_rules! deserialize_internally_tagged {
     {
         tag_field = $tagfield:expr,
@@ -298,7 +296,7 @@ macro_rules! deserialize_internally_tagged {
                 enum Tag {
                     $($variant_name,)*
                 }
-                
+
                 let mut v: ::serde_json::Value = ::serde::Deserialize::deserialize(deserializer)?;
 
                 // Remove the tag from the Value so that we can deny_unknown_fields further down
@@ -409,7 +407,7 @@ pub struct EventHello {}
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct EventAppsChanged {
-    pub app: App, 
+    pub app: App,
     pub event_ts: Timestamp,
 }
 
@@ -491,7 +489,7 @@ pub struct EventFilePublic {
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
-pub struct EventChannelMarked{
+pub struct EventChannelMarked {
     pub channel: ChannelId, //TODO ChannelOrGroupId ughghhghg
     pub ts: Timestamp,
     pub unread_count: u32,
@@ -505,7 +503,7 @@ pub struct EventChannelMarked{
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
-pub struct EventGroupMarked{
+pub struct EventGroupMarked {
     pub channel: GroupId, //TODO ChannelOrGroupId ughghhghg
     pub ts: Timestamp,
     pub unread_count: u32,

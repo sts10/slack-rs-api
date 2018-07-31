@@ -107,4 +107,3 @@ impl ::std::convert::From<GroupId> for ConversationId {
         ConversationId::Group(id)
     }
 }
-
