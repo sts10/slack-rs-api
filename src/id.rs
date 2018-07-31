@@ -80,3 +80,30 @@ make_id!(TeamId, b'T', TeamIdVisitor);
 make_id!(AppId, b'A', AppIdVisitor);
 make_id!(FileId, b'F', FileIdVisitor);
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Deserialize)]
+#[serde(untagged)]
+pub enum ConversationId {
+    Channel(ChannelId),
+    Group(GroupId),
+}
+
+impl ::std::fmt::Display for ConversationId {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        match &self {
+            ConversationId::Channel(c) => write!(f, "{}", c),
+            ConversationId::Group(g) => write!(f, "{}", g),
+        }
+    }
+}
+
+impl ::std::convert::From<ChannelId> for ConversationId {
+    fn from(id: ChannelId) -> Self {
+        ConversationId::Channel(id)
+    }
+}
+
+impl ::std::convert::From<GroupId> for ConversationId {
+    fn from(id: GroupId) -> Self {
+        ConversationId::Group(id)
+    }
+

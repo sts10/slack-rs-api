@@ -226,86 +226,7 @@ pub struct Im {
     pub user: Option<UserId>,
 }
 
-/*
-deserialize_internally_tagged! {
-    tag_field = "type",
-    default_variant = Standard,
-    default_struct = EventStandard,
-    #[derive(Clone, Debug)]
-    pub enum Event {
-        AccountsChanged,
-        BotAdded,
-        BotChanged,
-        ChannelArchive,
-        ChannelCreated,
-        ChannelDeleted,
-        ChannelHistoryChanged,
-        ChannelJoined,
-        ChannelLeft,
-        ChannelMarked,
-        ChannelRename,
-        ChannelUnarchive,
-        CommandsChanged,
-        DndUpdated,
-        EmailDomainChanged,
-        FileChange,
-        FileCommentAdded,
-        FileCommentDeleted,
-        FileCommentEdited,
-        FileCreated,
-        FileDeleted,
-        FilePublic,
-        FileShared,
-        FileUnshared,
-        Goodbye,
-        GroupArchive,
-        GroupClose,
-        GroupHistoryChanged,
-        GroupJoined,
-        GroupLeft,
-        GroupMarked,
-        GroupOpen,
-        GroupRename,
-        GroupUnarchive,
-        Hello,
-        ImClose,
-        ImCreated,
-        ImHistoryChanged,
-        ImMarked,
-        ImOpen,
-        ManualPresenceChange,
-        MemberJoinedChannel,
-        MemberLeftChannel,
-        Message,
-        PinAdded,
-        PinRemoved,
-        PrefChange,
-        PresenceChange,
-        PresenceQuery,
-        PresenceSub,
-        ReactionAdded,
-        ReactionRemoved,
-        ReconnectUrl, // Experimental?
-        StarAdded,
-        StarRemoved,
-        SubteamCreated,
-        SubteamMembersChanged,
-        SubteamSelfAdded,
-        SubteamUpdated,
-        TeamDomainChange,
-        TeamJoin,
-        TeamMigrationStarted,
-        TeamPlanChange,
-        TeamPrefChange,
-        TeamProfileChange,
-        TeamProfileDelete,
-        TeamProfileReorder,
-        TeamRename,
-        UserChange,
-        UserTyping,
-    }
-}
-*/
+
 
 macro_rules! deserialize_internally_tagged {
     {
@@ -328,18 +249,7 @@ macro_rules! deserialize_internally_tagged {
                 where
                 D: ::serde::Deserializer<'de>,
             {
-                ::flame::start("Message->Value");
                 let v: ::serde_json::Value = ::serde::Deserialize::deserialize(deserializer)?;
-                ::flame::end("Message->Value");
-
-                /*
-                for (k, v) in v.as_object().unwrap().iter() {
-                    println!("{}", k.len());
-                    if let ::serde_json::Value::String(ref s) = v {
-                        println!("{}", s.len());
-                    }
-                }
-                */
 
                 #[derive(Deserialize)]
                 #[serde(field_identifier, rename_all = "snake_case")]
@@ -350,14 +260,12 @@ macro_rules! deserialize_internally_tagged {
                 match Option::deserialize(&v[$tagfield]).map_err(::serde::de::Error::custom)? {
                     $(
                     Some(Tag::$variant_name) => {
-                        let _guard = ::flame::start_guard(stringify!($variant_name));
                         ::serde::Deserialize::deserialize(v)
                         .map($enumname::$variant_name)
                         .map_err(|e| ::serde::de::Error::custom(format!("{} while deserializing {}", e, stringify!($struct_name))))
                     }
                     )*
                     None => {
-                        let _guard = ::flame::start_guard(stringify!($default_variant));
                         ::serde::Deserialize::deserialize(v)
                             .map($enumname::$default_variant)
                             .map_err(|e| ::serde::de::Error::custom(format!("{} while deserializing {}", e, stringify!($default_struct))))
@@ -365,7 +273,257 @@ macro_rules! deserialize_internally_tagged {
                 }
             }
         }
+    };
+    // Impl for when there is no default
+    {
+        tag_field = $tagfield:expr,
+        $(#[$attr:meta])*
+        pub enum $enumname:ident {
+            $($variant_name:ident($struct_name:ty)),*,
+        }
+   } => {
+
+        $(#[$attr])*
+        pub enum $enumname {
+            $($variant_name($struct_name),)*
+        }
+
+        impl<'de> ::serde::Deserialize<'de> for $enumname {
+            fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+                where
+                D: ::serde::Deserializer<'de>,
+            {
+                #[derive(Deserialize)]
+                #[serde(field_identifier, rename_all = "snake_case")]
+                enum Tag {
+                    $($variant_name,)*
+                }
+                
+                let mut v: ::serde_json::Value = ::serde::Deserialize::deserialize(deserializer)?;
+
+                // Remove the tag from the Value so that we can deny_unknown_fields further down
+                let tag = v
+                    .as_object_mut()
+                    .and_then(|obj| obj.remove($tagfield))
+                    .ok_or_else(|| ::serde::de::Error::custom(format!("cannot deserialize {} without a tag", stringify!($enumname))))
+                    .and_then(|str_tag| Tag::deserialize(str_tag))
+                    // No idea how to do this conversion gracefully
+                    .map_err(|e| ::serde::de::Error::custom(format!("{}", e)))?;
+
+                match tag {
+                    $(
+                    Tag::$variant_name => {
+                        ::serde::Deserialize::deserialize(v)
+                        .map($enumname::$variant_name)
+                        .map_err(|e| ::serde::de::Error::custom(format!("{} while deserializing {}", e, stringify!($struct_name))))
+                    }
+                    )*
+                }
+            }
+        }
     }
+}
+
+deserialize_internally_tagged! {
+    tag_field = "type",
+    #[derive(Clone, Debug)]
+    pub enum Event {
+        AppsChanged(EventAppsChanged),
+        //AccountsChanged,
+        //BotAdded,
+        //BotChanged,
+        //ChannelArchive,
+        //ChannelCreated,
+        //ChannelDeleted,
+        //ChannelHistoryChanged,
+        //ChannelJoined,
+        //ChannelLeft,
+        ChannelMarked(EventChannelMarked),
+        //ChannelRename,
+        //ChannelUnarchive,
+        //CommandsChanged,
+        DndUpdatedUser(EventDndUpdatedUser),
+        //EmailDomainChanged,
+        //FileChange,
+        //FileCommentAdded,
+        //FileCommentDeleted,
+        //FileCommentEdited,
+        //FileCreated,
+        //FileDeleted,
+        FilePublic(EventFilePublic),
+        FileShared(EventFileShared),
+        //FileUnshared,
+        //Goodbye,
+        //GroupArchive,
+        //GroupClose,
+        //GroupHistoryChanged,
+        //GroupJoined,
+        //GroupLeft,
+        GroupMarked(EventGroupMarked),
+        //GroupOpen,
+        //GroupRename,
+        //GroupUnarchive,
+        Hello(EventHello),
+        //ImClose,
+        //ImCreated,
+        //ImHistoryChanged,
+        //ImMarked,
+        //ImOpen,
+        //ManualPresenceChange,
+        //MemberJoinedChannel,
+        //MemberLeftChannel,
+        Message(Message),
+        //PinAdded,
+        //PinRemoved,
+        //PrefChange,
+        //PresenceChange,
+        //PresenceQuery,
+        //PresenceSub,
+        ReactionAdded(EventReactionAdded),
+        //ReactionRemoved,
+        //ReconnectUrl, // Experimental?
+        //StarAdded,
+        //StarRemoved,
+        //SubteamCreated,
+        //SubteamMembersChanged,
+        //SubteamSelfAdded,
+        //SubteamUpdated,
+        //TeamDomainChange,
+        //TeamJoin,
+        //TeamMigrationStarted,
+        //TeamPlanChange,
+        //TeamPrefChange,
+        //TeamProfileChange,
+        //TeamProfileDelete,
+        //TeamProfileReorder,
+        //TeamRename,
+        UserChange(EventUserChange),
+        UserTyping(EventUserTyping),
+    }
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventHello {}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventAppsChanged {
+    pub app: App, 
+    pub event_ts: Timestamp,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct App {
+    pub id: AppId,
+    pub name: String,
+    pub icons: Option<AppIcons>,
+    pub deleted: Option<bool>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct AppIcons {
+    pub image_36: Option<String>,
+    pub image_48: Option<String>,
+    pub image_72: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventUserTyping {
+    pub channel: ConversationId,
+    pub user: UserId,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventReactionAdded {
+    pub user: UserId,
+    pub item: Box<Event>, // This is an event inside of an event, sounds like this could be bad
+    pub reaction: String,
+    pub item_user: UserId,
+    pub event_ts: Timestamp,
+    pub ts: Timestamp,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventDndUpdatedUser {
+    pub user: UserId,
+    pub dnd_status: DndStatus,
+    pub event_ts: Timestamp,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct DndStatus {
+    pub dnd_enabled: bool,
+    pub next_dnd_start_ts: Timestamp,
+    pub next_dnd_end_ts: Timestamp,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventFileShared {
+    pub file_id: FileId,
+    pub user_id: UserId,
+    pub file: JustAFileId,
+    pub event_ts: Timestamp,
+    pub ts: Timestamp,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct JustAFileId {
+    pub id: FileId,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventFilePublic {
+    pub file_id: FileId,
+    pub user_id: UserId,
+    pub file: JustAFileId,
+    pub event_ts: Timestamp,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventChannelMarked{
+    pub channel: ChannelId, //TODO ChannelOrGroupId ughghhghg
+    pub ts: Timestamp,
+    pub unread_count: u32,
+    pub unread_count_display: u32,
+    pub num_mentions: u32,
+    pub num_mentions_display: u32,
+    pub mention_count: u32,
+    pub mention_count_display: u32,
+    pub event_ts: Timestamp,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventGroupMarked{
+    pub channel: GroupId, //TODO ChannelOrGroupId ughghhghg
+    pub ts: Timestamp,
+    pub unread_count: u32,
+    pub unread_count_display: u32,
+    pub num_mentions: u32,
+    pub num_mentions_display: u32,
+    pub mention_count: u32,
+    pub mention_count_display: u32,
+    pub event_ts: Timestamp,
+    pub is_mpim: Option<bool>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventUserChange {
+    pub user: User,
+    pub cache_ts: Timestamp,
+    pub event_ts: Timestamp,
 }
 
 deserialize_internally_tagged! {
@@ -407,13 +565,6 @@ deserialize_internally_tagged! {
         ThreadBroadcast(Box<MessageThreadBroadcast>),
         UnpinnedItem(MessageUnpinnedItem),
     }
-}
-
-#[derive(Clone, Debug, Deserialize)]
-pub struct UserChange {
-    pub user: User,
-    cache_ts: Timestamp,
-    event_ts: Timestamp,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -696,7 +847,7 @@ pub struct MessageMessageChangedMessage {
     pub reply_count: Option<i32>,
     pub subscribed: Option<bool>,
     pub text: Option<String>,
-    pub thread_ts: Timestamp,
+    pub thread_ts: Option<Timestamp>,
     pub ts: Timestamp,
     //#[serde(rename = "type")]
     //pub ty: Option<String>,
@@ -880,7 +1031,7 @@ pub struct MessageReplyBroadcastAttachment {
 pub struct MessageStandard {
     pub attachments: Option<Vec<MessageStandardAttachment>>,
     pub bot_id: Option<BotId>,
-    pub channel: Option<ChannelId>,
+    pub channel: Option<ConversationId>,
     pub edited: Option<MessageStandardEdited>,
     pub event_ts: Option<Timestamp>,
     pub reply_broadcast: Option<bool>,
@@ -907,6 +1058,8 @@ pub struct MessageStandard {
     pub upload: Option<bool>,
     pub upload_reply_to: Option<Uuid>,
     pub x_files: Option<Vec<FileId>>,
+    pub user_profile: Option<UserProfile>,
+    pub user_team: Option<TeamId>,
     #[serde(rename = "type")]
     ty: Option<String>,
 }
