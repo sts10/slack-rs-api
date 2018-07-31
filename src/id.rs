@@ -106,4 +106,5 @@ impl ::std::convert::From<GroupId> for ConversationId {
     fn from(id: GroupId) -> Self {
         ConversationId::Group(id)
     }
+}
 
