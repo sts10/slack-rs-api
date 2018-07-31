@@ -346,7 +346,7 @@ deserialize_internally_tagged! {
         //FileCommentAdded,
         //FileCommentDeleted,
         //FileCommentEdited,
-        //FileCreated,
+        FileCreated(EventFileCreated),
         //FileDeleted,
         FilePublic(EventFilePublic),
         FileShared(EventFileShared),
@@ -469,7 +469,7 @@ pub struct EventFileShared {
     pub user_id: UserId,
     pub file: JustAFileId,
     pub event_ts: Timestamp,
-    pub ts: Timestamp,
+    pub ts: Option<Timestamp>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -485,7 +485,19 @@ pub struct EventFilePublic {
     pub user_id: UserId,
     pub file: JustAFileId,
     pub event_ts: Timestamp,
+    pub ts: Option<Timestamp>,
 }
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventFileCreated {
+    pub file: JustAFileId,
+    pub file_id: FileId,
+    pub user_id: UserId,
+    pub event_ts: Timestamp,
+    pub ts: Option<Timestamp>,
+}
+
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
