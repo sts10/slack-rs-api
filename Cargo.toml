@@ -1,3 +1,5 @@
+cargo-features = ["profile-overrides"]
+
 [package]
 authors = ["Benjamin Elder <ben.the.elder@gmail.com>", "Matt Jones <mthjones@gmail.com>"]
 description = "Interface for the Slack Web API"
@@ -28,4 +30,7 @@ harness = false
 [[bench]]
 name = "history"
 harness = false
+
+[profile.dev.overrides."*"]
+opt-level = 3
 

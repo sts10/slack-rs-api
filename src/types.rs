@@ -70,6 +70,7 @@ pub struct Bot {
     pub icons: Option<BotIcons>,
     pub id: BotId,
     pub name: String,
+    pub updated: Option<Timestamp>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -329,7 +330,7 @@ deserialize_internally_tagged! {
         AppsChanged(EventAppsChanged),
         //AccountsChanged,
         //BotAdded,
-        //BotChanged,
+        BotChanged(EventBotChanged),
         //ChannelArchive,
         //ChannelCreated,
         //ChannelDeleted,
@@ -342,7 +343,7 @@ deserialize_internally_tagged! {
         //CommandsChanged,
         DndUpdatedUser(EventDndUpdatedUser),
         //EmailDomainChanged,
-        //FileChange,
+        FileChange(EventFileChange),
         //FileCommentAdded,
         //FileCommentDeleted,
         //FileCommentEdited,
@@ -371,7 +372,7 @@ deserialize_internally_tagged! {
         //MemberJoinedChannel,
         //MemberLeftChannel,
         Message(Message),
-        //PinAdded,
+        PinAdded(EventPinAdded),
         //PinRemoved,
         //PrefChange,
         //PresenceChange,
@@ -399,6 +400,37 @@ deserialize_internally_tagged! {
         UserTyping(EventUserTyping),
     }
 }
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventFileChange {
+    pub file_id: FileId,
+    pub user_id: UserId,
+    pub file: JustAFileId,
+    pub event_ts: Timestamp,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventPinAdded {
+    user: UserId,
+    channel_id: ConversationId,
+    item: Message,
+    item_user: UserId,
+    pin_count: i32,
+    pinned_info: PinnedInfo,
+    event_ts: Timestamp,
+    ts: Option<Timestamp>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct PinnedInfo {
+    channel: ConversationId,
+    pinned_by: UserId,
+    pinned_ts: Timestamp,
+    event_ts: Timestamp,
+    ts: Option<Timestamp>,
+}
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -423,9 +455,24 @@ pub struct App {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct AppIcons {
+    pub image_32: Option<String>,
     pub image_36: Option<String>,
     pub image_48: Option<String>,
+    pub image_64: Option<String>,
     pub image_72: Option<String>,
+    pub image_96: Option<String>,
+    pub image_128: Option<String>,
+    pub image_192: Option<String>,
+    pub image_512: Option<String>,
+    pub image_1024: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventBotChanged {
+    bot: Bot,
+    cache_ts: Option<Timestamp>,
+    event_ts: Timestamp,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -498,11 +545,10 @@ pub struct EventFileCreated {
     pub ts: Option<Timestamp>,
 }
 
-
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct EventChannelMarked {
-    pub channel: ChannelId, //TODO ChannelOrGroupId ughghhghg
+    pub channel: ChannelId,
     pub ts: Timestamp,
     pub unread_count: u32,
     pub unread_count_display: u32,
@@ -516,7 +562,7 @@ pub struct EventChannelMarked {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct EventGroupMarked {
-    pub channel: GroupId, //TODO ChannelOrGroupId ughghhghg
+    pub channel: GroupId,
     pub ts: Timestamp,
     pub unread_count: u32,
     pub unread_count_display: u32,
@@ -579,8 +625,6 @@ deserialize_internally_tagged! {
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageChannelMarked {
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
     pub channel: Option<ChannelId>,
     pub ts: Option<Timestamp>,
     pub unread_count: Option<i32>,
@@ -595,11 +639,8 @@ pub struct MessageChannelMarked {
 pub struct MessageBotAdd {
     pub bot_id: Option<BotId>,
     pub bot_link: Option<String>,
-    pub subtype: Option<String>,
     pub text: Option<String>,
     pub ts: Option<Timestamp>,
-    //#[serde(rename = "type")]
-    //pub ty: Option<String>,
     pub user: Option<UserId>,
 }
 
@@ -607,11 +648,8 @@ pub struct MessageBotAdd {
 pub struct MessageBotRemove {
     pub bot_id: Option<BotId>,
     pub bot_link: Option<String>,
-    pub subtype: Option<String>,
     pub text: Option<String>,
     pub ts: Option<Timestamp>,
-    //#[serde(rename = "type")]
-    //pub ty: Option<String>,
     pub user: Option<UserId>,
 }
 
@@ -619,13 +657,10 @@ pub struct MessageBotRemove {
 pub struct MessageBotMessage {
     pub bot_id: Option<BotId>,
     pub icons: Option<MessageBotMessageIcons>,
-    pub subtype: Option<String>,
     pub text: Option<String>,
     pub ts: Option<Timestamp>,
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
     pub username: Option<String>,
-    pub channel: Option<ChannelId>,
+    pub channel: Option<ConversationId>,
     pub team: Option<TeamId>,
     pub reactions: Option<Vec<Reaction>>,
     pub attachments: Option<Vec<MessageStandardAttachment>>,
@@ -641,31 +676,22 @@ pub struct MessageBotMessageIcons {
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageChannelArchive {
     pub members: Option<Vec<String>>,
-    pub subtype: Option<String>,
     pub text: Option<String>,
     pub ts: Option<Timestamp>,
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
     pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageChannelJoin {
-    pub subtype: Option<String>,
     pub text: Option<String>,
     pub ts: Option<Timestamp>,
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
     pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageChannelLeave {
-    pub subtype: Option<String>,
     pub text: Option<String>,
     pub ts: Option<Timestamp>,
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
     pub user: Option<UserId>,
 }
 
@@ -673,43 +699,31 @@ pub struct MessageChannelLeave {
 pub struct MessageChannelName {
     pub name: Option<String>,
     pub old_name: Option<String>,
-    pub subtype: Option<String>,
     pub text: Option<String>,
     pub ts: Option<Timestamp>,
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
     pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageChannelPurpose {
     pub purpose: Option<String>,
-    pub subtype: Option<String>,
     pub text: Option<String>,
     pub ts: Option<Timestamp>,
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
     pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageChannelTopic {
-    pub subtype: Option<String>,
     pub text: Option<String>,
     pub topic: Option<String>,
     pub ts: Option<Timestamp>,
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
     pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageChannelUnarchive {
-    pub subtype: Option<String>,
     pub text: Option<String>,
     pub ts: Option<Timestamp>,
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
     pub user: Option<UserId>,
 }
 
@@ -717,33 +731,24 @@ pub struct MessageChannelUnarchive {
 pub struct MessageFileComment {
     pub comment: Option<::FileComment>,
     pub file: Option<::File>,
-    pub subtype: Option<String>,
     pub text: Option<String>,
     pub ts: Option<Timestamp>,
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageFileMention {
     pub file: Option<::File>,
-    pub subtype: Option<String>,
     pub text: Option<String>,
     pub ts: Option<Timestamp>,
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
     pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageFileShare {
-    pub channel: Option<ChannelId>,
+    pub channel: Option<ConversationId>,
     pub file: Option<::File>,
-    pub subtype: Option<String>,
     pub text: Option<String>,
     pub ts: Option<Timestamp>,
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
     pub upload: Option<bool>,
     pub user: Option<UserId>,
 }
@@ -751,31 +756,22 @@ pub struct MessageFileShare {
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageGroupArchive {
     pub members: Option<Vec<String>>,
-    pub subtype: Option<String>,
     pub text: Option<String>,
     pub ts: Option<Timestamp>,
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
     pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageGroupJoin {
-    pub subtype: Option<String>,
     pub text: Option<String>,
     pub ts: Option<Timestamp>,
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
     pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageGroupLeave {
-    pub subtype: Option<String>,
     pub text: Option<String>,
     pub ts: Option<Timestamp>,
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
     pub user: Option<UserId>,
 }
 
@@ -783,68 +779,50 @@ pub struct MessageGroupLeave {
 pub struct MessageGroupName {
     pub name: Option<String>,
     pub old_name: Option<String>,
-    pub subtype: Option<String>,
     pub text: Option<String>,
     pub ts: Option<Timestamp>,
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
     pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageGroupPurpose {
     pub purpose: Option<String>,
-    pub subtype: Option<String>,
     pub text: Option<String>,
     pub ts: Option<Timestamp>,
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
     pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageGroupTopic {
-    pub subtype: Option<String>,
     pub text: Option<String>,
     pub topic: Option<String>,
     pub ts: Option<Timestamp>,
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
     pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageGroupUnarchive {
-    pub subtype: Option<String>,
     pub text: Option<String>,
     pub ts: Option<Timestamp>,
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
     pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageMeMessage {
-    pub channel: Option<ChannelId>,
-    pub subtype: Option<String>,
+    pub channel: Option<ConversationId>,
     pub text: Option<String>,
     pub ts: Option<Timestamp>,
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
     pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageMessageChanged {
-    pub channel: ChannelId,
+    pub channel: ConversationId,
     pub event_ts: Timestamp,
     pub hidden: Option<bool>,
     pub message: Option<MessageMessageChangedMessage>,
     pub previous_message: Option<MessageMessageChangedPreviousMessage>,
-    pub subtype: Option<String>,
     pub ts: Timestamp,
-    //#[serde(rename = "type")]
-    //pub ty: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -859,8 +837,6 @@ pub struct MessageMessageChangedMessage {
     pub text: Option<String>,
     pub thread_ts: Option<Timestamp>,
     pub ts: Timestamp,
-    //#[serde(rename = "type")]
-    //pub ty: Option<String>,
     pub unread_count: Option<i32>,
     pub user: Option<UserId>,
 }
@@ -912,10 +888,7 @@ pub struct MessageMessageDeleted {
     pub event_ts: Option<String>,
     pub hidden: Option<bool>,
     pub previous_message: Option<MessageMessageDeletedPreviousMessage>,
-    pub subtype: Option<String>,
     pub ts: Option<Timestamp>,
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -948,7 +921,7 @@ pub struct MessageMessageDeletedPreviousMessageReply {
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageMessageReplied {
-    pub channel: Option<ChannelId>,
+    pub channel: Option<ConversationId>,
     pub event_ts: Timestamp,
     pub hidden: Option<bool>,
     pub message: Option<MessageMessageRepliedMessage>,
@@ -986,7 +959,7 @@ pub struct MessageMessageRepliedMessageReply {
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessagePinnedItem {
-    pub channel: Option<ChannelId>,
+    pub channel: Option<ConversationId>,
     pub item: Option<MessagePinnedItemItem>,
     pub item_type: Option<String>,
     pub text: Option<String>,
@@ -1001,9 +974,6 @@ pub struct MessagePinnedItemItem {}
 pub struct MessageReminderAdd {
     pub message: Option<String>,
     pub ts: Option<Timestamp>,
-    pub subtype: Option<String>,
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
     pub user: Option<UserId>,
     pub channel: Option<String>,
 }
@@ -1013,10 +983,7 @@ pub struct MessageReplyBroadcast {
     pub attachments: Option<Vec<MessageReplyBroadcastAttachment>>,
     pub channel: Option<String>,
     pub event_ts: Option<String>,
-    pub subtype: Option<String>,
     pub ts: Option<Timestamp>,
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
     pub user: Option<UserId>,
 }
 
@@ -1116,14 +1083,11 @@ pub struct MessageStandardEdited {
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageUnpinnedItem {
-    pub channel: Option<ChannelId>,
+    pub channel: Option<ConversationId>,
     pub item: Option<MessageUnpinnedItemItem>,
     //pub item_type: Option<String>,
-    //pub subtype: Option<String>,
     pub text: Option<String>,
     pub ts: Option<Timestamp>,
-    //#[serde(rename = "type")]
-    //pub ty: Option<String>,
     pub user: Option<UserId>,
 }
 
@@ -1134,11 +1098,8 @@ pub struct MessageUnpinnedItemItem {}
 pub struct MessageSlackbotResponse {
     pub text: Option<String>,
     pub ts: Option<Timestamp>,
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
-    pub subtype: Option<String>,
     pub user: Option<UserId>,
-    pub channel: Option<ChannelId>,
+    pub channel: Option<ConversationId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
