@@ -157,7 +157,7 @@ pub struct File {
     pub preview: Option<String>,
     pub preview_highlight: Option<String>,
     pub public_url_shared: Option<bool>,
-    pub reactions: Option<Vec<::Reaction>>,
+    pub reactions: Vec<::Reaction>,
     pub size: Option<i32>,
     pub thumb_160: Option<String>,
     pub thumb_360: Option<String>,
@@ -181,7 +181,7 @@ pub struct File {
 pub struct FileComment {
     pub comment: Option<String>,
     pub id: Option<String>,
-    pub reactions: Option<Vec<::Reaction>>,
+    pub reactions: Vec<::Reaction>,
     pub timestamp: Option<i32>,
     pub user: Option<UserId>,
 }
@@ -610,7 +610,7 @@ deserialize_internally_tagged! {
         GroupTopic(MessageGroupTopic),
         GroupUnarchive(MessageGroupUnarchive),
         MeMessage(MessageMeMessage),
-        Message(MessageMessageChanged),
+        //Message(MessageMessageChanged),
         MessageChanged(MessageMessageChanged),
         MessageDeleted(MessageMessageDeleted),
         MessageReplied(MessageMessageReplied),
@@ -662,7 +662,7 @@ pub struct MessageBotMessage {
     pub username: Option<String>,
     pub channel: Option<ConversationId>,
     pub team: Option<TeamId>,
-    pub reactions: Option<Vec<Reaction>>,
+    pub reactions: Vec<Reaction>,
     pub attachments: Option<Vec<MessageStandardAttachment>>,
 }
 
@@ -1019,7 +1019,7 @@ pub struct MessageStandard {
     pub ts: Option<Timestamp>,
     pub user: Option<UserId>,
     pub client_msg_id: Option<Uuid>,
-    pub reactions: Option<Vec<Reaction>>,
+    pub reactions: Vec<Reaction>,
     pub parent_user_id: Option<UserId>,
     pub replies: Option<Vec<MessageStandardReply>>,
     pub reply_count: Option<i32>,
@@ -1150,7 +1150,7 @@ pub struct Paging {
 #[derive(Clone, Debug, Deserialize)]
 pub struct Reaction {
     pub count: Option<i32>,
-    pub name: Option<String>,
+    pub name: String,
     pub users: Option<Vec<UserId>>,
 }
 
