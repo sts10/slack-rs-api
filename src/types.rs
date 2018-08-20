@@ -751,6 +751,7 @@ pub struct MessageFileShare {
     pub ts: Option<Timestamp>,
     pub upload: Option<bool>,
     pub user: Option<UserId>,
+    pub reactions: Vec<::Reaction>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -1100,6 +1101,7 @@ pub struct MessageSlackbotResponse {
     pub ts: Option<Timestamp>,
     pub user: Option<UserId>,
     pub channel: Option<ConversationId>,
+    pub reactions: Vec<::Reaction>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
