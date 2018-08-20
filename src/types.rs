@@ -157,6 +157,7 @@ pub struct File {
     pub preview: Option<String>,
     pub preview_highlight: Option<String>,
     pub public_url_shared: Option<bool>,
+    #[serde(default)]
     pub reactions: Vec<::Reaction>,
     pub size: Option<i32>,
     pub thumb_160: Option<String>,
@@ -181,6 +182,7 @@ pub struct File {
 pub struct FileComment {
     pub comment: Option<String>,
     pub id: Option<String>,
+    #[serde(default)]
     pub reactions: Vec<::Reaction>,
     pub timestamp: Option<i32>,
     pub user: Option<UserId>,
@@ -662,6 +664,7 @@ pub struct MessageBotMessage {
     pub username: Option<String>,
     pub channel: Option<ConversationId>,
     pub team: Option<TeamId>,
+    #[serde(default)]
     pub reactions: Vec<Reaction>,
     pub attachments: Option<Vec<MessageStandardAttachment>>,
 }
@@ -751,6 +754,7 @@ pub struct MessageFileShare {
     pub ts: Option<Timestamp>,
     pub upload: Option<bool>,
     pub user: Option<UserId>,
+    #[serde(default)]
     pub reactions: Vec<::Reaction>,
 }
 
@@ -1020,6 +1024,7 @@ pub struct MessageStandard {
     pub ts: Option<Timestamp>,
     pub user: Option<UserId>,
     pub client_msg_id: Option<Uuid>,
+    #[serde(default)]
     pub reactions: Vec<Reaction>,
     pub parent_user_id: Option<UserId>,
     pub replies: Option<Vec<MessageStandardReply>>,
@@ -1101,6 +1106,7 @@ pub struct MessageSlackbotResponse {
     pub ts: Option<Timestamp>,
     pub user: Option<UserId>,
     pub channel: Option<ConversationId>,
+    #[serde(default)]
     pub reactions: Vec<::Reaction>,
 }
 
