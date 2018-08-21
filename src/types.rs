@@ -641,7 +641,8 @@ pub struct MessageChannelMarked {
 pub struct MessageBotAdd {
     pub bot_id: Option<BotId>,
     pub bot_link: Option<String>,
-    pub text: Option<String>,
+    #[serde(default)]
+    pub text: String,
     pub ts: Option<Timestamp>,
     pub user: Option<UserId>,
 }
@@ -650,7 +651,8 @@ pub struct MessageBotAdd {
 pub struct MessageBotRemove {
     pub bot_id: Option<BotId>,
     pub bot_link: Option<String>,
-    pub text: Option<String>,
+    #[serde(default)]
+    pub text: String,
     pub ts: Option<Timestamp>,
     pub user: Option<UserId>,
 }
@@ -659,7 +661,8 @@ pub struct MessageBotRemove {
 pub struct MessageBotMessage {
     pub bot_id: Option<BotId>,
     pub icons: Option<MessageBotMessageIcons>,
-    pub text: Option<String>,
+    #[serde(default)]
+    pub text: String,
     pub ts: Option<Timestamp>,
     pub username: Option<String>,
     pub channel: Option<ConversationId>,
@@ -679,21 +682,24 @@ pub struct MessageBotMessageIcons {
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageChannelArchive {
     pub members: Option<Vec<String>>,
-    pub text: Option<String>,
+    #[serde(default)]
+    pub text: String,
     pub ts: Option<Timestamp>,
     pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageChannelJoin {
-    pub text: Option<String>,
+    #[serde(default)]
+    pub text: String,
     pub ts: Option<Timestamp>,
     pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageChannelLeave {
-    pub text: Option<String>,
+    #[serde(default)]
+    pub text: String,
     pub ts: Option<Timestamp>,
     pub user: Option<UserId>,
 }
@@ -702,7 +708,8 @@ pub struct MessageChannelLeave {
 pub struct MessageChannelName {
     pub name: Option<String>,
     pub old_name: Option<String>,
-    pub text: Option<String>,
+    #[serde(default)]
+    pub text: String,
     pub ts: Option<Timestamp>,
     pub user: Option<UserId>,
 }
@@ -710,14 +717,16 @@ pub struct MessageChannelName {
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageChannelPurpose {
     pub purpose: Option<String>,
-    pub text: Option<String>,
+    #[serde(default)]
+    pub text: String,
     pub ts: Option<Timestamp>,
     pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageChannelTopic {
-    pub text: Option<String>,
+    #[serde(default)]
+    pub text: String,
     pub topic: Option<String>,
     pub ts: Option<Timestamp>,
     pub user: Option<UserId>,
@@ -725,7 +734,8 @@ pub struct MessageChannelTopic {
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageChannelUnarchive {
-    pub text: Option<String>,
+    #[serde(default)]
+    pub text: String,
     pub ts: Option<Timestamp>,
     pub user: Option<UserId>,
 }
@@ -734,14 +744,16 @@ pub struct MessageChannelUnarchive {
 pub struct MessageFileComment {
     pub comment: Option<::FileComment>,
     pub file: Option<::File>,
-    pub text: Option<String>,
+    #[serde(default)]
+    pub text: String,
     pub ts: Option<Timestamp>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageFileMention {
     pub file: Option<::File>,
-    pub text: Option<String>,
+    #[serde(default)]
+    pub text: String,
     pub ts: Option<Timestamp>,
     pub user: Option<UserId>,
 }
@@ -750,7 +762,8 @@ pub struct MessageFileMention {
 pub struct MessageFileShare {
     pub channel: Option<ConversationId>,
     pub file: Option<::File>,
-    pub text: Option<String>,
+    #[serde(default)]
+    pub text: String,
     pub ts: Option<Timestamp>,
     pub upload: Option<bool>,
     pub user: Option<UserId>,
@@ -761,21 +774,24 @@ pub struct MessageFileShare {
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageGroupArchive {
     pub members: Option<Vec<String>>,
-    pub text: Option<String>,
+    #[serde(default)]
+    pub text: String,
     pub ts: Option<Timestamp>,
     pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageGroupJoin {
-    pub text: Option<String>,
+    #[serde(default)]
+    pub text: String,
     pub ts: Option<Timestamp>,
     pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageGroupLeave {
-    pub text: Option<String>,
+    #[serde(default)]
+    pub text: String,
     pub ts: Option<Timestamp>,
     pub user: Option<UserId>,
 }
@@ -784,7 +800,8 @@ pub struct MessageGroupLeave {
 pub struct MessageGroupName {
     pub name: Option<String>,
     pub old_name: Option<String>,
-    pub text: Option<String>,
+    #[serde(default)]
+    pub text: String,
     pub ts: Option<Timestamp>,
     pub user: Option<UserId>,
 }
@@ -792,14 +809,16 @@ pub struct MessageGroupName {
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageGroupPurpose {
     pub purpose: Option<String>,
-    pub text: Option<String>,
+    #[serde(default)]
+    pub text: String,
     pub ts: Option<Timestamp>,
     pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageGroupTopic {
-    pub text: Option<String>,
+    #[serde(default)]
+    pub text: String,
     pub topic: Option<String>,
     pub ts: Option<Timestamp>,
     pub user: Option<UserId>,
@@ -807,7 +826,8 @@ pub struct MessageGroupTopic {
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageGroupUnarchive {
-    pub text: Option<String>,
+    #[serde(default)]
+    pub text: String,
     pub ts: Option<Timestamp>,
     pub user: Option<UserId>,
 }
@@ -815,7 +835,8 @@ pub struct MessageGroupUnarchive {
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageMeMessage {
     pub channel: Option<ConversationId>,
-    pub text: Option<String>,
+    #[serde(default)]
+    pub text: String,
     pub ts: Option<Timestamp>,
     pub user: Option<UserId>,
 }
@@ -839,7 +860,8 @@ pub struct MessageMessageChangedMessage {
     pub replies: Option<Vec<MessageMessageChangedMessageReply>>,
     pub reply_count: Option<i32>,
     pub subscribed: Option<bool>,
-    pub text: Option<String>,
+    #[serde(default)]
+    pub text: String,
     pub thread_ts: Option<Timestamp>,
     pub ts: Timestamp,
     pub unread_count: Option<i32>,
@@ -867,7 +889,8 @@ pub struct MessageMessageChangedPreviousMessage {
     pub replies: Option<Vec<MessageMessageChangedPreviousMessageReply>>,
     pub reply_count: Option<i32>,
     pub subscribed: Option<bool>,
-    pub text: Option<String>,
+    #[serde(default)]
+    pub text: String,
     pub thread_ts: Option<Timestamp>,
     pub ts: Timestamp,
     pub unread_count: Option<i32>,
@@ -905,7 +928,8 @@ pub struct MessageMessageDeletedPreviousMessage {
     pub replies: Option<Vec<MessageMessageDeletedPreviousMessageReply>>,
     pub reply_count: Option<i32>,
     pub subscribed: Option<bool>,
-    pub text: Option<String>,
+    #[serde(default)]
+    pub text: String,
     pub thread_ts: Option<Timestamp>,
     pub ts: Timestamp,
     pub unread_count: Option<i32>,
@@ -943,7 +967,8 @@ pub struct MessageMessageRepliedMessage {
     pub replies: Option<Vec<MessageMessageRepliedMessageReply>>,
     pub reply_count: Option<i32>,
     pub subscribed: Option<bool>,
-    pub text: Option<String>,
+    #[serde(default)]
+    pub text: String,
     pub thread_ts: Option<Timestamp>,
     pub ts: Timestamp,
     pub unread_count: Option<i32>,
@@ -967,7 +992,8 @@ pub struct MessagePinnedItem {
     pub channel: Option<ConversationId>,
     pub item: Option<MessagePinnedItemItem>,
     pub item_type: Option<String>,
-    pub text: Option<String>,
+    #[serde(default)]
+    pub text: String,
     pub ts: Option<Timestamp>,
     pub user: Option<UserId>,
 }
@@ -1004,7 +1030,8 @@ pub struct MessageReplyBroadcastAttachment {
     pub from_url: Option<String>,
     pub id: Option<i32>,
     pub mrkdwn_in: Option<Vec<String>>,
-    pub text: Option<String>,
+    #[serde(default)]
+    pub text: String,
     pub ts: Option<Timestamp>,
 }
 
@@ -1019,7 +1046,8 @@ pub struct MessageStandard {
     pub reply_broadcast: Option<bool>,
     pub source_team: Option<TeamId>,
     pub team: Option<TeamId>,
-    pub text: Option<String>,
+    #[serde(default)]
+    pub text: String,
     pub thread_ts: Option<Timestamp>,
     pub ts: Option<Timestamp>,
     pub user: Option<UserId>,
@@ -1067,7 +1095,8 @@ pub struct MessageStandardAttachment {
     pub footer_icon: Option<String>,
     pub image_url: Option<String>,
     pub pretext: Option<String>,
-    pub text: Option<String>,
+    #[serde(default)]
+    pub text: String,
     pub thumb_url: Option<String>,
     pub title: Option<String>,
     pub title_link: Option<String>,
@@ -1091,8 +1120,8 @@ pub struct MessageStandardEdited {
 pub struct MessageUnpinnedItem {
     pub channel: Option<ConversationId>,
     pub item: Option<MessageUnpinnedItemItem>,
-    //pub item_type: Option<String>,
-    pub text: Option<String>,
+    #[serde(default)]
+    pub text: String,
     pub ts: Option<Timestamp>,
     pub user: Option<UserId>,
 }
@@ -1102,7 +1131,8 @@ pub struct MessageUnpinnedItemItem {}
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageSlackbotResponse {
-    pub text: Option<String>,
+    #[serde(default)]
+    pub text: String,
     pub ts: Option<Timestamp>,
     pub user: Option<UserId>,
     pub channel: Option<ConversationId>,
@@ -1114,7 +1144,8 @@ pub struct MessageSlackbotResponse {
 pub struct MessageThreadBroadcast {
     pub attachments: Option<Vec<MessageThreadBroadcastAttachment>>,
     pub root: Option<MessageStandard>,
-    pub text: Option<String>,
+    #[serde(default)]
+    pub text: String,
     pub thread_ts: Option<String>,
     pub user: Option<UserId>,
     pub ts: Option<Timestamp>,
@@ -1127,7 +1158,8 @@ pub struct MessageThreadBroadcastAttachment {
     pub id: Option<i32>,
     pub service_icon: Option<String>,
     pub service_name: Option<String>,
-    pub text: Option<String>,
+    #[serde(default)]
+    pub text: String,
     pub title: Option<String>,
     pub title_link: Option<String>,
 }
@@ -1168,7 +1200,8 @@ pub struct Reminder {
     pub creator: Option<String>,
     pub id: Option<String>,
     pub recurring: Option<bool>,
-    pub text: Option<String>,
+    #[serde(default)]
+    pub text: String,
     pub time: Option<f32>,
     pub user: Option<UserId>,
 }
