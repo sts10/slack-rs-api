@@ -490,7 +490,7 @@ pub struct EventReactionAdded {
     pub user: UserId,
     pub item: Box<Event>,
     pub reaction: String,
-    pub item_user: UserId,
+    pub item_user: Option<UserId>,
     pub event_ts: Timestamp,
     pub ts: Timestamp,
 }
@@ -501,7 +501,7 @@ pub struct EventReactionRemoved {
     pub user: UserId,
     pub item: Box<Event>,
     pub reaction: String,
-    pub item_user: UserId,
+    pub item_user: Option<UserId>,
     pub event_ts: Timestamp,
     pub ts: Timestamp,
 }
