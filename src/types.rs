@@ -381,7 +381,7 @@ deserialize_internally_tagged! {
         //PresenceQuery,
         //PresenceSub,
         ReactionAdded(EventReactionAdded),
-        //ReactionRemoved,
+        ReactionRemoved(EventReactionRemoved),
         //ReconnectUrl, // Experimental?
         //StarAdded,
         //StarRemoved,
@@ -488,7 +488,18 @@ pub struct EventUserTyping {
 #[serde(deny_unknown_fields)]
 pub struct EventReactionAdded {
     pub user: UserId,
-    pub item: Box<Event>, // This is an event inside of an event, sounds like this could be bad
+    pub item: Box<Event>,
+    pub reaction: String,
+    pub item_user: UserId,
+    pub event_ts: Timestamp,
+    pub ts: Timestamp,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventReactionRemoved {
+    pub user: UserId,
+    pub item: Box<Event>,
     pub reaction: String,
     pub item_user: UserId,
     pub event_ts: Timestamp,
