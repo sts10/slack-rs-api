@@ -7,7 +7,12 @@ pub fn send_structured<T: ::serde::Serialize>(
     method_url: &str,
     params: &T,
 ) -> Result<String, ::reqwest::Error> {
-    let url_text = method_url.to_string() + &::serde_qs::to_string(params).unwrap();
+    let mut url_text = method_url.to_string();
+    if let Ok(s) = ::serde_urlencoded::to_string(params) {
+        url_text += &s;
+    } else {
+        // TODO: Log the error
+    }
     let url = ::reqwest::Url::parse(&url_text).unwrap();
     client.get(url).send()?.text()
 }

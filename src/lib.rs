@@ -21,7 +21,7 @@ extern crate chrono;
 pub extern crate flame;
 extern crate reqwest;
 extern crate serde_json;
-extern crate serde_qs;
+extern crate serde_urlencoded;
 extern crate uuid;
 
 #[macro_use]
