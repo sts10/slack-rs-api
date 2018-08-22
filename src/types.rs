@@ -672,8 +672,7 @@ pub struct MessageBotRemove {
 pub struct MessageBotMessage {
     pub bot_id: Option<BotId>,
     pub icons: Option<MessageBotMessageIcons>,
-    #[serde(default)]
-    pub text: String,
+    pub text: Option<String>,
     pub ts: Option<Timestamp>,
     pub username: Option<String>,
     pub channel: Option<ConversationId>,

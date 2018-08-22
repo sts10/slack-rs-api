@@ -1,3 +1,4 @@
+extern crate chrono;
 extern crate openssl_probe;
 extern crate slack_api as slack;
 
@@ -13,7 +14,7 @@ fn main() {
 
     for channel in response.channels {
         println!("{}, {}", channel.id, channel.name);
-        slack::channels::history(
+        let response = slack::channels::history(
             &client,
             &token,
             &slack::channels::HistoryRequest {
@@ -22,6 +23,12 @@ fn main() {
                 ..slack::channels::HistoryRequest::default()
             },
         );
+        for message in response.unwrap().messages {
+            if let ::slack::Message::Standard(::slack::MessageStandard { ts: Some(ts), .. }) = message {
+                let datetime: ::chrono::DateTime<::chrono::Utc> = ts.into();
+                println!("{:?}", datetime.timestamp_subsec_millis());
+            }
+        }
     }
 
     /*

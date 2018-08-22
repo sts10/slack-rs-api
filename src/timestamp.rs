@@ -10,10 +10,8 @@ pub struct Timestamp {
 
 impl Into<::chrono::DateTime<::chrono::Utc>> for Timestamp {
     fn into(self) -> ::chrono::DateTime<::chrono::Utc> {
-        let naive = ::chrono::naive::NaiveDateTime::from_timestamp(
-            self.seconds as i64,
-            u8s_to_u32(&self.milliseconds.unwrap_or([0, 0, 0])),
-        );
+        let millis = u8s_to_u32(&self.milliseconds.unwrap_or([0, 0, 0]));
+        let naive = ::chrono::naive::NaiveDateTime::from_timestamp(self.seconds as i64, millis * 1_000_000);
         ::chrono::DateTime::from_utc(naive, ::chrono::Utc)
     }
 }

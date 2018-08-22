@@ -13,7 +13,7 @@ pub fn send_structured<T: ::serde::Serialize>(
     } else {
         // TODO: Log the error
     }
-    let url = ::reqwest::Url::parse(&url_text).unwrap();
+    let url = ::reqwest::Url::parse(&url_text).expect("Internal error, failed to parse Slack URL");
     client.get(url).send()?.text()
 }
 
