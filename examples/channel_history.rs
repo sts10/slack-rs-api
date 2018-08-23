@@ -23,12 +23,6 @@ fn main() {
                 ..slack::channels::HistoryRequest::default()
             },
         );
-        for message in response.unwrap().messages {
-            if let ::slack::Message::Standard(::slack::MessageStandard { ts: Some(ts), .. }) = message {
-                let datetime: ::chrono::DateTime<::chrono::Utc> = ts.into();
-                println!("{:?}", datetime.timestamp_subsec_millis());
-            }
-        }
     }
 
     /*

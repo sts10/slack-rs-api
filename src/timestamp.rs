@@ -1,17 +1,17 @@
+//use core::num::NonZeroU64;
 use serde::de::{self, Deserialize, Deserializer, Error, Visitor};
 use std::fmt;
 
-// NOTE: This falls apart after a few decades
 #[derive(Clone, Copy, Debug)]
 pub struct Timestamp {
-    seconds: u32,
-    milliseconds: Option<[u8; 3]>,
+    microseconds: u64,
 }
 
 impl Into<::chrono::DateTime<::chrono::Utc>> for Timestamp {
     fn into(self) -> ::chrono::DateTime<::chrono::Utc> {
-        let millis = u8s_to_u32(&self.milliseconds.unwrap_or([0, 0, 0]));
-        let naive = ::chrono::naive::NaiveDateTime::from_timestamp(self.seconds as i64, millis * 1_000_000);
+        let seconds = self.microseconds / 1_000_000;
+        let nanoseconds = (self.microseconds % 1_000_000) * 1_000;
+        let naive = ::chrono::naive::NaiveDateTime::from_timestamp(seconds as i64, nanoseconds as u32);
         ::chrono::DateTime::from_utc(naive, ::chrono::Utc)
     }
 }
@@ -47,16 +47,15 @@ impl<'de> Visitor<'de> for TimestampVisitor {
             let dot_location = value
                 .find('.')
                 .ok_or_else(|| Error::custom("Got a string without a ."))?;
-            let (seconds_str, millis_str) = value.split_at(dot_location);
+            let (seconds_str, micros_str) = value.split_at(dot_location);
+            let seconds = seconds_str
+                .parse::<u64>()
+                .map_err(|_| Error::custom(format!("Cannot parse {} as a number", seconds_str)))?;
+            let microseconds = micros_str[1..]
+                .parse::<u64>()
+                .map_err(|_| Error::custom(format!("Cannot parse {} as a number", micros_str)))?;
             Ok(Timestamp {
-                seconds: seconds_str
-                    .parse()
-                    .map_err(|_| Error::custom(format!("Cannot parse {} as a number", seconds_str)))?,
-                milliseconds: Some(u32_to_u8s(
-                    millis_str[1..]
-                        .parse()
-                        .map_err(|_| Error::custom(format!("Cannot parse {} as a number", millis_str)))?,
-                )),
+                microseconds: seconds * 1_000_000 + microseconds,
             })
         } else {
             Err(E::custom(format!(
@@ -71,8 +70,7 @@ impl<'de> Visitor<'de> for TimestampVisitor {
         E: de::Error,
     {
         Ok(Timestamp {
-            seconds: value as u32,
-            milliseconds: None,
+            microseconds: value * 1_000_000,
         })
     }
 }
@@ -99,9 +97,11 @@ fn u8s_to_u32(x: &[u8; 3]) -> u32 {
 
 impl ::std::fmt::Display for Timestamp {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-        match self.milliseconds {
-            Some(millis) => write!(f, "\"{}.{:06}\"", self.seconds, u8s_to_u32(&millis)),
-            None => write!(f, "{}", self.seconds),
-        }
+        write!(
+            f,
+            "\"{}.{:06}\"",
+            self.microseconds / 1_000_000,
+            self.microseconds % 1_000_000
+        )
     }
 }
