@@ -1,8 +1,8 @@
-//use core::num::NonZeroU64;
 use serde::de::{self, Deserialize, Deserializer, Error, Visitor};
+use serde::ser::{Serialize, Serializer};
 use std::fmt;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Timestamp {
     microseconds: u64,
 }
@@ -17,25 +17,11 @@ impl Into<::chrono::DateTime<::chrono::Utc>> for Timestamp {
 }
 
 struct TimestampVisitor;
-use serde::de::MapAccess;
 impl<'de> Visitor<'de> for TimestampVisitor {
     type Value = Timestamp;
 
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         formatter.write_str("a Unix-style timestamp, as a u32 or string")
-    }
-
-    fn visit_map<M>(self, mut access: M) -> Result<Self::Value, M::Error>
-    where
-        M: MapAccess<'de>,
-    {
-        let mut message = String::new();
-        while let Some((l, r)) = access.next_entry()? {
-            let l: String = l;
-            let r: String = r;
-            message += &format!("{}, {}\n", l, r);
-        }
-        Err(Error::custom(message))
     }
 
     fn visit_str<E>(self, value: &str) -> Result<Timestamp, E>
@@ -84,24 +70,38 @@ impl<'de> Deserialize<'de> for Timestamp {
     }
 }
 
-fn u32_to_u8s(x: u32) -> [u8; 3] {
-    let b1: u8 = ((x >> 16) & 0xff) as u8;
-    let b2: u8 = ((x >> 8) & 0xff) as u8;
-    let b3: u8 = (x & 0xff) as u8;
-    return [b1, b2, b3];
-}
-
-fn u8s_to_u32(x: &[u8; 3]) -> u32 {
-    (x[0] as u32) << 16 | (x[1] as u32) << 8 | (x[2] as u32)
+impl Serialize for Timestamp {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_str(&self.to_string())
+    }
 }
 
 impl ::std::fmt::Display for Timestamp {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         write!(
             f,
-            "\"{}.{:06}\"",
+            "{}.{:06}",
             self.microseconds / 1_000_000,
             self.microseconds % 1_000_000
         )
+    }
+}
+
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+
+    #[test]
+    fn ser_de() {
+        let the_json = "\"1234.567890\"";
+
+        let ts: Timestamp = ::serde_json::from_str(the_json).unwrap();
+        let as_str = ts.to_string();
+
+        assert_eq!(&as_str, "1234.567890");
     }
 }

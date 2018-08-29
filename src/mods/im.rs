@@ -8,9 +8,9 @@
 api_call!(close, "im.close", CloseRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
-pub struct CloseRequest<'a> {
+pub struct CloseRequest {
     /// Direct message channel to close.
-    pub channel: &'a str,
+    pub channel: ::DmId,
 }
 
 /// Fetches history of messages and events from direct message channel.
@@ -20,13 +20,13 @@ pub struct CloseRequest<'a> {
 api_call!(history, "im.history", HistoryRequest, HistoryResponse);
 
 #[derive(Clone, Default, Debug, Serialize)]
-pub struct HistoryRequest<'a> {
+pub struct HistoryRequest {
     /// Direct message channel to fetch history for.
-    pub channel: &'a str,
+    pub channel: ::DmId,
     /// End of time range of messages to include in results.
-    pub latest: Option<&'a str>,
+    pub latest: Option<::Timestamp>,
     /// Start of time range of messages to include in results.
-    pub oldest: Option<&'a str>,
+    pub oldest: Option<::Timestamp>,
     /// Include messages with latest or oldest timestamp in results.
     pub inclusive: Option<bool>,
     /// Number of messages to return, between 1 and 1000.
@@ -72,11 +72,11 @@ pub struct ListResponse {
 api_call!(mark, "im.mark", MarkRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
-pub struct MarkRequest<'a> {
+pub struct MarkRequest {
     /// Direct message channel to set reading cursor in.
-    pub channel: &'a str,
+    pub channel: ::DmId,
     /// Timestamp of the most recently seen message.
-    pub ts: &'a str,
+    pub ts: ::Timestamp,
 }
 
 /// Opens a direct message channel.
@@ -86,9 +86,9 @@ pub struct MarkRequest<'a> {
 api_call!(open, "im.open", OpenRequest, OpenResponse);
 
 #[derive(Clone, Default, Debug, Serialize)]
-pub struct OpenRequest<'a> {
+pub struct OpenRequest {
     /// User to open a direct message channel with.
-    pub user: &'a str,
+    pub user: ::UserId,
     /// Boolean, indicates you want the full IM channel definition in the response.
     pub return_im: Option<bool>,
 }
@@ -106,11 +106,11 @@ pub struct OpenResponse {
 api_call!(replies, "im.replies", RepliesRequest, RepliesResponse);
 
 #[derive(Clone, Default, Debug, Serialize)]
-pub struct RepliesRequest<'a> {
+pub struct RepliesRequest {
     /// Direct message channel to fetch thread from
-    pub channel: &'a str,
+    pub channel: ::DmId,
     /// Unique identifier of a thread's parent message
-    pub thread_ts: &'a str,
+    pub thread_ts: ::Timestamp,
 }
 
 #[derive(Clone, Debug, Deserialize)]

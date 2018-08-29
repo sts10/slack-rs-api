@@ -76,6 +76,7 @@ make_id!(BotId, b'B', BotIdVisitor);
 make_id!(UserId, b'U', UserIdVisitor);
 make_id!(ChannelId, b'C', ChannelIdVisitor);
 make_id!(GroupId, b'G', GroupIdVisitor);
+make_id!(DmId, b'D', DmIdVisitor);
 make_id!(TeamId, b'T', TeamIdVisitor);
 make_id!(AppId, b'A', AppIdVisitor);
 make_id!(FileId, b'F', FileIdVisitor);
@@ -85,6 +86,7 @@ make_id!(FileId, b'F', FileIdVisitor);
 pub enum ConversationId {
     Channel(ChannelId),
     Group(GroupId),
+    DirectMessage(DmId),
 }
 
 impl ::std::fmt::Display for ConversationId {
@@ -92,6 +94,7 @@ impl ::std::fmt::Display for ConversationId {
         match &self {
             ConversationId::Channel(c) => write!(f, "{}", c),
             ConversationId::Group(g) => write!(f, "{}", g),
+            ConversationId::DirectMessage(d) => write!(f, "{}", d),
         }
     }
 }
@@ -105,5 +108,11 @@ impl ::std::convert::From<ChannelId> for ConversationId {
 impl ::std::convert::From<GroupId> for ConversationId {
     fn from(id: GroupId) -> Self {
         ConversationId::Group(id)
+    }
+}
+
+impl ::std::convert::From<DmId> for ConversationId {
+    fn from(id: DmId) -> Self {
+        ConversationId::DirectMessage(id)
     }
 }

@@ -39,13 +39,13 @@ pub struct CreateResponse {
 api_call!(history, "channels.history", HistoryRequest, HistoryResponse);
 
 #[derive(Clone, Default, Debug, Serialize)]
-pub struct HistoryRequest<'a> {
+pub struct HistoryRequest {
     /// Channel to fetch history for.
     pub channel: ::ChannelId,
     /// End of time range of messages to include in results.
-    pub latest: Option<&'a str>,
+    pub latest: Option<::Timestamp>,
     /// Start of time range of messages to include in results.
-    pub oldest: Option<&'a str>,
+    pub oldest: Option<::Timestamp>,
     /// Include messages with latest or oldest timestamp in results.
     pub inclusive: Option<bool>,
     /// Number of messages to return, between 1 and 1000.
@@ -123,7 +123,7 @@ pub struct JoinRequest<'a> {
 #[serde(deny_unknown_fields)]
 pub struct JoinResponse {
     ok: bool,
-    pub channel: ::Channel, //TODO: This is actually an Either based on already_in_channel
+    pub channel: ::Channel, //TODO: This contains different attributes depending on already_in_channel
     pub already_in_channel: Option<bool>,
 }
 
@@ -196,11 +196,11 @@ pub struct ResponseMetadata {
 api_call!(mark, "channels.mark", MarkRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
-pub struct MarkRequest<'a> {
+pub struct MarkRequest {
     /// Channel to set reading cursor in.
     pub channel: ::ChannelId,
     /// Timestamp of the most recently seen message.
-    pub ts: &'a str,
+    pub ts: ::Timestamp,
 }
 
 /// Renames a channel.
@@ -233,14 +233,13 @@ pub struct RenameResponse {
 api_call!(replies, "channels.replies", RepliesRequest, RepliesResponse);
 
 #[derive(Clone, Default, Debug, Serialize)]
-pub struct RepliesRequest<'a> {
+pub struct RepliesRequest {
     /// Channel to fetch thread from
     pub channel: ::ChannelId,
     /// Unique identifier of a thread's parent message
-    pub thread_ts: &'a str,
+    pub thread_ts: ::Timestamp,
 }
 
-// TODO: This looks like its messages are of mixed type?
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct RepliesResponse {
