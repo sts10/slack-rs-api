@@ -33,10 +33,10 @@ pub struct CreateResponse {
 
 api_call!(disable, "usergroups.disable", DisableRequest, DisableResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
-pub struct DisableRequest<'a> {
+#[derive(Clone, Debug, Serialize)]
+pub struct DisableRequest {
     /// The encoded ID of the User Group to disable.
-    pub usergroup: &'a str,
+    pub usergroup: ::UsergroupId,
     /// Include the number of users in the User Group.
     pub include_count: Option<bool>,
 }
@@ -54,10 +54,10 @@ pub struct DisableResponse {
 
 api_call!(enable, "usergroups.enable", EnableRequest, EnableResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
-pub struct EnableRequest<'a> {
+#[derive(Clone, Debug, Serialize)]
+pub struct EnableRequest {
     /// The encoded ID of the User Group to enable.
-    pub usergroup: &'a str,
+    pub usergroup: ::UsergroupId,
     /// Include the number of users in the User Group.
     pub include_count: Option<bool>,
 }
@@ -98,10 +98,10 @@ pub struct ListResponse {
 
 api_call!(update, "usergroups.update", UpdateRequest, UpdateResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct UpdateRequest<'a> {
     /// The encoded ID of the User Group to update.
-    pub usergroup: &'a str,
+    pub usergroup: ::UsergroupId,
     /// A name for the User Group. Must be unique among User Groups.
     pub name: Option<&'a str>,
     /// A mention handle. Must be unique among channels, users and User Groups.
@@ -109,7 +109,7 @@ pub struct UpdateRequest<'a> {
     /// A short description of the User Group.
     pub description: Option<&'a str>,
     /// A comma separated string of encoded channel IDs for which the User Group uses as a default.
-    pub channels: Option<&'a str>,
+    pub channels: Option<&'a str>, // TODO: Should be a Vec<ChannelId> and serialize_with
     /// Include the number of users in the User Group.
     pub include_count: Option<bool>,
 }

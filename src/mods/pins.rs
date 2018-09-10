@@ -4,16 +4,14 @@
 
 api_call!(add, "pins.add", AddRequest => ());
 
-#[derive(Clone, Default, Debug, Serialize)]
-pub struct AddRequest<'a> {
+#[derive(Clone, Debug, Serialize)]
+pub struct AddRequest {
     /// Channel to pin the item in.
-    pub channel: &'a str,
+    pub channel: ::ChannelId,
     /// File to pin.
-    pub file: Option<&'a str>,
-    /// File comment to pin.
-    pub file_comment: Option<&'a str>,
+    pub file: Option<::FileId>,
     /// Timestamp of the message to pin.
-    pub timestamp: Option<&'a str>,
+    pub timestamp: Option<::Timestamp>,
 }
 
 /// Lists items pinned to a channel.
@@ -22,10 +20,10 @@ pub struct AddRequest<'a> {
 
 api_call!(list, "pins.list", ListRequest, ListResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
-pub struct ListRequest<'a> {
+#[derive(Clone, Debug, Serialize)]
+pub struct ListRequest {
     /// Channel to get pinned items for.
-    pub channel: &'a str,
+    pub channel: ::ChannelId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -46,8 +44,8 @@ pub enum ListResponseItem {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ListResponseItemFile {
-    pub created: Option<f32>,
-    pub created_by: Option<String>,
+    pub created: Option<::Timestamp>,
+    pub created_by: Option<::UserId>,
     pub file: ::File,
 }
 
@@ -55,17 +53,17 @@ pub struct ListResponseItemFile {
 #[serde(deny_unknown_fields)]
 pub struct ListResponseItemFileComment {
     pub comment: ::FileComment,
-    pub created: Option<f32>,
-    pub created_by: Option<String>,
+    pub created: Option<::Timestamp>,
+    pub created_by: Option<::UserId>,
     pub file: ::File,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ListResponseItemMessage {
-    pub channel: String,
-    pub created: Option<f32>,
-    pub created_by: Option<String>,
+    pub channel: ::ChannelId,
+    pub created: Option<::Timestamp>,
+    pub created_by: Option<::UserId>,
     pub message: ::Message,
 }
 
@@ -75,14 +73,12 @@ pub struct ListResponseItemMessage {
 
 api_call!(remove, "pins.remove", RemoveRequest => ());
 
-#[derive(Clone, Default, Debug, Serialize)]
-pub struct RemoveRequest<'a> {
+#[derive(Clone, Debug, Serialize)]
+pub struct RemoveRequest {
     /// Channel where the item is pinned to.
-    pub channel: &'a str,
+    pub channel: ::ChannelId,
     /// File to un-pin.
-    pub file: Option<&'a str>,
-    /// File comment to un-pin.
-    pub file_comment: Option<&'a str>,
+    pub file: Option<::FileId>,
     /// Timestamp of the message to un-pin.
-    pub timestamp: Option<&'a str>,
+    pub timestamp: Option<::Timestamp>,
 }

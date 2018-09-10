@@ -22,6 +22,10 @@ extern crate reqwest;
 extern crate serde_json;
 extern crate serde_urlencoded;
 extern crate uuid;
+#[macro_use]
+extern crate derive_new;
+#[macro_use]
+extern crate lazy_static;
 
 #[macro_use]
 mod requests;

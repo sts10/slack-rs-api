@@ -5,9 +5,9 @@
 api_call!(get, "users.profile.get", GetRequest, GetResponse);
 
 #[derive(Clone, Default, Debug, Serialize)]
-pub struct GetRequest<'a> {
+pub struct GetRequest {
     /// User to retrieve profile info for
-    pub user: Option<&'a str>,
+    pub user: Option<::UserId>,
     /// Include labels for each ID in custom profile fields
     pub include_labels: Option<bool>,
 }
@@ -28,7 +28,7 @@ api_call!(set, "users.profile.set", SetRequest, SetResponse);
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct SetRequest<'a> {
     /// ID of user to change. This argument may only be specified by team admins on paid teams.
-    pub user: Option<&'a str>,
+    pub user: Option<::UserId>,
     /// Collection of key:value pairs presented as a URL-encoded JSON hash.
     pub profile: Option<&'a str>,
     /// Name of a single key to set. Usable only if profile is not passed.

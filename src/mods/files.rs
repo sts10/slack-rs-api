@@ -1,17 +1,15 @@
 //! Get info on files uploaded to Slack, upload new files to Slack.
 
-use types::*;
-
 /// Deletes a file.
 ///
 /// Wraps https://api.slack.com/methods/files.delete
 
 api_call!(delete, "files.delete", DeleteRequest => ());
 
-#[derive(Clone, Default, Debug, Serialize)]
-pub struct DeleteRequest<'a> {
+#[derive(Clone, Debug, Serialize)]
+pub struct DeleteRequest {
     /// ID of file to delete.
-    pub file: &'a str,
+    pub file: ::FileId,
 }
 
 /// Gets information about a team file.
@@ -20,10 +18,10 @@ pub struct DeleteRequest<'a> {
 
 api_call!(info, "files.info", InfoRequest, InfoResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
-pub struct InfoRequest<'a> {
+#[derive(Clone, Debug, Serialize)]
+pub struct InfoRequest {
     /// Specify a file by providing its ID.
-    pub file: &'a str,
+    pub file: ::FileId,
     /// Number of items to return per page.
     pub count: Option<u32>,
     /// Page number of results to return.
@@ -34,9 +32,9 @@ pub struct InfoRequest<'a> {
 #[serde(deny_unknown_fields)]
 pub struct InfoResponse {
     ok: bool,
-    pub comments: Vec<FileComment>,
-    pub file: File,
-    pub paging: Paging,
+    pub comments: Vec<::FileComment>,
+    pub file: ::File,
+    pub paging: ::Paging,
 }
 
 /// Lists & filters team files.
@@ -46,11 +44,11 @@ pub struct InfoResponse {
 api_call!(list, "files.list", ListRequest, ListResponse);
 
 #[derive(Clone, Default, Debug, Serialize)]
-pub struct ListRequest<'a> {
+pub struct ListRequest {
     /// Filter files created by a single user.
-    pub user: Option<&'a str>,
+    pub user: Option<::UserId>,
     /// Filter files appearing in a specific channel, indicated by its ID.
-    pub channel: Option<&'a str>,
+    pub channel: Option<::ChannelId>,
     /// Filter files created after this timestamp (inclusive).
     pub ts_from: Option<u32>,
     /// Filter files created before this timestamp (inclusive).
@@ -68,11 +66,29 @@ pub struct ListRequest<'a> {
     ///
     ///
     /// You can pass multiple values in the types argument, like types=spaces,snippets.The default value is all, which does not filter the list.
-    pub types: Option<&'a str>,
+    pub types: Option<FileType>,
     /// Number of items to return per page.
     pub count: Option<u32>,
     /// Page number of results to return.
     pub page: Option<u32>,
+}
+
+#[derive(Clone, Debug, Serialize)]
+#[serde(rename = "snake_case")]
+pub enum FileType {
+    All,
+    Spaces,
+    Snippets,
+    Images,
+    Gdocs,
+    Zips,
+    Pdfs,
+}
+
+impl Default for FileType {
+    fn default() -> Self {
+        FileType::All
+    }
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -94,17 +110,17 @@ api_call!(
     RevokePublicURLResponse
 );
 
-#[derive(Clone, Default, Debug, Serialize)]
-pub struct RevokePublicURLRequest<'a> {
+#[derive(Clone, Debug, Serialize)]
+pub struct RevokePublicURLRequest {
     /// File to revoke
-    pub file: &'a str,
+    pub file: ::FileId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct RevokePublicURLResponse {
     ok: bool,
-    pub file: File,
+    pub file: ::File,
 }
 
 /// Enables a file for public/external sharing.
@@ -118,15 +134,15 @@ api_call!(
     SharedPublicURLResponse
 );
 
-#[derive(Clone, Default, Debug, Serialize)]
-pub struct SharedPublicURLRequest<'a> {
+#[derive(Clone, Debug, Serialize)]
+pub struct SharedPublicURLRequest {
     /// File to share
-    pub file: &'a str,
+    pub file: ::FileId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct SharedPublicURLResponse {
     ok: bool,
-    pub file: File,
+    pub file: ::File,
 }

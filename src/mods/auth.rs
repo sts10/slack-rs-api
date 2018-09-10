@@ -4,9 +4,10 @@
 
 api_call!(revoke, "auth.revoke", RevokeRequest, RevokeResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Default, Debug, Serialize, new)]
 pub struct RevokeRequest {
     /// Setting this parameter to 1 triggers a testing mode where the specified token will not actually be revoked.
+    #[new(default)]
     pub test: Option<bool>,
 }
 
@@ -37,22 +38,20 @@ pub struct TestResponse {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::env;
+
+    lazy_static! {
+        pub static ref CLIENT: ::requests::Client = ::requests::default_client();
+        pub static ref TOKEN: String = ::std::env::var("SLACK_API_TOKEN").unwrap();
+    }
 
     #[test]
     fn test_revoke() {
-        let client = ::requests::default_client();
-        let token = env::var("SLACK_API_TOKEN").unwrap();
-
         let req = RevokeRequest { test: Some(true) };
-        assert_eq!(revoke(&client, &token, &req).unwrap().revoked, false);
+        assert_eq!(revoke(&CLIENT, &TOKEN, &req).unwrap().revoked, false);
     }
 
     #[test]
     fn test_test() {
-        let client = ::requests::default_client();
-        let token = env::var("SLACK_API_TOKEN").unwrap();
-
-        test(&client, &token).unwrap();
+        test(&CLIENT, &TOKEN).unwrap();
     }
 }

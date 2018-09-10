@@ -4,10 +4,10 @@
 
 api_call!(list, "usergroups.users.list", ListRequest, ListResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
-pub struct ListRequest<'a> {
+#[derive(Clone, Debug, Serialize)]
+pub struct ListRequest {
     /// The encoded ID of the User Group to update.
-    pub usergroup: &'a str,
+    pub usergroup: ::UsergroupId,
     /// Allow results that involve disabled User Groups.
     pub include_disabled: Option<bool>,
 }
@@ -16,7 +16,7 @@ pub struct ListRequest<'a> {
 #[serde(deny_unknown_fields)]
 pub struct ListResponse {
     ok: bool,
-    pub users: Option<Vec<String>>,
+    pub users: Option<Vec<::UserId>>,
 }
 
 /// Update the list of users for a User Group
@@ -25,12 +25,12 @@ pub struct ListResponse {
 
 api_call!(update, "usergroups.users.update", UpdateRequest, UpdateResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct UpdateRequest<'a> {
     /// The encoded ID of the User Group to update.
-    pub usergroup: &'a str,
+    pub usergroup: ::UsergroupId,
     /// A comma separated string of encoded user IDs that represent the entire list of users for the User Group.
-    pub users: &'a str,
+    pub users: &'a str, // TODO: Should be a Vec<UserId> and a serialize_with
     /// Include the number of users in the User Group.
     pub include_count: Option<bool>,
 }

@@ -1,3 +1,5 @@
+cargo-features = ["profile-overrides"]
+
 [package]
 authors = ["Benjamin Elder <ben.the.elder@gmail.com>", "Matt Jones <mthjones@gmail.com>"]
 description = "Interface for the Slack Web API"
@@ -15,6 +17,8 @@ serde_urlencoded = "0.5"
 reqwest = "0.8"
 uuid = { version = "0.6", features = ["serde", "v4"] }
 chrono = "0.4"
+derive-new = "0.5"
+lazy_static = "1.0"
 
 [dev-dependencies]
 openssl-probe = "*"
@@ -27,4 +31,7 @@ harness = false
 [[bench]]
 name = "history"
 harness = false
+
+[profile.dev.build-override]
+opt-level = 3
 

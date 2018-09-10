@@ -1,6 +1,6 @@
 macro_rules! make_id {
     ($name:ident, $firstchar:expr, $visname:ident) => {
-        #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
+        #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
         pub struct $name {
             len: u8,
             buf: [u8; 9],
@@ -9,9 +9,13 @@ macro_rules! make_id {
         impl<'a> From<&'a str> for $name {
             #[inline]
             fn from(input: &'a str) -> Self {
-                let mut output = Self::default();
+                assert!(input.len() < 10);
+                assert!(input.as_bytes()[0] == $firstchar);
+                let mut output = Self {
+                    len: input.len() as u8,
+                    buf: [0; 9],
+                };
                 output.buf[..input.len()].copy_from_slice(&input.as_bytes());
-                output.len = input.len() as u8;
                 output
             }
         }
@@ -80,8 +84,10 @@ make_id!(DmId, b'D', DmIdVisitor);
 make_id!(TeamId, b'T', TeamIdVisitor);
 make_id!(AppId, b'A', AppIdVisitor);
 make_id!(FileId, b'F', FileIdVisitor);
+make_id!(UsergroupId, b'S', UsergroupIdVisitor);
+make_id!(ReminderId, b'R', ReminderIdVisitor);
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Deserialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Deserialize, Serialize)]
 #[serde(untagged)]
 pub enum ConversationId {
     Channel(ChannelId),

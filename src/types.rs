@@ -343,6 +343,7 @@ deserialize_internally_tagged! {
         //ChannelRename,
         //ChannelUnarchive,
         //CommandsChanged,
+        DesktopNotification(EventDesktopNotification),
         DndUpdatedUser(EventDndUpdatedUser),
         //EmailDomainChanged,
         FileChange(EventFileChange),
@@ -402,6 +403,25 @@ deserialize_internally_tagged! {
         UserTyping(EventUserTyping),
     }
 }
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[allow(non_snake_case)]
+pub struct EventDesktopNotification {
+    title: String,
+    subtitle: String,
+    msg: Timestamp,
+    ts: Timestamp,
+    content: String,
+    channel: ConversationId,
+    launchUri: String,
+    avatarImage: String,
+    ssbFilename: String,
+    imageUri: String,
+    is_shared: bool,
+    event_ts: Timestamp,
+}
+
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct EventFileChange {
@@ -527,6 +547,7 @@ pub struct DndStatus {
 pub struct EventFileShared {
     pub file_id: FileId,
     pub user_id: UserId,
+    pub channel_id: ChannelId,
     pub file: JustAFileId,
     pub event_ts: Timestamp,
     pub ts: Option<Timestamp>,

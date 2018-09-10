@@ -30,58 +30,6 @@ pub fn default_client() -> ::reqwest::Client {
     ::reqwest::Client::new()
 }
 
-macro_rules! slack {
-    {
-        $(#[$attr:meta])*
-        $name:ident,
-        $strname:expr,
-        $reqname:ident {
-            $($(#[$req_item_attr:meta])* $reqattr:ident: $reqtyp:ty),*,
-        },
-        $resname:ident {
-            $($resattr:ident: $restyp:ty),*,
-        },
-    } => {
-        $(#[$attr])*
-        pub fn $name(client: &::requests::Client, token: &str, request: &$reqname) -> Result<$resname, ::requests::Error> {
-            use requests::Error;
-            #[derive(Deserialize)]
-            struct IsError {
-                ok: bool,
-                error: Option<String>,
-            }
-
-            let url = ::requests::get_slack_url_for_method($strname) + "?token=" + token + "&";
-            let bytes = ::requests::send_structured(client, &url, &request).map_err(Error::Client)?;
-
-            let is_error = ::serde_json::from_str::<IsError>(&bytes);
-            match is_error {
-                // Complete failure, can't do anything with the bytes
-                Err(e) => Err(Error::CannotParse(e, bytes)),
-                // Slack sent us an error
-                Ok(IsError { ok: false, error }) => Err(Error::Slack(error.unwrap_or_default())),
-                // Slack sent us an success result
-                Ok(IsError { ok: true, .. }) => match ::serde_json::from_str::<$resname>(&bytes) {
-                    Ok(res) => Ok(res),
-                    Err(e) => Err(Error::CannotParse(e, bytes)),
-                },
-            }
-        }
-
-        #[derive(Clone, Default, Debug, Serialize)]
-        pub struct $reqname<'a> {
-            $($(#[$req_item_attr])* pub $reqattr: $reqtyp,)*
-        }
-
-        #[derive(Clone, Debug, Deserialize)]
-        #[serde(deny_unknown_fields)]
-        pub struct $resname {
-            ok: bool,
-            $(pub $resattr: $restyp,)*
-        }
-    };
-}
-
 macro_rules! api_call {
     ($name:ident, $strname:expr, $reqty:ty, $okty:ty) => {
         pub fn $name(client: &::requests::Client, token: &str, request: &$reqty) -> Result<$okty, ::requests::Error> {

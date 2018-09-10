@@ -5,10 +5,10 @@
 api_call!(info, "bots.info", InfoRequest, InfoResponse);
 //TODO: This is very silly to call without a bot in the request
 // especially because that's the only situation in which we get an ok but no bot field
-#[derive(Clone, Default, Debug, Serialize)]
-pub struct InfoRequest<'a> {
+#[derive(Clone, Default, Debug, Serialize, new)]
+pub struct InfoRequest {
     /// Bot user to get info on
-    pub bot: Option<&'a str>,
+    pub bot: Option<::BotId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]

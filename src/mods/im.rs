@@ -1,5 +1,4 @@
 //! Get info on your direct messages.
-// TODO: check signatures
 
 /// Close a direct message channel.
 ///
@@ -7,7 +6,7 @@
 
 api_call!(close, "im.close", CloseRequest => ());
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct CloseRequest {
     /// Direct message channel to close.
     pub channel: ::DmId,
@@ -19,7 +18,7 @@ pub struct CloseRequest {
 
 api_call!(history, "im.history", HistoryRequest, HistoryResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct HistoryRequest {
     /// Direct message channel to fetch history for.
     pub channel: ::DmId,
@@ -50,10 +49,10 @@ pub struct HistoryResponse {
 
 api_call!(list, "im.list", ListRequest, ListResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct ListRequest<'a> {
     /// Paginate through collections of data by setting the `cursor` parameter to a `next_cursor` attribute returned by a previous request's `response_metadata`. Default value fetches the first "page" of the collection. See pagination for more detail.
-    pub cursor: Option<&'a str>,
+    pub cursor: Option<&'a str>, //TODO: need a new type for the cursor
     /// The maximum number of items to return. Fewer than the requested number of items may be returned, even if the end of the users list hasn't been reached.
     pub limit: Option<u32>,
 }
@@ -71,7 +70,7 @@ pub struct ListResponse {
 
 api_call!(mark, "im.mark", MarkRequest => ());
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct MarkRequest {
     /// Direct message channel to set reading cursor in.
     pub channel: ::DmId,
@@ -85,7 +84,7 @@ pub struct MarkRequest {
 
 api_call!(open, "im.open", OpenRequest, OpenResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct OpenRequest {
     /// User to open a direct message channel with.
     pub user: ::UserId,
@@ -105,7 +104,7 @@ pub struct OpenResponse {
 
 api_call!(replies, "im.replies", RepliesRequest, RepliesResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct RepliesRequest {
     /// Direct message channel to fetch thread from
     pub channel: ::DmId,

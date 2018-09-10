@@ -9,13 +9,11 @@ pub struct AddRequest<'a> {
     /// Reaction (emoji) name.
     pub name: &'a str,
     /// File to add reaction to.
-    pub file: Option<&'a str>,
-    /// File comment to add reaction to.
-    pub file_comment: Option<&'a str>,
+    pub file: Option<::FileId>,
     /// Channel where the message to add reaction to was posted.
-    pub channel: Option<&'a str>,
+    pub channel: Option<::ChannelId>,
     /// Timestamp of the message to add reaction to.
-    pub timestamp: Option<&'a str>,
+    pub timestamp: Option<::Timestamp>,
 }
 
 /// Gets reactions for an item.
@@ -25,15 +23,13 @@ pub struct AddRequest<'a> {
 api_call!(get, "reactions.get", GetRequest, GetResponse);
 
 #[derive(Clone, Default, Debug, Serialize)]
-pub struct GetRequest<'a> {
+pub struct GetRequest {
     /// File to get reactions for.
-    pub file: Option<&'a str>,
-    /// File comment to get reactions for.
-    pub file_comment: Option<&'a str>,
+    pub file: Option<::FileId>,
     /// Channel where the message to get reactions for was posted.
-    pub channel: Option<&'a str>,
+    pub channel: Option<::ChannelId>,
     /// Timestamp of the message to get reactions for.
-    pub timestamp: Option<&'a str>,
+    pub timestamp: Option<::Timestamp>,
     /// If true always return the complete reaction list.
     pub full: Option<bool>,
 }
@@ -74,9 +70,9 @@ pub struct GetResponseMessage {
 api_call!(list, "reactions.list", ListRequest, ListResponse);
 
 #[derive(Clone, Default, Debug, Serialize)]
-pub struct ListRequest<'a> {
+pub struct ListRequest {
     /// Show reactions made by this user. Defaults to the authed user.
-    pub user: Option<&'a str>,
+    pub user: Option<::UserId>,
     /// If true always return the complete reaction list.
     pub full: Option<bool>,
     /// Number of items to return per page.
@@ -133,11 +129,9 @@ pub struct RemoveRequest<'a> {
     /// Reaction (emoji) name.
     pub name: &'a str,
     /// File to remove reaction from.
-    pub file: Option<&'a str>,
-    /// File comment to remove reaction from.
-    pub file_comment: Option<&'a str>,
+    pub file: Option<::FileId>,
     /// Channel where the message to remove reaction from was posted.
-    pub channel: Option<&'a str>,
+    pub channel: Option<::ChannelId>,
     /// Timestamp of the message to remove reaction from.
-    pub timestamp: Option<&'a str>,
+    pub timestamp: Option<::Timestamp>,
 }

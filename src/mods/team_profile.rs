@@ -7,9 +7,23 @@ use std::collections::HashMap;
 api_call!(get, "team.profile.get", GetRequest, GetResponse);
 
 #[derive(Clone, Default, Debug, Serialize)]
-pub struct GetRequest<'a> {
+pub struct GetRequest {
     /// Filter by visibility.
-    pub visibility: Option<&'a str>,
+    pub visibility: Option<Visibility>,
+}
+
+#[derive(Clone, Debug, Serialize)]
+#[serde(rename = "snake_case")]
+pub enum Visibility {
+    All,
+    Visible,
+    Hidden,
+}
+
+impl Default for Visibility {
+    fn default() -> Self {
+        Visibility::All
+    }
 }
 
 #[derive(Clone, Debug, Deserialize)]

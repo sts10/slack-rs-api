@@ -11,7 +11,7 @@ pub struct AddRequest<'a> {
     /// When this reminder should happen: the Unix timestamp (up to five years from now), the number of seconds until the reminder (if within 24 hours), or a natural language description (Ex. "in 15 minutes," or "every Thursday")
     pub time: u32,
     /// The user who will receive the reminder. If no user is specified, the reminder will go to user who created it.
-    pub user: Option<&'a str>,
+    pub user: Option<::UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -27,10 +27,10 @@ pub struct AddResponse {
 
 api_call!(complete, "reminders.complete", CompleteRequest => ());
 
-#[derive(Clone, Default, Debug, Serialize)]
-pub struct CompleteRequest<'a> {
+#[derive(Clone, Debug, Serialize)]
+pub struct CompleteRequest {
     /// The ID of the reminder to be marked as complete
-    pub reminder: &'a str,
+    pub reminder: ::ReminderId,
 }
 
 /// Deletes a reminder.
@@ -39,10 +39,10 @@ pub struct CompleteRequest<'a> {
 
 api_call!(delete, "reminders.delete", DeleteRequest => ());
 
-#[derive(Clone, Default, Debug, Serialize)]
-pub struct DeleteRequest<'a> {
+#[derive(Clone, Debug, Serialize)]
+pub struct DeleteRequest {
     /// The ID of the reminder
-    pub reminder: &'a str,
+    pub reminder: ::ReminderId,
 }
 
 /// Gets information about a reminder.
@@ -51,10 +51,10 @@ pub struct DeleteRequest<'a> {
 
 api_call!(info, "reminders.info", InfoRequest, InfoResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
-pub struct InfoRequest<'a> {
+#[derive(Clone, Debug, Serialize)]
+pub struct InfoRequest {
     /// The ID of the reminder
-    pub reminder: &'a str,
+    pub reminder: ::ReminderId,
 }
 
 #[derive(Clone, Debug, Deserialize)]

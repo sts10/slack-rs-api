@@ -5,15 +5,13 @@
 api_call!(add, "stars.add", AddRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
-pub struct AddRequest<'a> {
+pub struct AddRequest {
     /// File to add star to.
-    pub file: Option<&'a str>,
-    /// File comment to add star to.
-    pub file_comment: Option<&'a str>,
+    pub file: Option<::FileId>,
     /// Channel to add star to, or channel where the message to add star to was posted (used with timestamp).
-    pub channel: Option<&'a str>,
+    pub channel: Option<::ChannelId>,
     /// Timestamp of the message to add star to.
-    pub timestamp: Option<&'a str>,
+    pub timestamp: Option<::Timestamp>,
 }
 
 /// Lists stars for a user.
@@ -56,13 +54,11 @@ pub enum ListResponseItem {
 api_call!(remove, "stars.remove", RemoveRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
-pub struct RemoveRequest<'a> {
+pub struct RemoveRequest {
     /// File to remove star from.
-    pub file: Option<&'a str>,
-    /// File comment to remove star from.
-    pub file_comment: Option<&'a str>,
+    pub file: Option<::FileId>,
     /// Channel to remove star from, or channel where the message to remove star from was posted (used with timestamp).
-    pub channel: Option<&'a str>,
+    pub channel: Option<::ChannelId>,
     /// Timestamp of the message to remove star from.
-    pub timestamp: Option<&'a str>,
+    pub timestamp: Option<::Timestamp>,
 }

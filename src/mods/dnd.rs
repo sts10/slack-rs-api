@@ -31,9 +31,9 @@ pub struct EndSnoozeResponse {
 api_call!(info, "dnd.info", InfoRequest, InfoResponse);
 
 #[derive(Clone, Default, Debug, Serialize)]
-pub struct InfoRequest<'a> {
+pub struct InfoRequest {
     /// User to fetch status for (defaults to current user)
-    pub user: Option<&'a str>,
+    pub user: Option<::UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -54,7 +54,7 @@ pub struct InfoResponse {
 
 api_call!(set_snooze, "dnd.setSnooze", SetSnoozeRequest, SetSnoozeResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct SetSnoozeRequest {
     /// Number of minutes, from now, to snooze until.
     pub num_minutes: u32,
@@ -78,7 +78,7 @@ api_call!(team_info, "dnd.teamInfo", TeamInfoRequest, TeamInfoResponse);
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct TeamInfoRequest<'a> {
     /// Comma-separated list of users to fetch Do Not Disturb status for
-    pub users: Option<&'a str>,
+    pub users: Option<&'a str>, // TODO: This should be a serialize_with on a vec
 }
 
 // TODO: idk what's going on here or how it ever worked

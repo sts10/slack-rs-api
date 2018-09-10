@@ -1,7 +1,4 @@
 //! Get info on your multiparty direct messages.
-//TODO: check signatures
-
-use types::*;
 
 /// Closes a multiparty direct message channel.
 ///
@@ -9,10 +6,10 @@ use types::*;
 
 api_call!(close, "mpim.close", CloseRequest => ());
 
-#[derive(Clone, Default, Debug, Serialize)]
-pub struct CloseRequest<'a> {
+#[derive(Clone, Debug, Serialize)]
+pub struct CloseRequest {
     /// MPIM to close.
-    pub channel: &'a str,
+    pub channel: ::GroupId,
 }
 
 /// Fetches history of messages and events from a multiparty direct message.
@@ -21,14 +18,14 @@ pub struct CloseRequest<'a> {
 
 api_call!(history, "mpim.history", HistoryRequest, HistoryResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
-pub struct HistoryRequest<'a> {
+#[derive(Clone, Debug, Serialize)]
+pub struct HistoryRequest {
     /// Multiparty direct message to fetch history for.
-    pub channel: &'a str,
+    pub channel: ::GroupId,
     /// End of time range of messages to include in results.
-    pub latest: Option<&'a str>,
+    pub latest: Option<::Timestamp>,
     /// Start of time range of messages to include in results.
-    pub oldest: Option<&'a str>,
+    pub oldest: Option<::Timestamp>,
     /// Include messages with latest or oldest timestamp in results.
     pub inclusive: Option<bool>,
     /// Number of messages to return, between 1 and 1000.
@@ -55,7 +52,7 @@ api_call!(list, "mpim.list", () => ListResponse);
 #[derive(Clone, Debug, Deserialize)]
 pub struct ListResponse {
     ok: bool,
-    pub groups: Vec<Mpim>,
+    pub groups: Vec<::Mpim>,
 }
 
 /// Sets the read cursor in a multiparty direct message channel.
@@ -64,12 +61,12 @@ pub struct ListResponse {
 
 api_call!(mark, "mpim.mark", MarkRequest => ());
 
-#[derive(Clone, Default, Debug, Serialize)]
-pub struct MarkRequest<'a> {
+#[derive(Clone, Debug, Serialize)]
+pub struct MarkRequest {
     /// multiparty direct message channel to set reading cursor in.
-    pub channel: &'a str,
+    pub channel: ::GroupId,
     /// Timestamp of the most recently seen message.
-    pub ts: &'a str,
+    pub ts: ::Timestamp,
 }
 
 /// This method opens a multiparty direct message.
@@ -81,7 +78,7 @@ api_call!(open, "mpim.open", OpenRequest, OpenResponse);
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct OpenRequest<'a> {
     /// Comma separated lists of users.  The ordering of the users is preserved whenever a MPIM group is returned.
-    pub users: &'a str,
+    pub users: &'a str, // TODO: Should be Vec<::UserId> and serialize_with
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -97,12 +94,12 @@ pub struct OpenResponse {
 
 api_call!(replies, "mpim.replies", RepliesRequest, RepliesResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
-pub struct RepliesRequest<'a> {
+#[derive(Clone, Debug, Serialize)]
+pub struct RepliesRequest {
     /// Multiparty direct message channel to fetch thread from.
-    pub channel: &'a str,
+    pub channel: ::GroupId,
     /// Unique identifier of a thread's parent message.
-    pub thread_ts: &'a str,
+    pub thread_ts: ::Timestamp,
 }
 
 #[derive(Clone, Debug, Deserialize)]

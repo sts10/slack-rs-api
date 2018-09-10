@@ -17,10 +17,10 @@ api_call!(
     GetPresenceResponse
 );
 
-#[derive(Clone, Default, Debug, Serialize)]
-pub struct GetPresenceRequest<'a> {
+#[derive(Clone, Debug, Serialize)]
+pub struct GetPresenceRequest {
     /// User to get presence info on. Defaults to the authed user.
-    pub user: &'a str,
+    pub user: ::UserId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -50,10 +50,10 @@ pub struct IdentityResponse {
 
 api_call!(info, "users.info", InfoRequest, InfoResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
-pub struct InfoRequest<'a> {
+#[derive(Clone, Debug, Serialize)]
+pub struct InfoRequest {
     /// User to get info on
-    pub user: &'a str,
+    pub user: ::UserId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -132,7 +132,20 @@ api_call!(set_active, "users.setActive");
 api_call!(set_presence, "users.setPresence", SetPresenceRequest => ());
 
 #[derive(Clone, Default, Debug, Serialize)]
-pub struct SetPresenceRequest<'a> {
+pub struct SetPresenceRequest {
     /// Either auto or away
-    pub presence: &'a str,
+    pub presence: Presence,
+}
+
+#[derive(Clone, Debug, Serialize)]
+#[serde(rename = "snake_case")]
+pub enum Presence {
+    Auto,
+    Away,
+}
+
+impl Default for Presence {
+    fn default() -> Self {
+        Presence::Auto
+    }
 }

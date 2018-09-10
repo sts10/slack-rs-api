@@ -5,7 +5,7 @@
 /// Wraps https://api.slack.com/methods/channels.archive
 api_call!(archive, "channels.archive", ArchiveRequest => ());
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct ArchiveRequest {
     /// Channel to archive
     pub channel: ::ChannelId,
@@ -17,11 +17,12 @@ pub struct ArchiveRequest {
 
 api_call!(create, "channels.create", CreateRequest, CreateResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct CreateRequest<'a> {
     /// Name of channel to create
     pub name: &'a str,
     /// Whether to return errors on invalid channel name instead of modifying it to meet the specified criteria.
+    #[new(default)]
     pub validate: Option<bool>,
 }
 
@@ -38,19 +39,24 @@ pub struct CreateResponse {
 
 api_call!(history, "channels.history", HistoryRequest, HistoryResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct HistoryRequest {
     /// Channel to fetch history for.
     pub channel: ::ChannelId,
     /// End of time range of messages to include in results.
+    #[new(default)]
     pub latest: Option<::Timestamp>,
     /// Start of time range of messages to include in results.
+    #[new(default)]
     pub oldest: Option<::Timestamp>,
     /// Include messages with latest or oldest timestamp in results.
+    #[new(default)]
     pub inclusive: Option<bool>,
     /// Number of messages to return, between 1 and 1000.
+    #[new(default)]
     pub count: Option<u32>,
     /// Include unread_count_display in the output?
+    #[new(default)]
     pub unreads: Option<bool>,
 }
 
@@ -70,10 +76,11 @@ pub struct HistoryResponse {
 
 api_call!(info, "channels.info", InfoRequest, InfoResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct InfoRequest {
     /// Channel to get info on
     pub channel: ::ChannelId,
+    #[new(default)]
     pub include_locale: Option<bool>,
 }
 
@@ -90,7 +97,7 @@ pub struct InfoResponse {
 
 api_call!(invite, "channels.invite", InviteRequest, InviteResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct InviteRequest {
     /// Channel to invite user to.
     pub channel: ::ChannelId,
@@ -111,11 +118,12 @@ pub struct InviteResponse {
 
 api_call!(join, "channels.join", JoinRequest, JoinResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct JoinRequest<'a> {
     /// Name of channel to join
     pub name: &'a str,
     /// Whether to return errors on invalid channel name instead of modifying it to meet the specified criteria.
+    #[new(default)]
     pub validate: Option<bool>,
 }
 
@@ -133,7 +141,7 @@ pub struct JoinResponse {
 
 api_call!(kick, "channels.kick", KickRequest => ());
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct KickRequest {
     /// Channel to remove user from.
     pub channel: ::ChannelId,
@@ -147,7 +155,7 @@ pub struct KickRequest {
 
 api_call!(leave, "channels.leave", LeaveRequest, LeaveResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct LeaveRequest {
     /// Channel to leave
     pub channel: ::ChannelId,
@@ -166,13 +174,17 @@ pub struct LeaveResponse {
 
 api_call!(list, "channels.list", ListRequest, ListResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Default, Debug, Serialize, new)]
 pub struct ListRequest {
     /// Exclude archived channels from the list
+    #[new(default)]
     pub exclude_archived: Option<bool>,
     /// Exclude the members collection from each channel
+    #[new(default)]
     pub exclude_members: Option<bool>,
+    #[new(default)]
     pub cursor: Option<String>,
+    #[new(default)]
     pub limit: Option<usize>,
 }
 
@@ -184,6 +196,7 @@ pub struct ListResponse {
     pub response_metadata: Option<ResponseMetadata>,
 }
 
+// TODO: This is a paging thing from src/types.rs
 #[derive(Clone, Debug, Deserialize)]
 pub struct ResponseMetadata {
     next_cursor: Option<String>,
@@ -195,7 +208,7 @@ pub struct ResponseMetadata {
 
 api_call!(mark, "channels.mark", MarkRequest => ());
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct MarkRequest {
     /// Channel to set reading cursor in.
     pub channel: ::ChannelId,
@@ -209,13 +222,14 @@ pub struct MarkRequest {
 
 api_call!(rename, "channels.rename", RenameRequest, RenameResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct RenameRequest<'a> {
     /// Channel to rename
     pub channel: ::ChannelId,
     /// New name for channel.
     pub name: &'a str,
     /// Whether to return errors on invalid channel name instead of modifying it to meet the specified criteria.
+    #[new(default)]
     pub validate: Option<bool>,
 }
 
@@ -232,7 +246,7 @@ pub struct RenameResponse {
 
 api_call!(replies, "channels.replies", RepliesRequest, RepliesResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct RepliesRequest {
     /// Channel to fetch thread from
     pub channel: ::ChannelId,
@@ -259,7 +273,7 @@ api_call!(
     SetPurposeResponse
 );
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct SetPurposeRequest<'a> {
     /// Channel to set the purpose of
     pub channel: ::ChannelId,
@@ -280,7 +294,7 @@ pub struct SetPurposeResponse {
 
 api_call!(set_topic, "channels.setTopic", SetTopicRequest, SetTopicResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct SetTopicRequest<'a> {
     /// Channel to set the topic of
     pub channel: ::ChannelId,
@@ -301,7 +315,7 @@ pub struct SetTopicResponse {
 
 api_call!(unarchive, "channels.unarchive", UnarchiveRequest => ());
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct UnarchiveRequest {
     /// Channel to unarchive
     pub channel: ::ChannelId,
@@ -310,42 +324,27 @@ pub struct UnarchiveRequest {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use id::{ChannelId, UserId};
-    use requests;
-    use std::env;
+
+    lazy_static! {
+        pub static ref CLIENT: ::requests::Client = ::requests::default_client();
+        pub static ref TOKEN: String = ::std::env::var("SLACK_API_TOKEN").unwrap();
+    }
 
     #[test]
     fn test_archive_unarchive() {
-        let client = requests::default_client();
-        let token = env::var("SLACK_API_TOKEN").unwrap();
+        let id = ::ChannelId::from("CAGMCM14K");
+        let _ = unarchive(&CLIENT, &TOKEN, &UnarchiveRequest::new(id));
 
-        let mut req = UnarchiveRequest::default();
-        req.channel = ChannelId::from("CAGMCM14K");
-        unarchive(&client, &token, &req);
+        archive(&CLIENT, &TOKEN, &ArchiveRequest::new(id)).unwrap();
 
-        let mut req = ArchiveRequest::default();
-        req.channel = ChannelId::from("CAGMCM14K");
-        archive(&client, &token, &req).unwrap();
-
-        let mut req = UnarchiveRequest::default();
-        req.channel = ChannelId::from("CAGMCM14K");
-        unarchive(&client, &token, &req).unwrap();
+        unarchive(&CLIENT, &TOKEN, &UnarchiveRequest::new(id)).unwrap();
     }
 
     #[test]
     fn test_create() {
-        let client = requests::default_client();
-        let token = env::var("SLACK_API_TOKEN").unwrap();
-        match create(
-            &client,
-            &token,
-            &CreateRequest {
-                name: "testchannel",
-                validate: Some(false),
-            },
-        ) {
+        match create(&CLIENT, &TOKEN, &CreateRequest::new("testchannel")) {
             Ok(_) => {}
-            Err(requests::Error::Slack(cause)) => {
+            Err(::requests::Error::Slack(cause)) => {
                 if cause != "name_taken" {
                     panic!(cause);
                 }
@@ -356,66 +355,40 @@ mod tests {
 
     #[test]
     fn test_history() {
-        let client = requests::default_client();
-        let token = env::var("SLACK_API_TOKEN").unwrap();
-        let mut req = HistoryRequest::default();
-        req.channel = ChannelId::from("CAGMCM14K");
-        history(&client, &token, &req).unwrap();
+        let id = ::ChannelId::from("CAGMCM14K");
+        history(&CLIENT, &TOKEN, &HistoryRequest::new(id)).unwrap();
     }
 
     #[test]
     fn test_info() {
-        let client = requests::default_client();
-        let token = env::var("SLACK_API_TOKEN").unwrap();
-        let mut req = InfoRequest::default();
-        req.channel = ChannelId::from("CAGMCM14K");
-        info(&client, &token, &req).unwrap();
+        let id = ::ChannelId::from("CAGMCM14K");
+        info(&CLIENT, &TOKEN, &InfoRequest::new(id)).unwrap();
     }
 
     #[test]
     fn test_invite_kick() {
-        let client = requests::default_client();
-        let token = env::var("SLACK_API_TOKEN").unwrap();
+        let chan_id = ::ChannelId::from("CAGMCM14K");
+        let user_id = ::UserId::from("UAJHFUB0C");
+        let _ = kick(&CLIENT, &TOKEN, &KickRequest::new(chan_id, user_id));
 
-        let mut req = KickRequest::default();
-        req.channel = ChannelId::from("CAGMCM14K");
-        req.user = UserId::from("UAJHFUB0C");
-        kick(&client, &token, &req);
+        invite(&CLIENT, &TOKEN, &InviteRequest::new(chan_id, user_id)).unwrap();
 
-        let mut req = InviteRequest::default();
-        req.channel = ChannelId::from("CAGMCM14K");
-        req.user = UserId::from("UAJHFUB0C");
-        invite(&client, &token, &req).unwrap();
-
-        let mut req = KickRequest::default();
-        req.channel = ChannelId::from("CAGMCM14K");
-        req.user = UserId::from("UAJHFUB0C");
-        kick(&client, &token, &req).unwrap();
+        kick(&CLIENT, &TOKEN, &KickRequest::new(chan_id, user_id)).unwrap();
     }
 
     #[test]
     fn test_join_leave() {
-        let client = requests::default_client();
-        let token = env::var("SLACK_API_TOKEN").unwrap();
+        let id = ::ChannelId::from("CAGMCM14K");
+        let _ = leave(&CLIENT, &TOKEN, &LeaveRequest::new(id));
 
-        let mut req = LeaveRequest::default();
-        req.channel = ChannelId::from("CAGMCM14K");
-        leave(&client, &token, &req);
+        join(&CLIENT, &TOKEN, &JoinRequest::new("#testchannel")).unwrap();
 
-        let mut req = JoinRequest::default();
-        req.name = "#testchannel";
-        join(&client, &token, &req).unwrap();
-
-        let mut req = LeaveRequest::default();
-        req.channel = ChannelId::from("CAGMCM14K");
-        leave(&client, &token, &req).unwrap();
+        leave(&CLIENT, &TOKEN, &LeaveRequest::new(id)).unwrap();
     }
 
     #[test]
     fn test_list() {
-        let client = requests::default_client();
-        let token = env::var("SLACK_API_TOKEN").unwrap();
-        list(&client, &token, &ListRequest::default()).unwrap();
+        list(&CLIENT, &TOKEN, &ListRequest::default()).unwrap();
     }
 
     #[test]
@@ -425,72 +398,51 @@ mod tests {
         let start = SystemTime::now();
         let since_the_epoch = start.duration_since(UNIX_EPOCH).unwrap();
         let time_string = format!("{}", since_the_epoch.as_secs());
+        let ts = ::serde_json::from_str(&time_string).unwrap();
 
-        let client = requests::default_client();
-        let token = env::var("SLACK_API_TOKEN").unwrap();
-
-        let req = MarkRequest {
-            channel: ChannelId::from("C9VGPGBL4"),
-            ts: &time_string,
-        };
-        mark(&client, &token, &req).unwrap();
+        let id = ::ChannelId::from("C9VGPGBL4");
+        mark(&CLIENT, &TOKEN, &MarkRequest::new(id, ts)).unwrap();
     }
 
     #[test]
     fn test_rename() {
-        let client = requests::default_client();
-        let token = env::var("SLACK_API_TOKEN").unwrap();
-        let mut req = RenameRequest::default();
-        req.channel = ChannelId::from("CAGMCM14K");
-        req.name = "testchannel";
-        rename(&client, &token, &req).unwrap();
+        let id = ::ChannelId::from("CAGMCM14K");
+        let _ = rename(&CLIENT, &TOKEN, &RenameRequest::new(id, "testchannel"));
 
-        req.name = "other_testchannel";
-        rename(&client, &token, &req).unwrap();
+        rename(&CLIENT, &TOKEN, &RenameRequest::new(id, "other_testchannel")).unwrap();
 
-        req.name = "testchannel";
-        rename(&client, &token, &req).unwrap();
+        rename(&CLIENT, &TOKEN, &RenameRequest::new(id, "testchannel")).unwrap();
     }
 
     #[test]
     fn test_replies() {
-        let client = requests::default_client();
-        let token = env::var("SLACK_API_TOKEN").unwrap();
-        let mut req = RepliesRequest::default();
-        req.channel = ChannelId::from("CAGMCM14K");
-        req.thread_ts = "1525306421.000207";
-        replies(&client, &token, &req).unwrap();
+        let id = ::ChannelId::from("CAGMCM14K");
+        let ts = ::serde_json::from_str("1525306421.000207").unwrap();
+        replies(&CLIENT, &TOKEN, &RepliesRequest::new(id, ts)).unwrap();
     }
 
     #[test]
     fn test_set_purpose() {
-        let client = requests::default_client();
-        let token = env::var("SLACK_API_TOKEN").unwrap();
-        let mut req = SetPurposeRequest::default();
-        req.channel = ChannelId::from("C9VGPGBL4");
-        req.purpose = "test_purpose";
-
-        let response = set_purpose(&client, &token, &req).unwrap();
+        let id = ::ChannelId::from("CAGMCM14K");
+        let mut req = SetPurposeRequest::new(id, "test_purpose");
+        let response = set_purpose(&CLIENT, &TOKEN, &req).unwrap();
         assert_eq!(response.purpose, "test_purpose");
 
         req.purpose = "other_test_purpose";
-        let response = set_purpose(&client, &token, &req).unwrap();
+        let response = set_purpose(&CLIENT, &TOKEN, &req).unwrap();
         assert_eq!(response.purpose, "other_test_purpose");
     }
 
     #[test]
     fn test_set_topic() {
-        let client = requests::default_client();
-        let token = env::var("SLACK_API_TOKEN").unwrap();
-        let mut req = SetTopicRequest::default();
-        req.channel = ChannelId::from("C9VGPGBL4");
-        req.topic = "test_topic";
+        let id = ::ChannelId::from("CAGMCM14K");
+        let mut req = SetTopicRequest::new(id, "test_topic");
 
-        let response = set_topic(&client, &token, &req).unwrap();
+        let response = set_topic(&CLIENT, &TOKEN, &req).unwrap();
         assert_eq!(response.topic, "test_topic");
 
         req.topic = "other_test_topic";
-        let response = set_topic(&client, &token, &req).unwrap();
+        let response = set_topic(&CLIENT, &TOKEN, &req).unwrap();
         assert_eq!(response.topic, "other_test_topic");
     }
 }
