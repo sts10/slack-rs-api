@@ -562,7 +562,7 @@ pub struct DndStatus {
 pub struct EventFileShared {
     pub file_id: FileId,
     pub user_id: UserId,
-    pub channel_id: ChannelId,
+    pub channel_id: ConversationId,
     pub file: JustAFileId,
     pub event_ts: Timestamp,
     pub ts: Option<Timestamp>,
