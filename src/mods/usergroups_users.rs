@@ -32,7 +32,8 @@ pub struct UpdateRequest<'a> {
     pub usergroup: ::UsergroupId,
     /// A comma separated string of encoded user IDs that represent the entire list of users for the User Group.
     #[new(default)]
-    pub users: &'a str, // TODO: Should be a Vec<UserId> and a serialize_with
+    #[serde(serialize_with = "::serialize_comma_separated")]
+    pub users: &'a [::UserId],
     /// Include the number of users in the User Group.
     #[new(default)]
     pub include_count: Option<bool>,

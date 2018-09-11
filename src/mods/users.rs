@@ -81,7 +81,7 @@ pub struct ListRequest {
     #[new(default)]
     pub presence: Option<bool>,
     #[new(default)]
-    pub cursor: Option<String>,
+    pub cursor: Option<::Cursor>,
     #[new(default)]
     pub limit: Option<usize>,
     #[new(default)]
@@ -94,14 +94,8 @@ pub struct ListResponse {
     ok: bool,
     pub members: Vec<::User>,
     pub cache_ts: Option<::Timestamp>,
-    pub response_metadata: Option<ResponseMetadata>,
+    pub response_metadata: Option<::Paging>,
     pub is_limited: Option<bool>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct ResponseMetadata {
-    next_cursor: Option<String>,
 }
 
 /// Gets a users's preferences

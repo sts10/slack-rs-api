@@ -3,7 +3,7 @@
 /// Wraps https://api.slack.com/methods/bots.info
 
 api_call!(info, "bots.info", InfoRequest, InfoResponse);
-//TODO: This is very silly to call without a bot in the request
+// This is very silly to call without a bot in the request
 // especially because that's the only situation in which we get an ok but no bot field
 #[derive(Clone, Debug, Serialize, new)]
 pub struct InfoRequest {

@@ -1,7 +1,5 @@
 //! Adjust and view Do Not Disturb settings for team members.
 
-use std::collections::HashMap;
-
 /// Ends the current user's Do Not Disturb session immediately.
 ///
 /// Wraps https://api.slack.com/methods/dnd.endDnd
@@ -80,13 +78,13 @@ api_call!(team_info, "dnd.teamInfo", TeamInfoRequest, TeamInfoResponse);
 pub struct TeamInfoRequest<'a> {
     /// Comma-separated list of users to fetch Do Not Disturb status for
     #[new(default)]
-    pub users: Option<&'a str>, // TODO: This should be a serialize_with on a vec
+    #[serde(serialize_with = "::serialize_comma_separated")]
+    pub users: &'a [::UserId],
 }
 
-// TODO: idk what's going on here or how it ever worked
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct TeamInfoResponse {
     ok: bool,
-    pub users: Option<HashMap<String, bool>>,
+    pub team: ::Team,
 }

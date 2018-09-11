@@ -55,10 +55,10 @@ pub struct HistoryResponse {
 api_call!(list, "im.list", ListRequest, ListResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
-pub struct ListRequest<'a> {
+pub struct ListRequest {
     /// Paginate through collections of data by setting the `cursor` parameter to a `next_cursor` attribute returned by a previous request's `response_metadata`. Default value fetches the first "page" of the collection. See pagination for more detail.
     #[new(default)]
-    pub cursor: Option<&'a str>, //TODO: need a new type for the cursor
+    pub cursor: Option<::Cursor>,
     /// The maximum number of items to return. Fewer than the requested number of items may be returned, even if the end of the users list hasn't been reached.
     #[new(default)]
     pub limit: Option<u32>,

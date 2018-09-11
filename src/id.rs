@@ -1,19 +1,21 @@
+pub const ID_LENGTH: usize = 9;
+
 macro_rules! make_id {
     ($name:ident, $firstchar:expr, $visname:ident) => {
         #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
         pub struct $name {
             len: u8,
-            buf: [u8; 9],
+            buf: [u8; ID_LENGTH],
         }
 
         impl<'a> From<&'a str> for $name {
             #[inline]
             fn from(input: &'a str) -> Self {
-                assert!(input.len() < 10);
+                assert!(input.len() <= ID_LENGTH);
                 assert!(input.as_bytes()[0] == $firstchar);
                 let mut output = Self {
                     len: input.len() as u8,
-                    buf: [0; 9],
+                    buf: [0; ID_LENGTH],
                 };
                 output.buf[..input.len()].copy_from_slice(&input.as_bytes());
                 output
@@ -26,19 +28,20 @@ macro_rules! make_id {
             type Value = $name;
 
             fn expecting(&self, formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-                formatter.write_str("a 9-byte str")
+                formatter.write_str(&format!("a {}-byte str", ID_LENGTH))
             }
 
             fn visit_str<E>(self, value: &str) -> Result<$name, E>
             where
                 E: ::serde::de::Error,
             {
-                if value.len() <= 9 && value.len() > 0 && value.as_bytes()[0] == $firstchar {
+                if value.len() <= ID_LENGTH && value.len() > 0 && value.as_bytes()[0] == $firstchar {
                     Ok($name::from(value))
                 } else {
                     Err(E::custom(format!(
-                        "{} must be a 9-byte string starting with {}, found {:?}",
+                        "{} must be a {}-byte string starting with {}, found {:?}",
                         stringify!($name),
+                        ID_LENGTH,
                         $firstchar as char,
                         value,
                     )))

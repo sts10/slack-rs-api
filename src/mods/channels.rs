@@ -183,7 +183,7 @@ pub struct ListRequest {
     #[new(default)]
     pub exclude_members: Option<bool>,
     #[new(default)]
-    pub cursor: Option<String>,
+    pub cursor: Option<::Cursor>,
     #[new(default)]
     pub limit: Option<usize>,
 }
@@ -193,13 +193,7 @@ pub struct ListRequest {
 pub struct ListResponse {
     ok: bool,
     pub channels: Vec<::Channel>,
-    pub response_metadata: Option<ResponseMetadata>,
-}
-
-// TODO: This is a paging thing from src/types.rs
-#[derive(Clone, Debug, Deserialize)]
-pub struct ResponseMetadata {
-    next_cursor: Option<String>,
+    pub response_metadata: Option<::Paging>,
 }
 
 /// Sets the read cursor in a channel.

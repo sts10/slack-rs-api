@@ -43,3 +43,20 @@ pub use timestamp::Timestamp;
 
 mod id;
 pub use id::*;
+
+fn serialize_comma_separated<T, S>(items: &[T], serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: ::serde::Serializer,
+    T: ::serde::Serialize + ::std::fmt::Display,
+{
+    use std::fmt::Write;
+
+    let mut output = String::with_capacity(items.len() * (ID_LENGTH + 1));
+    for item in items {
+        write!(output, "{},", item);
+    }
+    output.pop(); // Remove last comma, does nothing if output is empty
+
+    // Create a string that we can then serialize
+    serializer.serialize_str(&output)
+}

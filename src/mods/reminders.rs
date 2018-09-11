@@ -68,7 +68,8 @@ pub struct InfoResponse {
 /// Lists all reminders created by or for a given user.
 ///
 /// Wraps https://api.slack.com/methods/reminders.list
-// TODO: This seems like it should have a Request struct
+// TODO: Docs say "created by or for a given user", but also do not mention how to indicate said
+// user
 api_call!(list, "reminders.list", () => ListResponse);
 
 #[derive(Clone, Debug, Deserialize)]

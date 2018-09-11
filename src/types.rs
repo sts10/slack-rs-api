@@ -1210,6 +1210,9 @@ pub struct Mpim {
     pub unread_count_display: Option<i32>,
 }
 
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct Cursor(String); // TODO: Type safety goes here
+
 #[derive(Clone, Debug, Deserialize)]
 pub struct Paging {
     pub count: Option<i32>,

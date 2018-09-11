@@ -122,7 +122,8 @@ pub struct UpdateRequest<'a> {
     pub description: Option<&'a str>,
     /// A comma separated string of encoded channel IDs for which the User Group uses as a default.
     #[new(default)]
-    pub channels: Option<&'a str>, // TODO: Should be a Vec<ChannelId> and serialize_with
+    #[serde(serialize_with = "::serialize_comma_separated")]
+    pub channels: &'a [::UserId],
     /// Include the number of users in the User Group.
     #[new(default)]
     pub include_count: Option<bool>,

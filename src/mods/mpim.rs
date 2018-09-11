@@ -83,7 +83,8 @@ api_call!(open, "mpim.open", OpenRequest, OpenResponse);
 #[derive(Clone, Debug, Serialize, new)]
 pub struct OpenRequest<'a> {
     /// Comma separated lists of users.  The ordering of the users is preserved whenever a MPIM group is returned.
-    pub users: &'a str, // TODO: Should be Vec<::UserId> and serialize_with
+    #[serde(serialize_with = "::serialize_comma_separated")]
+    pub users: &'a [::UserId],
 }
 
 #[derive(Clone, Debug, Deserialize)]
