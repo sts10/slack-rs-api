@@ -4,7 +4,7 @@ use std::fmt;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Timestamp {
-    microseconds: u64,
+    microseconds: u64, // TODO: should this be an i64?
 }
 
 impl Into<::chrono::DateTime<::chrono::Utc>> for Timestamp {
@@ -13,6 +13,14 @@ impl Into<::chrono::DateTime<::chrono::Utc>> for Timestamp {
         let nanoseconds = (self.microseconds % 1_000_000) * 1_000;
         let naive = ::chrono::naive::NaiveDateTime::from_timestamp(seconds as i64, nanoseconds as u32);
         ::chrono::DateTime::from_utc(naive, ::chrono::Utc)
+    }
+}
+
+impl From<::chrono::DateTime<::chrono::Utc>> for Timestamp {
+    fn from(datetime: ::chrono::DateTime<::chrono::Utc>) -> Timestamp {
+        Timestamp {
+            microseconds: datetime.timestamp() as u64 * 1_000_000 + datetime.timestamp_subsec_micros() as u64,
+        }
     }
 }
 
