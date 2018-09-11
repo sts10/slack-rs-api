@@ -221,12 +221,15 @@ pub struct GroupTopic {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Im {
-    pub created: Option<i32>,
-    pub id: Option<String>,
+    pub created: Option<Timestamp>,
+    pub id: DmId,
     pub is_im: Option<bool>,
     pub is_user_deleted: Option<bool>,
-    pub user: Option<UserId>,
+    pub is_org_shared: Option<bool>,
+    pub priority: Option<f64>,
+    pub user: UserId,
 }
 
 macro_rules! deserialize_internally_tagged {
@@ -369,7 +372,7 @@ deserialize_internally_tagged! {
         //ImClose,
         //ImCreated,
         //ImHistoryChanged,
-        //ImMarked,
+        ImMarked(EventImMarked),
         //ImOpen,
         //ManualPresenceChange,
         //MemberJoinedChannel,
@@ -402,6 +405,17 @@ deserialize_internally_tagged! {
         UserChange(EventUserChange),
         UserTyping(EventUserTyping),
     }
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventImMarked {
+    channel: ::DmId,
+    ts: Timestamp,
+    dm_count: i32,
+    unread_count_display: i32,
+    num_mentions_display: i32,
+    event_ts: Timestamp,
 }
 
 #[derive(Clone, Debug, Deserialize)]

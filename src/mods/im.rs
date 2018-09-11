@@ -47,6 +47,7 @@ pub struct HistoryResponse {
     pub latest: Option<String>,
     #[serde(default)]
     pub messages: Vec<::Message>,
+    pub is_limited: Option<bool>,
 }
 
 /// Lists direct message channels for the calling user.
@@ -69,7 +70,8 @@ pub struct ListRequest {
 #[serde(deny_unknown_fields)]
 pub struct ListResponse {
     ok: bool,
-    pub ims: Option<Vec<::Im>>,
+    #[serde(default)]
+    pub ims: Vec<::Im>,
 }
 
 /// Sets the read cursor in a direct message channel.
