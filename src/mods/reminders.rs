@@ -4,13 +4,14 @@
 
 api_call!(add, "reminders.add", AddRequest, AddResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct AddRequest<'a> {
     /// The content of the reminder
     pub text: &'a str,
     /// When this reminder should happen: the Unix timestamp (up to five years from now), the number of seconds until the reminder (if within 24 hours), or a natural language description (Ex. "in 15 minutes," or "every Thursday")
     pub time: u32,
     /// The user who will receive the reminder. If no user is specified, the reminder will go to user who created it.
+    #[new(default)]
     pub user: Option<::UserId>,
 }
 
@@ -27,7 +28,7 @@ pub struct AddResponse {
 
 api_call!(complete, "reminders.complete", CompleteRequest => ());
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct CompleteRequest {
     /// The ID of the reminder to be marked as complete
     pub reminder: ::ReminderId,
@@ -39,7 +40,7 @@ pub struct CompleteRequest {
 
 api_call!(delete, "reminders.delete", DeleteRequest => ());
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct DeleteRequest {
     /// The ID of the reminder
     pub reminder: ::ReminderId,
@@ -51,7 +52,7 @@ pub struct DeleteRequest {
 
 api_call!(info, "reminders.info", InfoRequest, InfoResponse);
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct InfoRequest {
     /// The ID of the reminder
     pub reminder: ::ReminderId,
@@ -67,7 +68,7 @@ pub struct InfoResponse {
 /// Lists all reminders created by or for a given user.
 ///
 /// Wraps https://api.slack.com/methods/reminders.list
-// TOOD: This seems like it should have a Request struct
+// TODO: This seems like it should have a Request struct
 api_call!(list, "reminders.list", () => ListResponse);
 
 #[derive(Clone, Debug, Deserialize)]

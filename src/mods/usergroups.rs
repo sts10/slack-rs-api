@@ -6,17 +6,21 @@
 
 api_call!(create, "usergroups.create", CreateRequest, CreateResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct CreateRequest<'a> {
     /// A name for the User Group. Must be unique among User Groups.
     pub name: &'a str,
     /// A mention handle. Must be unique among channels, users and User Groups.
+    #[new(default)]
     pub handle: Option<&'a str>,
     /// A short description of the User Group.
+    #[new(default)]
     pub description: Option<&'a str>,
     /// A comma separated string of encoded channel IDs for which the User Group uses as a default.
+    #[new(default)]
     pub channels: Option<&'a str>,
     /// Include the number of users in each User Group.
+    #[new(default)]
     pub include_count: Option<bool>,
 }
 
@@ -33,11 +37,12 @@ pub struct CreateResponse {
 
 api_call!(disable, "usergroups.disable", DisableRequest, DisableResponse);
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct DisableRequest {
     /// The encoded ID of the User Group to disable.
     pub usergroup: ::UsergroupId,
     /// Include the number of users in the User Group.
+    #[new(default)]
     pub include_count: Option<bool>,
 }
 
@@ -54,11 +59,12 @@ pub struct DisableResponse {
 
 api_call!(enable, "usergroups.enable", EnableRequest, EnableResponse);
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct EnableRequest {
     /// The encoded ID of the User Group to enable.
     pub usergroup: ::UsergroupId,
     /// Include the number of users in the User Group.
+    #[new(default)]
     pub include_count: Option<bool>,
 }
 
@@ -75,13 +81,16 @@ pub struct EnableResponse {
 
 api_call!(list, "usergroups.list", ListRequest, ListResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct ListRequest {
     /// Include disabled User Groups.
+    #[new(default)]
     pub include_disabled: Option<bool>,
     /// Include the number of users in each User Group.
+    #[new(default)]
     pub include_count: Option<bool>,
     /// Include the list of users for each User Group.
+    #[new(default)]
     pub include_users: Option<bool>,
 }
 
@@ -98,19 +107,24 @@ pub struct ListResponse {
 
 api_call!(update, "usergroups.update", UpdateRequest, UpdateResponse);
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct UpdateRequest<'a> {
     /// The encoded ID of the User Group to update.
     pub usergroup: ::UsergroupId,
     /// A name for the User Group. Must be unique among User Groups.
+    #[new(default)]
     pub name: Option<&'a str>,
     /// A mention handle. Must be unique among channels, users and User Groups.
+    #[new(default)]
     pub handle: Option<&'a str>,
     /// A short description of the User Group.
+    #[new(default)]
     pub description: Option<&'a str>,
     /// A comma separated string of encoded channel IDs for which the User Group uses as a default.
+    #[new(default)]
     pub channels: Option<&'a str>, // TODO: Should be a Vec<ChannelId> and serialize_with
     /// Include the number of users in the User Group.
+    #[new(default)]
     pub include_count: Option<bool>,
 }
 

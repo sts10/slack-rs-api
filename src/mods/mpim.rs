@@ -6,7 +6,7 @@
 
 api_call!(close, "mpim.close", CloseRequest => ());
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct CloseRequest {
     /// MPIM to close.
     pub channel: ::GroupId,
@@ -18,19 +18,24 @@ pub struct CloseRequest {
 
 api_call!(history, "mpim.history", HistoryRequest, HistoryResponse);
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct HistoryRequest {
     /// Multiparty direct message to fetch history for.
     pub channel: ::GroupId,
     /// End of time range of messages to include in results.
+    #[new(default)]
     pub latest: Option<::Timestamp>,
     /// Start of time range of messages to include in results.
+    #[new(default)]
     pub oldest: Option<::Timestamp>,
     /// Include messages with latest or oldest timestamp in results.
+    #[new(default)]
     pub inclusive: Option<bool>,
     /// Number of messages to return, between 1 and 1000.
+    #[new(default)]
     pub count: Option<u32>,
     /// Include unread_count_display in the output?
+    #[new(default)]
     pub unreads: Option<bool>,
 }
 
@@ -61,7 +66,7 @@ pub struct ListResponse {
 
 api_call!(mark, "mpim.mark", MarkRequest => ());
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct MarkRequest {
     /// multiparty direct message channel to set reading cursor in.
     pub channel: ::GroupId,
@@ -75,7 +80,7 @@ pub struct MarkRequest {
 
 api_call!(open, "mpim.open", OpenRequest, OpenResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct OpenRequest<'a> {
     /// Comma separated lists of users.  The ordering of the users is preserved whenever a MPIM group is returned.
     pub users: &'a str, // TODO: Should be Vec<::UserId> and serialize_with
@@ -94,7 +99,7 @@ pub struct OpenResponse {
 
 api_call!(replies, "mpim.replies", RepliesRequest, RepliesResponse);
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct RepliesRequest {
     /// Multiparty direct message channel to fetch thread from.
     pub channel: ::GroupId,

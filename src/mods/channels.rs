@@ -174,7 +174,7 @@ pub struct LeaveResponse {
 
 api_call!(list, "channels.list", ListRequest, ListResponse);
 
-#[derive(Clone, Default, Debug, Serialize, new)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct ListRequest {
     /// Exclude archived channels from the list
     #[new(default)]
@@ -388,7 +388,7 @@ mod tests {
 
     #[test]
     fn test_list() {
-        list(&CLIENT, &TOKEN, &ListRequest::default()).unwrap();
+        list(&CLIENT, &TOKEN, &ListRequest::new()).unwrap();
     }
 
     #[test]

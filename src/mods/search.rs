@@ -1,19 +1,34 @@
 //! Search your team's files and messages.
 
+#[derive(Clone, Debug, Serialize)]
+pub enum SortDirection {
+    #[serde(rename = "asc")]
+    Ascending,
+    #[serde(rename = "desc")]
+    Descending,
+}
+
+#[derive(Clone, Debug, Serialize)]
+#[serde(rename = "snake_case")]
+pub enum SortBy {
+    Score,
+    Timestamp,
+}
+
 /// Searches for messages and files matching a query.
 ///
 /// Wraps https://api.slack.com/methods/search.all
 
 api_call!(all, "search.all", AllRequest, AllResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct AllRequest<'a> {
     /// Search query. May contains booleans, etc.
     pub query: &'a str,
     /// Return matches sorted by either score or timestamp.
-    pub sort: Option<&'a str>,
+    pub sort: Option<SortBy>,
     /// Change sort direction to ascending (asc) or descending (desc).
-    pub sort_dir: Option<&'a str>,
+    pub sort_dir: Option<SortDirection>,
     /// Pass a value of true to enable query highlight markers (see below).
     pub highlight: Option<bool>,
     /// Number of items to return per page.
@@ -51,19 +66,25 @@ pub struct AllResponseMessages {
 
 api_call!(files, "search.files", FilesRequest, FilesResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct FilesRequest<'a> {
     /// Search query. May contain booleans, etc.
+    #[new(default)]
     pub query: &'a str,
     /// Return matches sorted by either score or timestamp.
-    pub sort: Option<&'a str>,
+    #[new(default)]
+    pub sort: Option<SortBy>,
     /// Change sort direction to ascending (asc) or descending (desc).
-    pub sort_dir: Option<&'a str>,
+    #[new(default)]
+    pub sort_dir: Option<SortDirection>,
     /// Pass a value of true to enable query highlight markers (see below).
+    #[new(default)]
     pub highlight: Option<bool>,
     /// Number of items to return per page.
+    #[new(default)]
     pub count: Option<u32>,
     /// Page number of results to return.
+    #[new(default)]
     pub page: Option<u32>,
 }
 
@@ -89,19 +110,24 @@ pub struct FilesResponseFiles {
 
 api_call!(messages, "search.messages", MessagesRequest, MessagesResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct MessagesRequest<'a> {
     /// Search query. May contains booleans, etc.
     pub query: &'a str,
     /// Return matches sorted by either score or timestamp.
-    pub sort: Option<&'a str>,
+    #[new(default)]
+    pub sort: Option<SortBy>,
     /// Change sort direction to ascending (asc) or descending (desc).
-    pub sort_dir: Option<&'a str>,
+    #[new(default)]
+    pub sort_dir: Option<SortDirection>,
     /// Pass a value of true to enable query highlight markers (see below).
+    #[new(default)]
     pub highlight: Option<bool>,
     /// Number of items to return per page.
+    #[new(default)]
     pub count: Option<u32>,
     /// Page number of results to return.
+    #[new(default)]
     pub page: Option<u32>,
 }
 

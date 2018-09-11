@@ -4,15 +4,19 @@
 
 api_call!(add, "reactions.add", AddRequest => ());
 
-#[derive(Clone, Default, Debug, Serialize)]
+// TODO: one of these must be specified
+#[derive(Clone, Debug, Serialize, new)]
 pub struct AddRequest<'a> {
     /// Reaction (emoji) name.
     pub name: &'a str,
     /// File to add reaction to.
+    #[new(default)]
     pub file: Option<::FileId>,
     /// Channel where the message to add reaction to was posted.
+    #[new(default)]
     pub channel: Option<::ChannelId>,
     /// Timestamp of the message to add reaction to.
+    #[new(default)]
     pub timestamp: Option<::Timestamp>,
 }
 
@@ -22,15 +26,19 @@ pub struct AddRequest<'a> {
 
 api_call!(get, "reactions.get", GetRequest, GetResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct GetRequest {
     /// File to get reactions for.
+    #[new(default)]
     pub file: Option<::FileId>,
     /// Channel where the message to get reactions for was posted.
+    #[new(default)]
     pub channel: Option<::ChannelId>,
     /// Timestamp of the message to get reactions for.
+    #[new(default)]
     pub timestamp: Option<::Timestamp>,
     /// If true always return the complete reaction list.
+    #[new(default)]
     pub full: Option<bool>,
 }
 
@@ -69,15 +77,19 @@ pub struct GetResponseMessage {
 
 api_call!(list, "reactions.list", ListRequest, ListResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct ListRequest {
     /// Show reactions made by this user. Defaults to the authed user.
+    #[new(default)]
     pub user: Option<::UserId>,
     /// If true always return the complete reaction list.
+    #[new(default)]
     pub full: Option<bool>,
     /// Number of items to return per page.
+    #[new(default)]
     pub count: Option<u32>,
     /// Page number of results to return.
+    #[new(default)]
     pub page: Option<u32>,
 }
 
@@ -124,14 +136,17 @@ pub struct ListResponseItemMessage {
 
 api_call!(remove, "reactions.remove", RemoveRequest => ());
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct RemoveRequest<'a> {
     /// Reaction (emoji) name.
     pub name: &'a str,
     /// File to remove reaction from.
+    #[serde(default)]
     pub file: Option<::FileId>,
     /// Channel where the message to remove reaction from was posted.
+    #[serde(default)]
     pub channel: Option<::ChannelId>,
     /// Timestamp of the message to remove reaction from.
+    #[serde(default)]
     pub timestamp: Option<::Timestamp>,
 }

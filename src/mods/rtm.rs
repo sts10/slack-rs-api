@@ -4,9 +4,11 @@
 
 api_call!(connect, "rtm.connect", ConnectRequest, ConnectResponse);
 
-#[derive(Clone, Debug, Default, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct ConnectRequest {
+    #[new(default)]
     batch_presence_aware: Option<bool>,
+    #[new(default)]
     presence_sub: Option<bool>,
 }
 
@@ -43,17 +45,22 @@ pub struct ConnectResponseTeam {
 
 api_call!(start, "rtm.start", StartRequest, StartResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct StartRequest {
     /// Skip unread counts for each channel (improves performance).
+    #[new(default)]
     pub no_unreads: Option<bool>,
     /// Returns MPIMs to the client in the API response.
+    #[new(default)]
     pub mpim_aware: Option<bool>,
     /// Exclude latest timestamps for channels, groups, mpims, and ims. Automatically sets no_unreads to 1
+    #[new(default)]
     pub no_latest: Option<bool>,
     /// Only deliver presence events when requested by subscription. See [presence subscriptions](/docs/presence-and-status#subscriptions).
+    #[new(default)]
     pub batch_presence_aware: Option<bool>,
     /// Set this to `true` to receive the locale for users and channels. Defaults to `false`
+    #[new(default)]
     pub include_locale: Option<bool>,
 }
 

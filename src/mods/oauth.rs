@@ -4,7 +4,7 @@
 
 api_call!(access, "oauth.access", AccessRequest, AccessResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct AccessRequest<'a> {
     /// Issued when you created your application.
     pub client_id: &'a str,
@@ -13,6 +13,7 @@ pub struct AccessRequest<'a> {
     /// The code param returned via the OAuth callback.
     pub code: &'a str,
     /// This must match the originally submitted URI (if one was sent).
+    #[new(default)]
     pub redirect_uri: Option<&'a str>,
 }
 

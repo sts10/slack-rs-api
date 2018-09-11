@@ -4,7 +4,7 @@
 
 api_call!(revoke, "auth.revoke", RevokeRequest, RevokeResponse);
 
-#[derive(Clone, Default, Debug, Serialize, new)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct RevokeRequest {
     /// Setting this parameter to 1 triggers a testing mode where the specified token will not actually be revoked.
     #[new(default)]

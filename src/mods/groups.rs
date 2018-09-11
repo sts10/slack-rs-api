@@ -6,7 +6,7 @@
 
 api_call!(archive, "groups.archive", ArchiveRequest => ());
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct ArchiveRequest {
     /// Private channel to archive
     pub channel: ::GroupId,
@@ -18,7 +18,7 @@ pub struct ArchiveRequest {
 
 api_call!(close, "groups.close", CloseRequest => ());
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct CloseRequest {
     /// Private channel to close.
     pub channel: ::GroupId,
@@ -30,11 +30,12 @@ pub struct CloseRequest {
 
 api_call!(create, "groups.create", CreateRequest, CreateResponse);
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct CreateRequest<'a> {
     /// Name of private channel to create
     pub name: &'a str,
     /// Whether to return errors on invalid channel name instead of modifying it to meet the specified criteria.
+    #[new(default)]
     pub validate: Option<bool>,
 }
 
@@ -56,7 +57,7 @@ api_call!(
     CreateChildResponse
 );
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct CreateChildRequest {
     /// Private channel to clone and archive.
     pub channel: ::GroupId,
@@ -75,19 +76,24 @@ pub struct CreateChildResponse {
 
 api_call!(history, "groups.history", HistoryRequest, HistoryResponse);
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct HistoryRequest {
     /// Private channel to fetch history for.
     pub channel: ::GroupId,
     /// End of time range of messages to include in results.
+    #[new(default)]
     pub latest: Option<::Timestamp>,
     /// Start of time range of messages to include in results.
+    #[new(default)]
     pub oldest: Option<::Timestamp>,
     /// Include messages with latest or oldest timestamp in results.
+    #[new(default)]
     pub inclusive: Option<bool>,
     /// Number of messages to return, between 1 and 1000.
+    #[new(default)]
     pub count: Option<u32>,
     /// Include unread_count_display in the output?
+    #[new(default)]
     pub unreads: Option<bool>,
 }
 
@@ -107,7 +113,7 @@ pub struct HistoryResponse {
 
 api_call!(info, "groups.info", InfoRequest, InfoResponse);
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct InfoRequest {
     /// Private channel to get info on
     pub channel: ::GroupId,
@@ -126,7 +132,7 @@ pub struct InfoResponse {
 
 api_call!(invite, "groups.invite", InviteRequest, InviteResponse);
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct InviteRequest {
     /// Private channel to invite user to.
     pub channel: ::GroupId,
@@ -147,7 +153,7 @@ pub struct InviteResponse {
 
 api_call!(kick, "groups.kick", KickRequest => ());
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct KickRequest {
     /// Private channel to remove user from.
     pub channel: ::GroupId,
@@ -161,7 +167,7 @@ pub struct KickRequest {
 
 api_call!(leave, "groups.leave", LeaveRequest => ());
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct LeaveRequest {
     /// Private channel to leave
     pub channel: ::GroupId,
@@ -173,9 +179,10 @@ pub struct LeaveRequest {
 
 api_call!(list, "groups.list", ListRequest, ListResponse);
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct ListRequest {
     /// Don't return archived private channels.
+    #[new(default)]
     pub exclude_archived: Option<bool>,
 }
 
@@ -192,7 +199,7 @@ pub struct ListResponse {
 
 api_call!(mark, "groups.mark", MarkRequest => ());
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct MarkRequest {
     /// Private channel to set reading cursor in.
     pub channel: ::GroupId,
@@ -206,7 +213,7 @@ pub struct MarkRequest {
 
 api_call!(open, "groups.open", OpenRequest => ());
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct OpenRequest {
     /// Private channel to open.
     pub channel: ::GroupId,
@@ -218,13 +225,14 @@ pub struct OpenRequest {
 
 api_call!(rename, "groups.rename", RenameRequest, RenameResponse);
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct RenameRequest<'a> {
     /// Private channel to rename
     pub channel: ::GroupId,
     /// New name for private channel.
     pub name: &'a str,
     /// Whether to return errors on invalid channel name instead of modifying it to meet the specified criteria.
+    #[new(default)]
     pub validate: Option<bool>,
 }
 
@@ -250,7 +258,7 @@ pub struct RenameResponseChannel {
 
 api_call!(replies, "groups.replies", RepliesRequest, RepliesResponse);
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct RepliesRequest {
     /// Private channel to fetch thread from
     pub channel: ::GroupId,
@@ -272,7 +280,7 @@ pub struct RepliesResponse {
 
 api_call!(set_purpose, "groups.setPurpose", SetPurposeRequest, SetPurposeResponse);
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct SetPurposeRequest<'a> {
     /// Private channel to set the purpose of
     pub channel: ::GroupId,
@@ -293,7 +301,7 @@ pub struct SetPurposeResponse {
 
 api_call!(set_topic, "groups.setTopic", SetTopicRequest, SetTopicResponse);
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct SetTopicRequest<'a> {
     /// Private channel to set the topic of
     pub channel: ::GroupId,
@@ -314,7 +322,7 @@ pub struct SetTopicResponse {
 
 api_call!(unarchive, "groups.unarchive", UnarchiveRequest => ());
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct UnarchiveRequest {
     /// Private channel to unarchive
     pub channel: ::GroupId,

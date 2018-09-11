@@ -30,9 +30,10 @@ pub struct EndSnoozeResponse {
 
 api_call!(info, "dnd.info", InfoRequest, InfoResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct InfoRequest {
     /// User to fetch status for (defaults to current user)
+    #[new(default)]
     pub user: Option<::UserId>,
 }
 
@@ -75,9 +76,10 @@ pub struct SetSnoozeResponse {
 
 api_call!(team_info, "dnd.teamInfo", TeamInfoRequest, TeamInfoResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct TeamInfoRequest<'a> {
     /// Comma-separated list of users to fetch Do Not Disturb status for
+    #[new(default)]
     pub users: Option<&'a str>, // TODO: This should be a serialize_with on a vec
 }
 

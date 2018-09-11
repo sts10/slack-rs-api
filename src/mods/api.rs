@@ -3,11 +3,13 @@ use std::collections::HashMap;
 /// Checks API calling code.
 ///
 /// Wraps https://api.slack.com/methods/api.test
-#[derive(Debug, Clone, Default, Serialize, new)]
+#[derive(Debug, Clone, Serialize, new)]
 pub struct TestRequest<'a> {
     /// Error response to return
+    #[new(default)]
     error: Option<&'a str>,
     /// example property to return
+    #[new(default)]
     foo: Option<&'a str>,
 }
 
@@ -27,7 +29,10 @@ mod tests {
         let client = ::requests::default_client();
         let token = ::std::env::var("SLACK_API_TOKEN").unwrap();
 
-        let response = test(&client, &token, &TestRequest::new(None, Some("bar"))).unwrap();
+        let mut req = TestRequest::new();
+        req.foo = Some("bar");
+
+        let response = test(&client, &token, &req).unwrap();
         assert_eq!(response.args["foo"], "bar".to_string());
     }
 }

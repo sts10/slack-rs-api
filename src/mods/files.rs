@@ -6,7 +6,7 @@
 
 api_call!(delete, "files.delete", DeleteRequest => ());
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct DeleteRequest {
     /// ID of file to delete.
     pub file: ::FileId,
@@ -18,13 +18,15 @@ pub struct DeleteRequest {
 
 api_call!(info, "files.info", InfoRequest, InfoResponse);
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct InfoRequest {
     /// Specify a file by providing its ID.
     pub file: ::FileId,
     /// Number of items to return per page.
+    #[new(default)]
     pub count: Option<u32>,
     /// Page number of results to return.
+    #[new(default)]
     pub page: Option<u32>,
 }
 
@@ -43,15 +45,19 @@ pub struct InfoResponse {
 
 api_call!(list, "files.list", ListRequest, ListResponse);
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct ListRequest {
     /// Filter files created by a single user.
+    #[new(default)]
     pub user: Option<::UserId>,
     /// Filter files appearing in a specific channel, indicated by its ID.
+    #[new(default)]
     pub channel: Option<::ChannelId>,
     /// Filter files created after this timestamp (inclusive).
+    #[new(default)]
     pub ts_from: Option<u32>,
     /// Filter files created before this timestamp (inclusive).
+    #[new(default)]
     pub ts_to: Option<u32>,
     /// Filter files by type:
     ///
@@ -66,10 +72,13 @@ pub struct ListRequest {
     ///
     ///
     /// You can pass multiple values in the types argument, like types=spaces,snippets.The default value is all, which does not filter the list.
+    #[new(default)]
     pub types: Option<FileType>,
     /// Number of items to return per page.
+    #[new(default)]
     pub count: Option<u32>,
     /// Page number of results to return.
+    #[new(default)]
     pub page: Option<u32>,
 }
 
@@ -110,7 +119,7 @@ api_call!(
     RevokePublicURLResponse
 );
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct RevokePublicURLRequest {
     /// File to revoke
     pub file: ::FileId,
@@ -134,7 +143,7 @@ api_call!(
     SharedPublicURLResponse
 );
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct SharedPublicURLRequest {
     /// File to share
     pub file: ::FileId,

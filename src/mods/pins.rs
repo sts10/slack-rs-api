@@ -2,16 +2,23 @@
 ///
 /// Wraps https://api.slack.com/methods/pins.add
 
+#[derive(Clone, Debug, Serialize)]
+#[serde(rename = "snake_case")]
+pub enum Pinnable {
+    /// File to pin or unpin
+    File(::FileId),
+    /// Timestamp of the message to pin or unpin
+    Timestamp(::Timestamp),
+}
+
 api_call!(add, "pins.add", AddRequest => ());
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct AddRequest {
     /// Channel to pin the item in.
     pub channel: ::ChannelId,
-    /// File to pin.
-    pub file: Option<::FileId>,
-    /// Timestamp of the message to pin.
-    pub timestamp: Option<::Timestamp>,
+    #[serde(flatten)]
+    pub item: Pinnable,
 }
 
 /// Lists items pinned to a channel.
@@ -20,7 +27,7 @@ pub struct AddRequest {
 
 api_call!(list, "pins.list", ListRequest, ListResponse);
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct ListRequest {
     /// Channel to get pinned items for.
     pub channel: ::ChannelId,
@@ -73,12 +80,10 @@ pub struct ListResponseItemMessage {
 
 api_call!(remove, "pins.remove", RemoveRequest => ());
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct RemoveRequest {
     /// Channel where the item is pinned to.
     pub channel: ::ChannelId,
-    /// File to un-pin.
-    pub file: Option<::FileId>,
-    /// Timestamp of the message to un-pin.
-    pub timestamp: Option<::Timestamp>,
+    #[serde(flatten)]
+    pub item: Pinnable,
 }

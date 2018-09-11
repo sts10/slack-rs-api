@@ -17,7 +17,7 @@ api_call!(
     GetPresenceResponse
 );
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct GetPresenceRequest {
     /// User to get presence info on. Defaults to the authed user.
     pub user: ::UserId,
@@ -50,7 +50,7 @@ pub struct IdentityResponse {
 
 api_call!(info, "users.info", InfoRequest, InfoResponse);
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct InfoRequest {
     /// User to get info on
     pub user: ::UserId,
@@ -75,12 +75,16 @@ api_call!(list, "users.list", ListRequest, ListResponse);
 /// Resolve this scenario by using pagination.
 ///
 /// One day pagination will become required to use this method.
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct ListRequest {
     /// Whether to include presence data in the output
+    #[new(default)]
     pub presence: Option<bool>,
+    #[new(default)]
     pub cursor: Option<String>,
+    #[new(default)]
     pub limit: Option<usize>,
+    #[new(default)]
     pub include_locale: Option<bool>,
 }
 
@@ -131,7 +135,7 @@ api_call!(set_active, "users.setActive");
 
 api_call!(set_presence, "users.setPresence", SetPresenceRequest => ());
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, new)]
 pub struct SetPresenceRequest {
     /// Either auto or away
     pub presence: Presence,
@@ -142,10 +146,4 @@ pub struct SetPresenceRequest {
 pub enum Presence {
     Auto,
     Away,
-}
-
-impl Default for Presence {
-    fn default() -> Self {
-        Presence::Auto
-    }
 }
