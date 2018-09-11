@@ -14,7 +14,7 @@ pub struct AddRequest<'a> {
     pub file: Option<::FileId>,
     /// Channel where the message to add reaction to was posted.
     #[new(default)]
-    pub channel: Option<::ChannelId>,
+    pub channel: Option<::ConversationId>,
     /// Timestamp of the message to add reaction to.
     #[new(default)]
     pub timestamp: Option<::Timestamp>,
@@ -33,7 +33,7 @@ pub struct GetRequest {
     pub file: Option<::FileId>,
     /// Channel where the message to get reactions for was posted.
     #[new(default)]
-    pub channel: Option<::ChannelId>,
+    pub channel: Option<::ConversationId>,
     /// Timestamp of the message to get reactions for.
     #[new(default)]
     pub timestamp: Option<::Timestamp>,
@@ -145,7 +145,7 @@ pub struct RemoveRequest<'a> {
     pub file: Option<::FileId>,
     /// Channel where the message to remove reaction from was posted.
     #[serde(default)]
-    pub channel: Option<::ChannelId>,
+    pub channel: Option<::ConversationId>,
     /// Timestamp of the message to remove reaction from.
     #[serde(default)]
     pub timestamp: Option<::Timestamp>,
