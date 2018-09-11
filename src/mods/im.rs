@@ -45,7 +45,8 @@ pub struct HistoryResponse {
     ok: bool,
     pub has_more: Option<bool>,
     pub latest: Option<String>,
-    pub messages: Option<Vec<::Message>>,
+    #[serde(default)]
+    pub messages: Vec<::Message>,
 }
 
 /// Lists direct message channels for the calling user.
