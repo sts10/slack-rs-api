@@ -412,9 +412,10 @@ deserialize_internally_tagged! {
 pub struct EventImMarked {
     channel: ::DmId,
     ts: Timestamp,
-    dm_count: i32,
-    unread_count_display: i32,
-    num_mentions_display: i32,
+    dm_count: u32,
+    unread_count_display: u32,
+    num_mentions_display: u32,
+    mention_count_display: Option<u32>,
     event_ts: Timestamp,
 }
 
