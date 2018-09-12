@@ -8,7 +8,7 @@ fn main() {
     let client = slack::default_client();
 
     {
-        let request = slack::rtm::StartRequest::default();
+        let request = slack::rtm::StartRequest::new();
         let response = slack::rtm::start(&client, &token, &request);
 
         match response {

@@ -10,17 +10,14 @@ fn main() {
     let token = env::var("SLACK_API_TOKEN").expect("SLACK_API_TOKEN not set.");
     let client = slack::default_client();
 
-    let response = slack::channels::list(&client, &token, &slack::channels::ListRequest::default()).unwrap();
+    let response = slack::channels::list(&client, &token, &slack::channels::ListRequest::new()).unwrap();
 
     for channel in response.channels {
         println!("{}, {}", channel.id, channel.name);
         let response = slack::channels::history(
             &client,
             &token,
-            &slack::channels::HistoryRequest {
-                channel: channel.id,
-                count: Some(1000),
-                ..slack::channels::HistoryRequest::default()
+            &slack::channels::HistoryRequest::new(channel.id));
             },
         );
     }
