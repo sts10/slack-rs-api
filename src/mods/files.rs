@@ -9,7 +9,7 @@ api_call!(delete, "files.delete", DeleteRequest => ());
 #[derive(Clone, Debug, Serialize, new)]
 pub struct DeleteRequest {
     /// ID of file to delete.
-    pub file: ::FileId,
+    pub file: FileId,
 }
 
 /// Gets information about a team file.
@@ -21,7 +21,7 @@ api_call!(info, "files.info", InfoRequest, InfoResponse);
 #[derive(Clone, Debug, Serialize, new)]
 pub struct InfoRequest {
     /// Specify a file by providing its ID.
-    pub file: ::FileId,
+    pub file: FileId,
     /// Number of items to return per page.
     #[new(default)]
     pub count: Option<u32>,
@@ -34,9 +34,9 @@ pub struct InfoRequest {
 #[serde(deny_unknown_fields)]
 pub struct InfoResponse {
     ok: bool,
-    pub comments: Vec<::FileComment>,
-    pub file: ::File,
-    pub paging: ::Paging,
+    pub comments: Vec<FileComment>,
+    pub file: File,
+    pub paging: Paging,
 }
 
 /// Lists & filters team files.
@@ -49,10 +49,10 @@ api_call!(list, "files.list", ListRequest, ListResponse);
 pub struct ListRequest {
     /// Filter files created by a single user.
     #[new(default)]
-    pub user: Option<::UserId>,
+    pub user: Option<UserId>,
     /// Filter files appearing in a specific channel, indicated by its ID.
     #[new(default)]
-    pub channel: Option<::ChannelId>,
+    pub channel: Option<ChannelId>,
     /// Filter files created after this timestamp (inclusive).
     #[new(default)]
     pub ts_from: Option<u32>,
@@ -104,8 +104,8 @@ impl Default for FileType {
 #[serde(deny_unknown_fields)]
 pub struct ListResponse {
     ok: bool,
-    pub files: Option<Vec<::File>>,
-    pub paging: Option<::Paging>,
+    pub files: Option<Vec<File>>,
+    pub paging: Option<Paging>,
 }
 
 /// Revokes public/external sharing access for a file
@@ -122,14 +122,14 @@ api_call!(
 #[derive(Clone, Debug, Serialize, new)]
 pub struct RevokePublicURLRequest {
     /// File to revoke
-    pub file: ::FileId,
+    pub file: FileId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct RevokePublicURLResponse {
     ok: bool,
-    pub file: ::File,
+    pub file: File,
 }
 
 /// Enables a file for public/external sharing.
@@ -146,12 +146,12 @@ api_call!(
 #[derive(Clone, Debug, Serialize, new)]
 pub struct SharedPublicURLRequest {
     /// File to share
-    pub file: ::FileId,
+    pub file: FileId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct SharedPublicURLResponse {
     ok: bool,
-    pub file: ::File,
+    pub file: File,
 }

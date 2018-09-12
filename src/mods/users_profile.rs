@@ -1,3 +1,6 @@
+use crate::id::*;
+use crate::types::*;
+
 /// Retrieves a user's profile information.
 ///
 /// Wraps https://api.slack.com/methods/users.profile.get
@@ -8,7 +11,7 @@ api_call!(get, "users.profile.get", GetRequest, GetResponse);
 pub struct GetRequest {
     /// User to retrieve profile info for
     #[new(default)]
-    pub user: Option<::UserId>,
+    pub user: Option<UserId>,
     /// Include labels for each ID in custom profile fields
     #[new(default)]
     pub include_labels: Option<bool>,
@@ -18,7 +21,7 @@ pub struct GetRequest {
 #[serde(deny_unknown_fields)]
 pub struct GetResponse {
     ok: bool,
-    pub profile: Option<::UserProfile>,
+    pub profile: Option<UserProfile>,
 }
 
 /// Set the profile information for a user.
@@ -31,7 +34,7 @@ api_call!(set, "users.profile.set", SetRequest, SetResponse);
 pub struct SetRequest<'a> {
     /// ID of user to change. This argument may only be specified by team admins on paid teams.
     #[new(default)]
-    pub user: Option<::UserId>,
+    pub user: Option<UserId>,
     /// Collection of key:value pairs presented as a URL-encoded JSON hash.
     #[new(default)]
     pub profile: Option<&'a str>,
@@ -47,5 +50,5 @@ pub struct SetRequest<'a> {
 #[serde(deny_unknown_fields)]
 pub struct SetResponse {
     ok: bool,
-    pub profile: Option<::UserProfile>,
+    pub profile: Option<UserProfile>,
 }

@@ -35,7 +35,7 @@ pub struct ConnectResponseTeam {
     pub domain: String,
     pub enterprise_id: Option<String>,
     pub enterprise_name: Option<String>,
-    pub id: ::TeamId,
+    pub id: TeamId,
     pub name: String,
 }
 
@@ -68,21 +68,21 @@ pub struct StartRequest {
 #[serde(deny_unknown_fields)]
 pub struct StartResponse {
     ok: bool,
-    pub bots: Option<Vec<::Bot>>,
-    pub channels: Option<Vec<::Channel>>,
-    pub groups: Option<Vec<::Group>>,
-    pub ims: Option<Vec<::Im>>,
-    pub mpims: Option<Vec<::Mpim>>,
+    pub bots: Option<Vec<Bot>>,
+    pub channels: Option<Vec<Channel>>,
+    pub groups: Option<Vec<Group>>,
+    pub ims: Option<Vec<Im>>,
+    pub mpims: Option<Vec<Mpim>>,
     #[serde(rename = "self")]
-    pub slf: Option<::User>,
-    pub team: Option<::Team>,
+    pub slf: Option<User>,
+    pub team: Option<Team>,
     pub url: Option<String>,
-    pub users: Option<Vec<::User>>,
-    pub latest_event_ts: Option<::Timestamp>,
-    pub cache_ts: Option<::Timestamp>,
-    pub read_only_channels: Option<Vec<::Channel>>,
-    pub non_threadable_channels: Option<Vec<::Channel>>,
-    pub thread_only_channels: Option<Vec<::Channel>>,
+    pub users: Option<Vec<User>>,
+    pub latest_event_ts: Option<Timestamp>,
+    pub cache_ts: Option<Timestamp>,
+    pub read_only_channels: Option<Vec<Channel>>,
+    pub non_threadable_channels: Option<Vec<Channel>>,
+    pub thread_only_channels: Option<Vec<Channel>>,
     pub can_manage_shared_channels: Option<bool>,
     pub cache_version: Option<String>,
     pub cache_ts_version: Option<String>,
@@ -94,15 +94,15 @@ pub struct StartResponse {
 #[serde(deny_unknown_fields)]
 pub struct Dnd {
     pub dnd_enabled: bool,
-    pub next_dnd_end_ts: ::Timestamp,
-    pub next_dnd_start_ts: ::Timestamp,
+    pub next_dnd_end_ts: Timestamp,
+    pub next_dnd_start_ts: Timestamp,
     pub snooze_enabled: bool,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Subteams {
-    pub all: Option<Vec<::Team>>,
+    pub all: Option<Vec<Team>>,
     #[serde(rename = "self")]
     pub slf: Option<Vec<String>>,
 }

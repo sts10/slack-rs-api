@@ -1,5 +1,8 @@
 //! Get info on your team's User Groups.
 
+use crate::id::*;
+use crate::types::*;
+
 /// Create a User Group
 ///
 /// Wraps https://api.slack.com/methods/usergroups.create
@@ -28,7 +31,7 @@ pub struct CreateRequest<'a> {
 #[serde(deny_unknown_fields)]
 pub struct CreateResponse {
     ok: bool,
-    pub usergroup: Option<::Usergroup>,
+    pub usergroup: Option<Usergroup>,
 }
 
 /// Disable an existing User Group
@@ -40,7 +43,7 @@ api_call!(disable, "usergroups.disable", DisableRequest, DisableResponse);
 #[derive(Clone, Debug, Serialize, new)]
 pub struct DisableRequest {
     /// The encoded ID of the User Group to disable.
-    pub usergroup: ::UsergroupId,
+    pub usergroup: UsergroupId,
     /// Include the number of users in the User Group.
     #[new(default)]
     pub include_count: Option<bool>,
@@ -50,7 +53,7 @@ pub struct DisableRequest {
 #[serde(deny_unknown_fields)]
 pub struct DisableResponse {
     ok: bool,
-    pub usergroup: Option<::Usergroup>,
+    pub usergroup: Option<Usergroup>,
 }
 
 /// Enable a User Group
@@ -62,7 +65,7 @@ api_call!(enable, "usergroups.enable", EnableRequest, EnableResponse);
 #[derive(Clone, Debug, Serialize, new)]
 pub struct EnableRequest {
     /// The encoded ID of the User Group to enable.
-    pub usergroup: ::UsergroupId,
+    pub usergroup: UsergroupId,
     /// Include the number of users in the User Group.
     #[new(default)]
     pub include_count: Option<bool>,
@@ -72,7 +75,7 @@ pub struct EnableRequest {
 #[serde(deny_unknown_fields)]
 pub struct EnableResponse {
     ok: bool,
-    pub usergroup: Option<::Usergroup>,
+    pub usergroup: Option<Usergroup>,
 }
 
 /// List all User Groups for a team
@@ -98,7 +101,7 @@ pub struct ListRequest {
 #[serde(deny_unknown_fields)]
 pub struct ListResponse {
     ok: bool,
-    pub usergroups: Option<Vec<::Usergroup>>,
+    pub usergroups: Option<Vec<Usergroup>>,
 }
 
 /// Update an existing User Group
@@ -110,7 +113,7 @@ api_call!(update, "usergroups.update", UpdateRequest, UpdateResponse);
 #[derive(Clone, Debug, Serialize, new)]
 pub struct UpdateRequest<'a> {
     /// The encoded ID of the User Group to update.
-    pub usergroup: ::UsergroupId,
+    pub usergroup: UsergroupId,
     /// A name for the User Group. Must be unique among User Groups.
     #[new(default)]
     pub name: Option<&'a str>,
@@ -122,8 +125,8 @@ pub struct UpdateRequest<'a> {
     pub description: Option<&'a str>,
     /// A comma separated string of encoded channel IDs for which the User Group uses as a default.
     #[new(default)]
-    #[serde(serialize_with = "::serialize_comma_separated")]
-    pub channels: &'a [::UserId],
+    #[serde(serialize_with = "crate::serialize_comma_separated")]
+    pub channels: &'a [UserId],
     /// Include the number of users in the User Group.
     #[new(default)]
     pub include_count: Option<bool>,
@@ -133,5 +136,5 @@ pub struct UpdateRequest<'a> {
 #[serde(deny_unknown_fields)]
 pub struct UpdateResponse {
     ok: bool,
-    pub usergroup: Option<::Usergroup>,
+    pub usergroup: Option<Usergroup>,
 }

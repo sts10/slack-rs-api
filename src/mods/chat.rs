@@ -9,9 +9,9 @@ api_call!(delete, "chat.delete", DeleteRequest, DeleteResponse);
 #[derive(Clone, Debug, Serialize, new)]
 pub struct DeleteRequest {
     /// Timestamp of the message to be deleted.
-    pub ts: ::Timestamp,
+    pub ts: Timestamp,
     /// Channel containing the message to be deleted.
-    pub channel: ::ConversationId,
+    pub channel: ConversationId,
     /// Pass true to delete the message as the authed user. Bot users in this context are considered authed users.
     #[new(default)]
     pub as_user: Option<bool>,
@@ -21,8 +21,8 @@ pub struct DeleteRequest {
 #[serde(deny_unknown_fields)]
 pub struct DeleteResponse {
     ok: bool,
-    pub channel: ::ChannelId,
-    pub ts: ::Timestamp,
+    pub channel: ChannelId,
+    pub ts: Timestamp,
 }
 
 /// Share a me message into a channel.
@@ -34,7 +34,7 @@ api_call!(me_message, "chat.meMessage", MeMessageRequest, MeMessageResponse);
 #[derive(Clone, Debug, Serialize, new)]
 pub struct MeMessageRequest<'a> {
     /// Channel to send message to. Can be a public channel, private group or IM channel. Can be an encoded ID, or a name.
-    pub channel: ::ConversationId,
+    pub channel: ConversationId,
     /// Text of the message to send.
     pub text: &'a str,
 }
@@ -44,7 +44,7 @@ pub struct MeMessageRequest<'a> {
 pub struct MeMessageResponse {
     ok: bool,
     pub channel: Option<String>,
-    pub ts: Option<::Timestamp>,
+    pub ts: Option<Timestamp>,
 }
 
 /// Sends a message to a channel.
@@ -61,7 +61,7 @@ api_call!(
 #[derive(Clone, Debug, Serialize, new)]
 pub struct PostMessageRequest<'a> {
     /// Channel, private group, or IM channel to send message to. Can be an encoded ID, or a name. See below for more details.
-    pub channel: ::ConversationId,
+    pub channel: ConversationId,
     /// Text of the message to send. See below for an explanation of formatting. This field is usually required, unless you're providing only attachments instead.
     pub text: &'a str,
     /// Change how messages are treated. Defaults to none. See below.
@@ -93,7 +93,7 @@ pub struct PostMessageRequest<'a> {
     pub icon_emoji: Option<&'a str>,
     /// Provide another message's ts value to make this message a reply. Avoid using a reply's ts value; use its parent instead.
     #[new(default)]
-    pub thread_ts: Option<::Timestamp>,
+    pub thread_ts: Option<Timestamp>,
     /// Used in conjunction with thread_ts and indicates whether reply should be made visible to everyone in the channel or conversation. Defaults to false.
     #[new(default)]
     pub reply_broadcast: Option<bool>,
@@ -120,9 +120,9 @@ impl Default for ParseMode {
 #[serde(deny_unknown_fields)]
 pub struct PostMessageResponse {
     ok: bool,
-    pub channel: ::ConversationId,
-    pub message: ::Message,
-    pub ts: ::Timestamp,
+    pub channel: ConversationId,
+    pub message: Message,
+    pub ts: Timestamp,
 }
 
 /// Unfurl a URL that a user posted
@@ -134,9 +134,9 @@ api_call!(unfurl, "chat.unfurl", UnfurlRequest => ());
 #[derive(Clone, Debug, Serialize, new)]
 pub struct UnfurlRequest<'a> {
     /// Channel ID of the message
-    pub channel: ::ConversationId,
+    pub channel: ConversationId,
     /// Timestamp of the message to add unfurl behavior to
-    pub ts: ::Timestamp,
+    pub ts: Timestamp,
     /// JSON mapping a set of URLs from the message to their unfurl attachments
     pub unfurls: &'a str, // TODO: this should be a serialize_with on a Vec<String> I think?
     /// Set to true or 1 to indicate the user must install your Slack app to trigger unfurls for this domain
@@ -159,9 +159,9 @@ api_call!(update, "chat.update", UpdateRequest, UpdateResponse);
 #[derive(Clone, Debug, Serialize, new)]
 pub struct UpdateRequest<'a> {
     /// Timestamp of the message to be updated.
-    pub ts: ::Timestamp,
+    pub ts: Timestamp,
     /// Channel containing the message to be updated.
-    pub channel: ::ConversationId,
+    pub channel: ConversationId,
     /// New text for the message, using the default formatting rules.
     pub text: &'a str,
     /// Structured message attachments.
