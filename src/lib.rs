@@ -14,7 +14,7 @@
 
 //! Low-level, direct interface for the [Slack Web
 //! API](https://api.slack.com/methods).
-#![feature(rust_2018_preview)]
+#![feature(rust_2018_preview, uniform_paths)]
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
