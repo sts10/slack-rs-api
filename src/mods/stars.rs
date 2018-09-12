@@ -9,13 +9,13 @@ api_call!(add, "stars.add", AddRequest => ());
 pub struct AddRequest {
     /// File to add star to.
     #[new(default)]
-    pub file: Option<FileId>,
+    pub file: Option<::FileId>,
     /// Channel to add star to, or channel where the message to add star to was posted (used with timestamp).
     #[new(default)]
-    pub channel: Option<ChannelId>,
+    pub channel: Option<::ChannelId>,
     /// Timestamp of the message to add star to.
     #[new(default)]
-    pub timestamp: Option<Timestamp>,
+    pub timestamp: Option<::Timestamp>,
 }
 
 /// Lists stars for a user.
@@ -39,15 +39,15 @@ pub struct ListRequest {
 pub struct ListResponse {
     ok: bool,
     pub items: Option<Vec<ListResponseItem>>,
-    pub paging: Option<Paging>,
+    pub paging: Option<::Paging>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(tag = "type")]
 pub enum ListResponseItem {
-    Message { channel: String, message: Message },
-    File { file: File },
-    FileComment { comment: FileComment, file: File },
+    Message { channel: String, message: ::Message },
+    File { file: ::File },
+    FileComment { comment: ::FileComment, file: ::File },
     Channel { channel: String },
     Im { channel: String },
     Group { group: String },
@@ -63,11 +63,11 @@ api_call!(remove, "stars.remove", RemoveRequest => ());
 pub struct RemoveRequest {
     /// File to remove star from.
     #[new(default)]
-    pub file: Option<FileId>,
+    pub file: Option<::FileId>,
     /// Channel to remove star from, or channel where the message to remove star from was posted (used with timestamp).
     #[new(default)]
-    pub channel: Option<ChannelId>,
+    pub channel: Option<::ChannelId>,
     /// Timestamp of the message to remove star from.
     #[new(default)]
-    pub timestamp: Option<Timestamp>,
+    pub timestamp: Option<::Timestamp>,
 }

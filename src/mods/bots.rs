@@ -9,7 +9,7 @@ api_call!(info, "bots.info", InfoRequest, InfoResponse);
 pub struct InfoRequest {
     /// Bot user to get info on
     #[new(default)]
-    pub bot: Option<BotId>,
+    pub bot: Option<::BotId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -22,10 +22,10 @@ pub struct InfoResponse {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct InfoResponseBot {
-    pub app_id: AppId,
+    pub app_id: ::AppId,
     pub deleted: bool,
     pub icons: InfoResponseBotIcons,
-    pub id: BotId,
+    pub id: ::BotId,
     pub name: String,
 }
 
@@ -44,7 +44,7 @@ mod tests {
 
     #[test]
     fn test_info() {
-        let client = crate::requests::default_client();
+        let client = ::requests::default_client();
         let token = env::var("SLACK_API_TOKEN").unwrap();
 
         info(&client, &token, &InfoRequest::new()).unwrap();

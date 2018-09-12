@@ -6,9 +6,9 @@
 #[serde(rename = "snake_case")]
 pub enum Pinnable {
     /// File to pin or unpin
-    File(FileId),
+    File(::FileId),
     /// Timestamp of the message to pin or unpin
-    Timestamp(Timestamp),
+    Timestamp(::Timestamp),
 }
 
 api_call!(add, "pins.add", AddRequest => ());
@@ -16,7 +16,7 @@ api_call!(add, "pins.add", AddRequest => ());
 #[derive(Clone, Debug, Serialize, new)]
 pub struct AddRequest {
     /// Channel to pin the item in.
-    pub channel: ChannelId,
+    pub channel: ::ChannelId,
     #[serde(flatten)]
     pub item: Pinnable,
 }
@@ -30,7 +30,7 @@ api_call!(list, "pins.list", ListRequest, ListResponse);
 #[derive(Clone, Debug, Serialize, new)]
 pub struct ListRequest {
     /// Channel to get pinned items for.
-    pub channel: ChannelId,
+    pub channel: ::ChannelId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -51,27 +51,27 @@ pub enum ListResponseItem {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ListResponseItemFile {
-    pub created: Option<Timestamp>,
-    pub created_by: Option<UserId>,
-    pub file: File,
+    pub created: Option<::Timestamp>,
+    pub created_by: Option<::UserId>,
+    pub file: ::File,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ListResponseItemFileComment {
-    pub comment: FileComment,
-    pub created: Option<Timestamp>,
-    pub created_by: Option<UserId>,
-    pub file: File,
+    pub comment: ::FileComment,
+    pub created: Option<::Timestamp>,
+    pub created_by: Option<::UserId>,
+    pub file: ::File,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ListResponseItemMessage {
-    pub channel: ChannelId,
-    pub created: Option<Timestamp>,
-    pub created_by: Option<UserId>,
-    pub message: Message,
+    pub channel: ::ChannelId,
+    pub created: Option<::Timestamp>,
+    pub created_by: Option<::UserId>,
+    pub message: ::Message,
 }
 
 /// Un-pins an item from a channel.
@@ -83,7 +83,7 @@ api_call!(remove, "pins.remove", RemoveRequest => ());
 #[derive(Clone, Debug, Serialize, new)]
 pub struct RemoveRequest {
     /// Channel where the item is pinned to.
-    pub channel: ChannelId,
+    pub channel: ::ChannelId,
     #[serde(flatten)]
     pub item: Pinnable,
 }

@@ -32,7 +32,7 @@ api_call!(info, "dnd.info", InfoRequest, InfoResponse);
 pub struct InfoRequest {
     /// User to fetch status for (defaults to current user)
     #[new(default)]
-    pub user: Option<UserId>,
+    pub user: Option<::UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -78,13 +78,13 @@ api_call!(team_info, "dnd.teamInfo", TeamInfoRequest, TeamInfoResponse);
 pub struct TeamInfoRequest<'a> {
     /// Comma-separated list of users to fetch Do Not Disturb status for
     #[new(default)]
-    #[serde(serialize_with = "crate::serialize_comma_separated")]
-    pub users: &'a [UserId],
+    #[serde(serialize_with = "::serialize_comma_separated")]
+    pub users: &'a [::UserId],
 }
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct TeamInfoResponse {
     ok: bool,
-    pub team: Team,
+    pub team: ::Team,
 }

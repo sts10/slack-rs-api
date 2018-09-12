@@ -1,11 +1,14 @@
 extern crate slack_api as slack;
 
+use std::default::Default;
+use std::env;
+use std::error::Error;
 fn main() {
-    let token = std::env::var("SLACK_API_TOKEN").expect("SLACK_API_TOKEN not set.");
+    let token = env::var("SLACK_API_TOKEN").expect("SLACK_API_TOKEN not set.");
     let client = slack::default_client();
 
     {
-        let request = slack::rtm::StartRequest::new();
+        let request = slack::rtm::StartRequest::default();
         let response = slack::rtm::start(&client, &token, &request);
 
         match response {

@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#![feature(rust_2018_preview, uniform_paths)]
+
 //! Low-level, direct interface for the [Slack Web
 //! API](https://api.slack.com/methods).
 extern crate serde;

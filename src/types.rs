@@ -3,8 +3,8 @@ use std::collections::HashMap;
 use std::fmt;
 use uuid::Uuid;
 
-use crate::id::*;
-use crate::timestamp::Timestamp;
+use id::*;
+use timestamp::Timestamp;
 
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub struct ChannelName {
@@ -99,7 +99,7 @@ pub struct Channel {
     pub is_read_only: Option<bool>,
     pub is_shared: Option<bool>,
     pub last_read: Option<Timestamp>,
-    pub latest: Option<Message>,
+    pub latest: Option<::Message>,
     pub members: Option<Vec<UserId>>,
     pub name: String,
     pub name_normalized: Option<String>,
@@ -140,7 +140,7 @@ pub struct File {
     pub groups: Option<Vec<String>>,
     pub id: Option<String>,
     pub ims: Option<Vec<String>>,
-    pub initial_comment: Option<FileComment>,
+    pub initial_comment: Option<::FileComment>,
     pub is_external: Option<bool>,
     pub is_public: Option<bool>,
     pub is_starred: Option<bool>,
@@ -158,7 +158,7 @@ pub struct File {
     pub preview_highlight: Option<String>,
     pub public_url_shared: Option<bool>,
     #[serde(default)]
-    pub reactions: Vec<Reaction>,
+    pub reactions: Vec<::Reaction>,
     pub size: Option<i32>,
     pub thumb_160: Option<String>,
     pub thumb_360: Option<String>,
@@ -183,7 +183,7 @@ pub struct FileComment {
     pub comment: Option<String>,
     pub id: Option<String>,
     #[serde(default)]
-    pub reactions: Vec<Reaction>,
+    pub reactions: Vec<::Reaction>,
     pub timestamp: Option<i32>,
     pub user: Option<UserId>,
 }
@@ -197,7 +197,7 @@ pub struct Group {
     pub is_group: Option<bool>,
     pub is_mpim: Option<bool>,
     pub last_read: Option<Timestamp>,
-    pub latest: Option<Message>,
+    pub latest: Option<::Message>,
     pub members: Option<Vec<String>>,
     pub name: String,
     pub purpose: Option<GroupPurpose>,
@@ -410,7 +410,7 @@ deserialize_internally_tagged! {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct EventImMarked {
-    channel: DmId,
+    channel: ::DmId,
     ts: Timestamp,
     dm_count: u32,
     unread_count_display: u32,
@@ -788,8 +788,8 @@ pub struct MessageChannelUnarchive {
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageFileComment {
-    pub comment: Option<FileComment>,
-    pub file: Option<File>,
+    pub comment: Option<::FileComment>,
+    pub file: Option<::File>,
     #[serde(default)]
     pub text: String,
     pub ts: Option<Timestamp>,
@@ -797,7 +797,7 @@ pub struct MessageFileComment {
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageFileMention {
-    pub file: Option<File>,
+    pub file: Option<::File>,
     #[serde(default)]
     pub text: String,
     pub ts: Option<Timestamp>,
@@ -807,14 +807,14 @@ pub struct MessageFileMention {
 #[derive(Clone, Debug, Deserialize)]
 pub struct MessageFileShare {
     pub channel: Option<ConversationId>,
-    pub file: Option<File>,
+    pub file: Option<::File>,
     #[serde(default)]
     pub text: String,
     pub ts: Option<Timestamp>,
     pub upload: Option<bool>,
     pub user: Option<UserId>,
     #[serde(default)]
-    pub reactions: Vec<Reaction>,
+    pub reactions: Vec<::Reaction>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -1183,7 +1183,7 @@ pub struct MessageSlackbotResponse {
     pub user: Option<UserId>,
     pub channel: Option<ConversationId>,
     #[serde(default)]
-    pub reactions: Vec<Reaction>,
+    pub reactions: Vec<::Reaction>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -1218,7 +1218,7 @@ pub struct Mpim {
     pub is_group: Option<bool>,
     pub is_mpim: Option<bool>,
     pub last_read: Option<Timestamp>,
-    pub latest: Option<Message>,
+    pub latest: Option<::Message>,
     pub members: Option<Vec<UserId>>,
     pub name: Option<String>,
     pub unread_count: Option<i32>,
@@ -1297,7 +1297,7 @@ pub struct User {
     pub is_ultra_restricted: Option<bool>,
     pub locale: Option<String>,
     pub name: String,
-    pub profile: Option<UserProfile>,
+    pub profile: Option<::UserProfile>,
     pub real_name: Option<String>,
     pub team_id: Option<String>,
     pub two_factor_type: Option<String>,

@@ -1,9 +1,5 @@
 //! Get info on members of your Slack team.
 
-use crate::id::*;
-use crate::timestamp::Timestamp;
-use crate::types::*;
-
 /// Delete the user profile photo
 ///
 /// Wraps https://api.slack.com/methods/users.deletePhoto
@@ -24,7 +20,7 @@ api_call!(
 #[derive(Clone, Debug, Serialize, new)]
 pub struct GetPresenceRequest {
     /// User to get presence info on. Defaults to the authed user.
-    pub user: UserId,
+    pub user: ::UserId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -44,8 +40,8 @@ api_call!(identity, "users.identity", () => IdentityResponse);
 #[serde(deny_unknown_fields)]
 pub struct IdentityResponse {
     ok: bool,
-    pub team: Option<Team>,
-    pub user: Option<User>,
+    pub team: Option<::Team>,
+    pub user: Option<::User>,
 }
 
 /// Gets information about a user.
@@ -57,14 +53,14 @@ api_call!(info, "users.info", InfoRequest, InfoResponse);
 #[derive(Clone, Debug, Serialize, new)]
 pub struct InfoRequest {
     /// User to get info on
-    pub user: UserId,
+    pub user: ::UserId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct InfoResponse {
     ok: bool,
-    pub user: Option<User>,
+    pub user: Option<::User>,
 }
 
 /// Lists all users in a Slack team.
@@ -85,7 +81,7 @@ pub struct ListRequest {
     #[new(default)]
     pub presence: Option<bool>,
     #[new(default)]
-    pub cursor: Option<Cursor>,
+    pub cursor: Option<::Cursor>,
     #[new(default)]
     pub limit: Option<usize>,
     #[new(default)]
@@ -96,9 +92,9 @@ pub struct ListRequest {
 #[serde(deny_unknown_fields)]
 pub struct ListResponse {
     ok: bool,
-    pub members: Vec<User>,
-    pub cache_ts: Option<Timestamp>,
-    pub response_metadata: Option<Paging>,
+    pub members: Vec<::User>,
+    pub cache_ts: Option<::Timestamp>,
+    pub response_metadata: Option<::Paging>,
     pub is_limited: Option<bool>,
 }
 
@@ -118,7 +114,7 @@ pub struct PrefsResponse {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct UserPrefs {
-    muted_channels: Vec<ChannelId>,
+    muted_channels: Vec<::ChannelId>,
 }
 
 /// Marks a user as active.

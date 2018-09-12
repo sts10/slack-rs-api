@@ -12,14 +12,14 @@ pub struct AddRequest<'a> {
     pub time: u32,
     /// The user who will receive the reminder. If no user is specified, the reminder will go to user who created it.
     #[new(default)]
-    pub user: Option<UserId>,
+    pub user: Option<::UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct AddResponse {
     ok: bool,
-    pub reminder: Option<Reminder>,
+    pub reminder: Option<::Reminder>,
 }
 
 /// Marks a reminder as complete.
@@ -31,7 +31,7 @@ api_call!(complete, "reminders.complete", CompleteRequest => ());
 #[derive(Clone, Debug, Serialize, new)]
 pub struct CompleteRequest {
     /// The ID of the reminder to be marked as complete
-    pub reminder: ReminderId,
+    pub reminder: ::ReminderId,
 }
 
 /// Deletes a reminder.
@@ -43,7 +43,7 @@ api_call!(delete, "reminders.delete", DeleteRequest => ());
 #[derive(Clone, Debug, Serialize, new)]
 pub struct DeleteRequest {
     /// The ID of the reminder
-    pub reminder: ReminderId,
+    pub reminder: ::ReminderId,
 }
 
 /// Gets information about a reminder.
@@ -55,14 +55,14 @@ api_call!(info, "reminders.info", InfoRequest, InfoResponse);
 #[derive(Clone, Debug, Serialize, new)]
 pub struct InfoRequest {
     /// The ID of the reminder
-    pub reminder: ReminderId,
+    pub reminder: ::ReminderId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct InfoResponse {
     ok: bool,
-    pub reminder: Option<Reminder>,
+    pub reminder: Option<::Reminder>,
 }
 
 /// Lists all reminders created by or for a given user.
@@ -75,5 +75,5 @@ api_call!(list, "reminders.list", () => ListResponse);
 #[derive(Clone, Debug, Deserialize)]
 pub struct ListResponse {
     ok: bool,
-    pub reminders: Option<Vec<Reminder>>,
+    pub reminders: Option<Vec<::Reminder>>,
 }

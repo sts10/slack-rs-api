@@ -32,25 +32,17 @@ pub fn default_client() -> ::reqwest::Client {
 
 macro_rules! api_call {
     ($name:ident, $strname:expr, $reqty:ty, $okty:ty) => {
-        pub fn $name(
-            client: &crate::requests::Client,
-            token: &str,
-            request: &$reqty,
-        ) -> Result<$okty, crate::requests::Error> {
+        pub fn $name(client: &::requests::Client, token: &str, request: &$reqty) -> Result<$okty, ::requests::Error> {
             api_call_internal!(client, token, $strname, request, $okty)
         }
     };
     ($name:ident, $strname:expr,() => $okty:ty) => {
-        pub fn $name(client: &crate::requests::Client, token: &str) -> Result<$okty, crate::requests::Error> {
+        pub fn $name(client: &::requests::Client, token: &str) -> Result<$okty, ::requests::Error> {
             api_call_internal!(client, token, $strname, (), $okty)
         }
     };
     ($name:ident, $strname:expr, $reqty:ty => ()) => {
-        pub fn $name(
-            client: &crate::requests::Client,
-            token: &str,
-            request: &$reqty,
-        ) -> Result<(), crate::requests::Error> {
+        pub fn $name(client: &::requests::Client, token: &str, request: &$reqty) -> Result<(), ::requests::Error> {
             #[allow(dead_code)] // But isn't serde using the field?
             #[derive(Deserialize)]
             #[serde(deny_unknown_fields)]
@@ -62,7 +54,7 @@ macro_rules! api_call {
         }
     };
     ($name:ident, $strname:expr) => {
-        pub fn $name(client: &crate::requests::Client, token: &str) -> Result<(), crate::requests::Error> {
+        pub fn $name(client: &::requests::Client, token: &str) -> Result<(), ::requests::Error> {
             #[allow(dead_code)] // But isn't serde using the field?
             #[derive(Deserialize)]
             #[serde(deny_unknown_fields)]
@@ -77,16 +69,15 @@ macro_rules! api_call {
 
 macro_rules! api_call_internal {
     ($client:expr, $token:expr, $strname:expr, $request:expr, $okty:ty) => {{
-        use crate::requests::Error;
-
+        use requests::Error;
         #[derive(Deserialize)]
         struct IsError {
             ok: bool,
             error: Option<String>,
         }
 
-        let url = crate::requests::get_slack_url_for_method($strname) + "?token=" + $token + "&";
-        let bytes = crate::requests::send_structured($client, &url, &$request).map_err(Error::Client)?;
+        let url = ::requests::get_slack_url_for_method($strname) + "?token=" + $token + "&";
+        let bytes = ::requests::send_structured($client, &url, &$request).map_err(Error::Client)?;
 
         let is_error = ::serde_json::from_str::<IsError>(&bytes);
         match is_error {
