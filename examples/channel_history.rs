@@ -14,11 +14,6 @@ fn main() {
 
     for channel in response.channels {
         println!("{}, {}", channel.id, channel.name);
-        let response = slack::channels::history(
-            &client,
-            &token,
-            &slack::channels::HistoryRequest::new(channel.id));
-            },
-        );
+        let response = slack::channels::history(&client, &token, &slack::channels::HistoryRequest::new(channel.id));
     }
 }
