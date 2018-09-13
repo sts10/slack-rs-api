@@ -14,7 +14,6 @@
 
 //! Low-level, direct interface for the [Slack Web
 //! API](https://api.slack.com/methods).
-#![feature(rust_2018_preview, uniform_paths)]
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
@@ -54,7 +53,7 @@ where
 
     let mut output = String::with_capacity(items.len() * (ID_LENGTH + 1));
     for item in items {
-        write!(output, "{},", item);
+        let _ = write!(output, "{},", item);
     }
     output.pop(); // Remove last comma, does nothing if output is empty
 
