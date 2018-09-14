@@ -19,7 +19,7 @@ pub enum SortBy {
 ///
 /// Wraps https://api.slack.com/methods/search.all
 
-api_call!(all, "search.all", AllRequest, AllResponse);
+api_call!(all, "search.all", AllRequest => AllResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct AllRequest<'a> {
@@ -64,7 +64,7 @@ pub struct AllResponseMessages {
 ///
 /// Wraps https://api.slack.com/methods/search.files
 
-api_call!(files, "search.files", FilesRequest, FilesResponse);
+api_call!(files, "search.files", FilesRequest => FilesResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct FilesRequest<'a> {
@@ -108,7 +108,7 @@ pub struct FilesResponseFiles {
 ///
 /// Wraps https://api.slack.com/methods/search.messages
 
-api_call!(messages, "search.messages", MessagesRequest, MessagesResponse);
+api_call!(messages, "search.messages", MessagesRequest => MessagesResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct MessagesRequest<'a> {

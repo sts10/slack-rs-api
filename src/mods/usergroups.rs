@@ -4,7 +4,7 @@
 ///
 /// Wraps https://api.slack.com/methods/usergroups.create
 
-api_call!(create, "usergroups.create", CreateRequest, CreateResponse);
+api_call!(create, "usergroups.create", CreateRequest => CreateResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct CreateRequest<'a> {
@@ -35,7 +35,7 @@ pub struct CreateResponse {
 ///
 /// Wraps https://api.slack.com/methods/usergroups.disable
 
-api_call!(disable, "usergroups.disable", DisableRequest, DisableResponse);
+api_call!(disable, "usergroups.disable", DisableRequest => DisableResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct DisableRequest {
@@ -57,7 +57,7 @@ pub struct DisableResponse {
 ///
 /// Wraps https://api.slack.com/methods/usergroups.enable
 
-api_call!(enable, "usergroups.enable", EnableRequest, EnableResponse);
+api_call!(enable, "usergroups.enable", EnableRequest => EnableResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct EnableRequest {
@@ -79,7 +79,7 @@ pub struct EnableResponse {
 ///
 /// Wraps https://api.slack.com/methods/usergroups.list
 
-api_call!(list, "usergroups.list", ListRequest, ListResponse);
+api_call!(list, "usergroups.list", ListRequest => ListResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct ListRequest {
@@ -105,7 +105,7 @@ pub struct ListResponse {
 ///
 /// Wraps https://api.slack.com/methods/usergroups.update
 
-api_call!(update, "usergroups.update", UpdateRequest, UpdateResponse);
+api_call!(update, "usergroups.update", UpdateRequest => UpdateResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct UpdateRequest<'a> {

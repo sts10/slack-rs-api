@@ -4,7 +4,7 @@
 ///
 /// Wraps https://api.slack.com/methods/files.delete
 
-api_call!(delete, "files.delete", DeleteRequest => ());
+api_call!(delete, "files.delete", DeleteRequest =>);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct DeleteRequest {
@@ -16,7 +16,7 @@ pub struct DeleteRequest {
 ///
 /// Wraps https://api.slack.com/methods/files.info
 
-api_call!(info, "files.info", InfoRequest, InfoResponse);
+api_call!(info, "files.info", InfoRequest => InfoResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct InfoRequest {
@@ -43,7 +43,7 @@ pub struct InfoResponse {
 ///
 /// Wraps https://api.slack.com/methods/files.list
 
-api_call!(list, "files.list", ListRequest, ListResponse);
+api_call!(list, "files.list", ListRequest => ListResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct ListRequest {
@@ -115,7 +115,7 @@ pub struct ListResponse {
 api_call!(
     revoke_public_url,
     "files.revokePublicURL",
-    RevokePublicURLRequest,
+    RevokePublicURLRequest =>
     RevokePublicURLResponse
 );
 
@@ -139,7 +139,7 @@ pub struct RevokePublicURLResponse {
 api_call!(
     shared_public_url,
     "files.sharedPublicURL",
-    SharedPublicURLRequest,
+    SharedPublicURLRequest =>
     SharedPublicURLResponse
 );
 

@@ -2,7 +2,7 @@
 ///
 /// Wraps https://api.slack.com/methods/users.profile.get
 
-api_call!(get, "users.profile.get", GetRequest, GetResponse);
+api_call!(get, "users.profile.get", GetRequest => GetResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct GetRequest {
@@ -25,7 +25,7 @@ pub struct GetResponse {
 ///
 /// Wraps https://api.slack.com/methods/users.profile.set
 
-api_call!(set, "users.profile.set", SetRequest, SetResponse);
+api_call!(set, "users.profile.set", SetRequest => SetResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct SetRequest<'a> {

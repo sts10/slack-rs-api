@@ -2,7 +2,7 @@
 ///
 /// Wraps https://api.slack.com/methods/usergroups.users.list
 
-api_call!(list, "usergroups.users.list", ListRequest, ListResponse);
+api_call!(list, "usergroups.users.list", ListRequest => ListResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct ListRequest {
@@ -24,7 +24,7 @@ pub struct ListResponse {
 ///
 /// Wraps https://api.slack.com/methods/usergroups.users.update
 
-api_call!(update, "usergroups.users.update", UpdateRequest, UpdateResponse);
+api_call!(update, "usergroups.users.update", UpdateRequest => UpdateResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct UpdateRequest<'a> {

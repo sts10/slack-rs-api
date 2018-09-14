@@ -24,13 +24,13 @@ extern crate serde_urlencoded;
 extern crate uuid;
 #[macro_use]
 extern crate derive_new;
+
+#[cfg(test)]
 #[macro_use]
 extern crate lazy_static;
 
 #[macro_use]
 mod requests;
-pub use requests::default_client;
-pub use requests::Client;
 
 mod types;
 pub use types::*;

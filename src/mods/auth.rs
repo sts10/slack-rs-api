@@ -2,7 +2,7 @@
 ///
 /// Wraps https://api.slack.com/methods/auth.revoke
 
-api_call!(revoke, "auth.revoke", RevokeRequest, RevokeResponse);
+api_call!(revoke, "auth.revoke", RevokeRequest => RevokeResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct RevokeRequest {
@@ -22,7 +22,7 @@ pub struct RevokeResponse {
 ///
 /// Wraps https://api.slack.com/methods/auth.test
 
-api_call!(test, "auth.test", () => TestResponse);
+api_call!(test, "auth.test", => TestResponse);
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -38,9 +38,10 @@ pub struct TestResponse {
 #[cfg(test)]
 mod tests {
     use super::*;
+    extern crate reqwest;
 
     lazy_static! {
-        pub static ref CLIENT: ::requests::Client = ::requests::default_client();
+        pub static ref CLIENT: ::requests::Client = ::reqwest::Client::new();
         pub static ref TOKEN: String = ::std::env::var("SLACK_API_TOKEN").unwrap();
     }
 

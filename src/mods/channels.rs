@@ -3,7 +3,7 @@
 /// Archives a channel.
 ///
 /// Wraps https://api.slack.com/methods/channels.archive
-api_call!(archive, "channels.archive", ArchiveRequest => ());
+api_call!(archive, "channels.archive", ArchiveRequest =>);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct ArchiveRequest {
@@ -15,7 +15,7 @@ pub struct ArchiveRequest {
 ///
 /// Wraps https://api.slack.com/methods/channels.create
 
-api_call!(create, "channels.create", CreateRequest, CreateResponse);
+api_call!(create, "channels.create", CreateRequest => CreateResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct CreateRequest<'a> {
@@ -37,7 +37,7 @@ pub struct CreateResponse {
 ///
 /// Wraps https://api.slack.com/methods/channels.history
 
-api_call!(history, "channels.history", HistoryRequest, HistoryResponse);
+api_call!(history, "channels.history", HistoryRequest => HistoryResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct HistoryRequest {
@@ -74,7 +74,7 @@ pub struct HistoryResponse {
 ///
 /// Wraps https://api.slack.com/methods/channels.info
 
-api_call!(info, "channels.info", InfoRequest, InfoResponse);
+api_call!(info, "channels.info", InfoRequest => InfoResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct InfoRequest {
@@ -95,7 +95,7 @@ pub struct InfoResponse {
 ///
 /// Wraps https://api.slack.com/methods/channels.invite
 
-api_call!(invite, "channels.invite", InviteRequest, InviteResponse);
+api_call!(invite, "channels.invite", InviteRequest => InviteResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct InviteRequest {
@@ -116,7 +116,7 @@ pub struct InviteResponse {
 ///
 /// Wraps https://api.slack.com/methods/channels.join
 
-api_call!(join, "channels.join", JoinRequest, JoinResponse);
+api_call!(join, "channels.join", JoinRequest => JoinResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct JoinRequest<'a> {
@@ -139,7 +139,7 @@ pub struct JoinResponse {
 ///
 /// Wraps https://api.slack.com/methods/channels.kick
 
-api_call!(kick, "channels.kick", KickRequest => ());
+api_call!(kick, "channels.kick", KickRequest =>);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct KickRequest {
@@ -153,7 +153,7 @@ pub struct KickRequest {
 ///
 /// Wraps https://api.slack.com/methods/channels.leave
 
-api_call!(leave, "channels.leave", LeaveRequest, LeaveResponse);
+api_call!(leave, "channels.leave", LeaveRequest => LeaveResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct LeaveRequest {
@@ -172,7 +172,7 @@ pub struct LeaveResponse {
 ///
 /// Wraps https://api.slack.com/methods/channels.list
 
-api_call!(list, "channels.list", ListRequest, ListResponse);
+api_call!(list, "channels.list", ListRequest => ListResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct ListRequest {
@@ -200,7 +200,7 @@ pub struct ListResponse {
 ///
 /// Wraps https://api.slack.com/methods/channels.mark
 
-api_call!(mark, "channels.mark", MarkRequest => ());
+api_call!(mark, "channels.mark", MarkRequest =>);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct MarkRequest {
@@ -214,7 +214,7 @@ pub struct MarkRequest {
 ///
 /// Wraps https://api.slack.com/methods/channels.rename
 
-api_call!(rename, "channels.rename", RenameRequest, RenameResponse);
+api_call!(rename, "channels.rename", RenameRequest => RenameResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct RenameRequest<'a> {
@@ -238,7 +238,7 @@ pub struct RenameResponse {
 ///
 /// Wraps https://api.slack.com/methods/channels.replies
 
-api_call!(replies, "channels.replies", RepliesRequest, RepliesResponse);
+api_call!(replies, "channels.replies", RepliesRequest => RepliesResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct RepliesRequest {
@@ -263,7 +263,7 @@ pub struct RepliesResponse {
 api_call!(
     set_purpose,
     "channels.setPurpose",
-    SetPurposeRequest,
+    SetPurposeRequest =>
     SetPurposeResponse
 );
 
@@ -286,7 +286,7 @@ pub struct SetPurposeResponse {
 ///
 /// Wraps https://api.slack.com/methods/channels.setTopic
 
-api_call!(set_topic, "channels.setTopic", SetTopicRequest, SetTopicResponse);
+api_call!(set_topic, "channels.setTopic", SetTopicRequest => SetTopicResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct SetTopicRequest<'a> {
@@ -307,7 +307,7 @@ pub struct SetTopicResponse {
 ///
 /// Wraps https://api.slack.com/methods/channels.unarchive
 
-api_call!(unarchive, "channels.unarchive", UnarchiveRequest => ());
+api_call!(unarchive, "channels.unarchive", UnarchiveRequest =>);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct UnarchiveRequest {
@@ -320,7 +320,7 @@ mod tests {
     use super::*;
 
     lazy_static! {
-        pub static ref CLIENT: ::requests::Client = ::requests::default_client();
+        pub static ref CLIENT: ::requests::Client = ::requests::Client::new();
         pub static ref TOKEN: String = ::std::env::var("SLACK_API_TOKEN").unwrap();
     }
 

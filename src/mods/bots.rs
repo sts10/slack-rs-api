@@ -2,7 +2,7 @@
 ///
 /// Wraps https://api.slack.com/methods/bots.info
 
-api_call!(info, "bots.info", InfoRequest, InfoResponse);
+api_call!(info, "bots.info", InfoRequest => InfoResponse);
 // This is very silly to call without a bot in the request
 // especially because that's the only situation in which we get an ok but no bot field
 #[derive(Clone, Debug, Serialize, new)]
@@ -41,12 +41,13 @@ pub struct InfoResponseBotIcons {
 mod tests {
     use super::*;
     use std::env;
+    extern crate reqwest;
 
     #[test]
     fn test_info() {
-        let client = ::requests::default_client();
+        let client = ::reqwest::Client::new();
         let token = env::var("SLACK_API_TOKEN").unwrap();
 
-        info(&client, &token, &InfoRequest::new()).unwrap();
+        info(&&client, &token, &InfoRequest::new()).unwrap();
     }
 }

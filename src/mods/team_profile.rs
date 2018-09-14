@@ -4,7 +4,7 @@ use std::collections::HashMap;
 ///
 /// Wraps https://api.slack.com/methods/team.profile.get
 
-api_call!(get, "team.profile.get", GetRequest, GetResponse);
+api_call!(get, "team.profile.get", GetRequest => GetResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct GetRequest {

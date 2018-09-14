@@ -3,7 +3,7 @@
 /// Wraps https://api.slack.com/methods/team.accessLogs
 use std::collections::HashMap;
 
-api_call!(access_logs, "team.accessLogs", AccessLogsRequest, AccessLogsResponse);
+api_call!(access_logs, "team.accessLogs", AccessLogsRequest => AccessLogsResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct AccessLogsRequest {
@@ -48,7 +48,7 @@ pub struct AccessLogsResponseLogin {
 api_call!(
     billable_info,
     "team.billableInfo",
-    BillableInfoRequest,
+    BillableInfoRequest =>
     BillableInfoResponse
 );
 
@@ -70,7 +70,7 @@ pub struct BillableInfoResponse {
 ///
 /// Wraps https://api.slack.com/methods/team.info
 
-api_call!(info, "team.info", () => InfoResponse);
+api_call!(info, "team.info", => InfoResponse);
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -86,7 +86,7 @@ pub struct InfoResponse {
 api_call!(
     integration_logs,
     "team.integrationLogs",
-    IntegrationLogsRequest,
+    IntegrationLogsRequest =>
     IntegrationLogsResponse
 );
 

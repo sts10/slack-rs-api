@@ -1,48 +1,51 @@
 //! Functionality for sending requests to Slack.
 pub use reqwest::Client;
 
-/// Make an API call to Slack. Takes a struct that describes the request params
-pub fn send_structured<T: ::serde::Serialize>(
-    client: &::reqwest::Client,
-    method_url: &str,
-    params: &T,
-) -> Result<String, ::reqwest::Error> {
-    let mut url_text = method_url.to_string();
-    if let Ok(s) = ::serde_urlencoded::to_string(params) {
-        url_text += &s;
-    } else {
-        // TODO: Log the error
-    }
-    let url = ::reqwest::Url::parse(&url_text).expect("Internal error, failed to parse Slack URL");
-    client.get(url).send()?.text()
+pub trait SlackSender {
+    type Error: ::std::error::Error;
+
+    fn send_structured<T: ::serde::Serialize>(&self, method_url: &str, params: &T) -> Result<String, Self::Error>;
 }
 
-/// Provides a default `reqwest` client to give to the API functions to send requests.
-///
-/// # Examples
-///
-/// ```
-/// # let token = "some_token";
-/// let client = slack_api::requests::default_client().unwrap();
-/// let response = slack_api::channels::list(&client, &token, &Default::default());
-/// ```
-pub fn default_client() -> ::reqwest::Client {
-    ::reqwest::Client::new()
+impl<C> SlackSender for C
+where
+    C: ::std::ops::Deref<Target = ::reqwest::Client>,
+{
+    type Error = ::reqwest::Error;
+    /// Make an API call to Slack. Takes a struct that describes the request params
+    fn send_structured<T: ::serde::Serialize>(&self, method_url: &str, params: &T) -> Result<String, ::reqwest::Error> {
+        let mut url_text = method_url.to_string();
+        if let Ok(s) = ::serde_urlencoded::to_string(params) {
+            url_text += &s;
+        } else {
+            // TODO: Log the error
+        }
+        let url = ::reqwest::Url::parse(&url_text).expect("Internal error, failed to parse Slack URL");
+        self.get(url).send()?.text()
+    }
 }
 
 macro_rules! api_call {
-    ($name:ident, $strname:expr, $reqty:ty, $okty:ty) => {
-        pub fn $name(client: &::requests::Client, token: &str, request: &$reqty) -> Result<$okty, ::requests::Error> {
+    ($name:ident, $strname:expr, $reqty:ty => $okty:ty) => {
+        pub fn $name<C: ::requests::SlackSender>(
+            client: &C,
+            token: &str,
+            request: &$reqty,
+        ) -> Result<$okty, ::requests::Error<C>> {
             api_call_internal!(client, token, $strname, request, $okty)
         }
     };
-    ($name:ident, $strname:expr,() => $okty:ty) => {
-        pub fn $name(client: &::requests::Client, token: &str) -> Result<$okty, ::requests::Error> {
-            api_call_internal!(client, token, $strname, (), $okty)
+    ($name:ident, $strname:expr, => $okty:ty) => {
+        pub fn $name<C: ::requests::SlackSender>(client: &C, token: &str) -> Result<$okty, ::requests::Error<C>> {
+            api_call_internal!(client, token, $strname, &"", $okty)
         }
     };
-    ($name:ident, $strname:expr, $reqty:ty => ()) => {
-        pub fn $name(client: &::requests::Client, token: &str, request: &$reqty) -> Result<(), ::requests::Error> {
+    ($name:ident, $strname:expr, $reqty:ty => ) => {
+        pub fn $name<C: ::requests::SlackSender>(
+            client: &C,
+            token: &str,
+            request: &$reqty,
+        ) -> Result<(), ::requests::Error<C>> {
             #[allow(dead_code)] // But isn't serde using the field?
             #[derive(Deserialize)]
             #[serde(deny_unknown_fields)]
@@ -54,7 +57,7 @@ macro_rules! api_call {
         }
     };
     ($name:ident, $strname:expr) => {
-        pub fn $name(client: &::requests::Client, token: &str) -> Result<(), ::requests::Error> {
+        pub fn $name<C: ::requests::SlackSender>(client: &C, token: &str) -> Result<(), ::requests::Error<C>> {
             #[allow(dead_code)] // But isn't serde using the field?
             #[derive(Deserialize)]
             #[serde(deny_unknown_fields)]
@@ -62,7 +65,7 @@ macro_rules! api_call {
                 ok: bool,
             }
 
-            api_call_internal!(client, token, $strname, (), SimpleOk).map(|_| ())
+            api_call_internal!(client, token, $strname, &"", SimpleOk).map(|_| ())
         }
     };
 }
@@ -77,7 +80,7 @@ macro_rules! api_call_internal {
         }
 
         let url = ::requests::get_slack_url_for_method($strname) + "?token=" + $token + "&";
-        let bytes = ::requests::send_structured($client, &url, &$request).map_err(Error::Client)?;
+        let bytes = $client.send_structured(&url, $request).map_err(Error::Client)?;
 
         let is_error = ::serde_json::from_str::<IsError>(&bytes);
         match is_error {
@@ -98,13 +101,13 @@ pub fn get_slack_url_for_method(method: &str) -> String {
     format!("https://slack.com/api/{}", method)
 }
 
-pub enum Error {
+pub enum Error<C: SlackSender> {
     Slack(String),
     CannotParse(::serde_json::error::Error, String),
-    Client(::reqwest::Error),
+    Client(C::Error),
 }
 
-impl ::std::fmt::Debug for Error {
+impl<C: SlackSender> ::std::fmt::Debug for Error<C> {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         match self {
             Error::Slack(reason) => write!(f, "{}", reason),
@@ -114,7 +117,7 @@ impl ::std::fmt::Debug for Error {
     }
 }
 
-impl ::std::fmt::Display for Error {
+impl<C: SlackSender> ::std::fmt::Display for Error<C> {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         match self {
             Error::Slack(reason) => write!(f, "{}", reason),
@@ -124,7 +127,7 @@ impl ::std::fmt::Display for Error {
     }
 }
 
-impl ::std::error::Error for Error {
+impl<C: SlackSender> ::std::error::Error for Error<C> {
     fn description(&self) -> &str {
         match self {
             Error::Slack(ref reason) => reason,

@@ -10,7 +10,7 @@ api_call!(end_dnd, "dnd.endDnd");
 ///
 /// Wraps https://api.slack.com/methods/dnd.endSnooze
 
-api_call!(end_snooze, "dnd.endSnooze", () => EndSnoozeResponse);
+api_call!(end_snooze, "dnd.endSnooze", => EndSnoozeResponse);
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -26,7 +26,7 @@ pub struct EndSnoozeResponse {
 ///
 /// Wraps https://api.slack.com/methods/dnd.info
 
-api_call!(info, "dnd.info", InfoRequest, InfoResponse);
+api_call!(info, "dnd.info", InfoRequest => InfoResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct InfoRequest {
@@ -51,7 +51,7 @@ pub struct InfoResponse {
 ///
 /// Wraps https://api.slack.com/methods/dnd.setSnooze
 
-api_call!(set_snooze, "dnd.setSnooze", SetSnoozeRequest, SetSnoozeResponse);
+api_call!(set_snooze, "dnd.setSnooze", SetSnoozeRequest => SetSnoozeResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct SetSnoozeRequest {
@@ -72,7 +72,7 @@ pub struct SetSnoozeResponse {
 ///
 /// Wraps https://api.slack.com/methods/dnd.teamInfo
 
-api_call!(team_info, "dnd.teamInfo", TeamInfoRequest, TeamInfoResponse);
+api_call!(team_info, "dnd.teamInfo", TeamInfoRequest => TeamInfoResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct TeamInfoRequest<'a> {

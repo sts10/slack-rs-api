@@ -13,7 +13,7 @@ api_call!(delete_photo, "users.deletePhoto");
 api_call!(
     get_presence,
     "users.getPresence",
-    GetPresenceRequest,
+    GetPresenceRequest =>
     GetPresenceResponse
 );
 
@@ -34,7 +34,7 @@ pub struct GetPresenceResponse {
 ///
 /// Wraps https://api.slack.com/methods/users.identity
 
-api_call!(identity, "users.identity", () => IdentityResponse);
+api_call!(identity, "users.identity", => IdentityResponse);
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -48,7 +48,7 @@ pub struct IdentityResponse {
 ///
 /// Wraps https://api.slack.com/methods/users.info
 
-api_call!(info, "users.info", InfoRequest, InfoResponse);
+api_call!(info, "users.info", InfoRequest => InfoResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct InfoRequest {
@@ -67,7 +67,7 @@ pub struct InfoResponse {
 ///
 /// Wraps https://api.slack.com/methods/users.list
 
-api_call!(list, "users.list", ListRequest, ListResponse);
+api_call!(list, "users.list", ListRequest => ListResponse);
 
 /// At this time, providing no limit value will result in Slack
 /// attempting to deliver you the entire result set.
@@ -102,7 +102,7 @@ pub struct ListResponse {
 ///
 /// Wraps https://api.slack.com/methods/users.prefs.get
 
-api_call!(prefs_get, "users.prefs.get", () => PrefsResponse);
+api_call!(prefs_get, "users.prefs.get", => PrefsResponse);
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -127,7 +127,7 @@ api_call!(set_active, "users.setActive");
 ///
 /// Wraps https://api.slack.com/methods/users.setPresence
 
-api_call!(set_presence, "users.setPresence", SetPresenceRequest => ());
+api_call!(set_presence, "users.setPresence", SetPresenceRequest =>);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct SetPresenceRequest {

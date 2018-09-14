@@ -4,7 +4,7 @@
 ///
 /// Wraps https://api.slack.com/methods/chat.delete
 
-api_call!(delete, "chat.delete", DeleteRequest, DeleteResponse);
+api_call!(delete, "chat.delete", DeleteRequest => DeleteResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct DeleteRequest {
@@ -29,7 +29,7 @@ pub struct DeleteResponse {
 ///
 /// Wraps https://api.slack.com/methods/chat.meMessage
 
-api_call!(me_message, "chat.meMessage", MeMessageRequest, MeMessageResponse);
+api_call!(me_message, "chat.meMessage", MeMessageRequest => MeMessageResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct MeMessageRequest<'a> {
@@ -54,7 +54,7 @@ pub struct MeMessageResponse {
 api_call!(
     post_message,
     "chat.postMessage",
-    PostMessageRequest,
+    PostMessageRequest =>
     PostMessageResponse
 );
 
@@ -129,7 +129,7 @@ pub struct PostMessageResponse {
 ///
 /// Wraps https://api.slack.com/methods/chat.unfurl
 
-api_call!(unfurl, "chat.unfurl", UnfurlRequest => ());
+api_call!(unfurl, "chat.unfurl", UnfurlRequest =>);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct UnfurlRequest<'a> {
@@ -154,7 +154,7 @@ pub struct UnfurlRequest<'a> {
 ///
 /// Wraps https://api.slack.com/methods/chat.update
 
-api_call!(update, "chat.update", UpdateRequest, UpdateResponse);
+api_call!(update, "chat.update", UpdateRequest => UpdateResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct UpdateRequest<'a> {

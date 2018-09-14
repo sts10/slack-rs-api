@@ -4,7 +4,7 @@
 ///
 /// Wraps https://api.slack.com/methods/mpim.close
 
-api_call!(close, "mpim.close", CloseRequest => ());
+api_call!(close, "mpim.close", CloseRequest =>);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct CloseRequest {
@@ -16,7 +16,7 @@ pub struct CloseRequest {
 ///
 /// Wraps https://api.slack.com/methods/mpim.history
 
-api_call!(history, "mpim.history", HistoryRequest, HistoryResponse);
+api_call!(history, "mpim.history", HistoryRequest => HistoryResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct HistoryRequest {
@@ -52,7 +52,7 @@ pub struct HistoryResponse {
 ///
 /// Wraps https://api.slack.com/methods/mpim.list
 
-api_call!(list, "mpim.list", () => ListResponse);
+api_call!(list, "mpim.list", => ListResponse);
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct ListResponse {
@@ -64,7 +64,7 @@ pub struct ListResponse {
 ///
 /// Wraps https://api.slack.com/methods/mpim.mark
 
-api_call!(mark, "mpim.mark", MarkRequest => ());
+api_call!(mark, "mpim.mark", MarkRequest =>);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct MarkRequest {
@@ -78,7 +78,7 @@ pub struct MarkRequest {
 ///
 /// Wraps https://api.slack.com/methods/mpim.open
 
-api_call!(open, "mpim.open", OpenRequest, OpenResponse);
+api_call!(open, "mpim.open", OpenRequest => OpenResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct OpenRequest<'a> {
@@ -98,7 +98,7 @@ pub struct OpenResponse {
 ///
 /// Wraps https://api.slack.com/methods/mpim.replies
 
-api_call!(replies, "mpim.replies", RepliesRequest, RepliesResponse);
+api_call!(replies, "mpim.replies", RepliesRequest => RepliesResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct RepliesRequest {

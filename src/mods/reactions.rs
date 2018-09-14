@@ -2,7 +2,7 @@
 ///
 /// Wraps https://api.slack.com/methods/reactions.add
 
-api_call!(add, "reactions.add", AddRequest => ());
+api_call!(add, "reactions.add", AddRequest =>);
 
 // TODO: one of these must be specified
 #[derive(Clone, Debug, Serialize, new)]
@@ -24,7 +24,7 @@ pub struct AddRequest<'a> {
 ///
 /// Wraps https://api.slack.com/methods/reactions.get
 
-api_call!(get, "reactions.get", GetRequest, GetResponse);
+api_call!(get, "reactions.get", GetRequest => GetResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct GetRequest {
@@ -75,7 +75,7 @@ pub struct GetResponseMessage {
 ///
 /// Wraps https://api.slack.com/methods/reactions.list
 
-api_call!(list, "reactions.list", ListRequest, ListResponse);
+api_call!(list, "reactions.list", ListRequest => ListResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct ListRequest {
@@ -134,7 +134,7 @@ pub struct ListResponseItemMessage {
 ///
 /// Wraps https://api.slack.com/methods/reactions.remove
 
-api_call!(remove, "reactions.remove", RemoveRequest => ());
+api_call!(remove, "reactions.remove", RemoveRequest =>);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct RemoveRequest<'a> {

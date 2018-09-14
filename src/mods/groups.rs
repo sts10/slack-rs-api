@@ -4,7 +4,7 @@
 ///
 /// Wraps https://api.slack.com/methods/groups.archive
 
-api_call!(archive, "groups.archive", ArchiveRequest => ());
+api_call!(archive, "groups.archive", ArchiveRequest =>);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct ArchiveRequest {
@@ -16,7 +16,7 @@ pub struct ArchiveRequest {
 ///
 /// Wraps https://api.slack.com/methods/groups.close
 
-api_call!(close, "groups.close", CloseRequest => ());
+api_call!(close, "groups.close", CloseRequest =>);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct CloseRequest {
@@ -28,7 +28,7 @@ pub struct CloseRequest {
 ///
 /// Wraps https://api.slack.com/methods/groups.create
 
-api_call!(create, "groups.create", CreateRequest, CreateResponse);
+api_call!(create, "groups.create", CreateRequest => CreateResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct CreateRequest<'a> {
@@ -53,7 +53,7 @@ pub struct CreateResponse {
 api_call!(
     create_child,
     "groups.createChild",
-    CreateChildRequest,
+    CreateChildRequest =>
     CreateChildResponse
 );
 
@@ -74,7 +74,7 @@ pub struct CreateChildResponse {
 ///
 /// Wraps https://api.slack.com/methods/groups.history
 
-api_call!(history, "groups.history", HistoryRequest, HistoryResponse);
+api_call!(history, "groups.history", HistoryRequest => HistoryResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct HistoryRequest {
@@ -111,7 +111,7 @@ pub struct HistoryResponse {
 ///
 /// Wraps https://api.slack.com/methods/groups.info
 
-api_call!(info, "groups.info", InfoRequest, InfoResponse);
+api_call!(info, "groups.info", InfoRequest => InfoResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct InfoRequest {
@@ -130,7 +130,7 @@ pub struct InfoResponse {
 ///
 /// Wraps https://api.slack.com/methods/groups.invite
 
-api_call!(invite, "groups.invite", InviteRequest, InviteResponse);
+api_call!(invite, "groups.invite", InviteRequest => InviteResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct InviteRequest {
@@ -151,7 +151,7 @@ pub struct InviteResponse {
 ///
 /// Wraps https://api.slack.com/methods/groups.kick
 
-api_call!(kick, "groups.kick", KickRequest => ());
+api_call!(kick, "groups.kick", KickRequest =>);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct KickRequest {
@@ -165,7 +165,7 @@ pub struct KickRequest {
 ///
 /// Wraps https://api.slack.com/methods/groups.leave
 
-api_call!(leave, "groups.leave", LeaveRequest => ());
+api_call!(leave, "groups.leave", LeaveRequest =>);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct LeaveRequest {
@@ -177,7 +177,7 @@ pub struct LeaveRequest {
 ///
 /// Wraps https://api.slack.com/methods/groups.list
 
-api_call!(list, "groups.list", ListRequest, ListResponse);
+api_call!(list, "groups.list", ListRequest => ListResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct ListRequest {
@@ -197,7 +197,7 @@ pub struct ListResponse {
 ///
 /// Wraps https://api.slack.com/methods/groups.mark
 
-api_call!(mark, "groups.mark", MarkRequest => ());
+api_call!(mark, "groups.mark", MarkRequest =>);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct MarkRequest {
@@ -211,7 +211,7 @@ pub struct MarkRequest {
 ///
 /// Wraps https://api.slack.com/methods/groups.open
 
-api_call!(open, "groups.open", OpenRequest => ());
+api_call!(open, "groups.open", OpenRequest =>);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct OpenRequest {
@@ -223,7 +223,7 @@ pub struct OpenRequest {
 ///
 /// Wraps https://api.slack.com/methods/groups.rename
 
-api_call!(rename, "groups.rename", RenameRequest, RenameResponse);
+api_call!(rename, "groups.rename", RenameRequest => RenameResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct RenameRequest<'a> {
@@ -256,7 +256,7 @@ pub struct RenameResponseChannel {
 ///
 /// Wraps https://api.slack.com/methods/groups.replies
 
-api_call!(replies, "groups.replies", RepliesRequest, RepliesResponse);
+api_call!(replies, "groups.replies", RepliesRequest => RepliesResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct RepliesRequest {
@@ -278,7 +278,7 @@ pub struct RepliesResponse {
 ///
 /// Wraps https://api.slack.com/methods/groups.setPurpose
 
-api_call!(set_purpose, "groups.setPurpose", SetPurposeRequest, SetPurposeResponse);
+api_call!(set_purpose, "groups.setPurpose", SetPurposeRequest => SetPurposeResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct SetPurposeRequest<'a> {
@@ -299,7 +299,7 @@ pub struct SetPurposeResponse {
 ///
 /// Wraps https://api.slack.com/methods/groups.setTopic
 
-api_call!(set_topic, "groups.setTopic", SetTopicRequest, SetTopicResponse);
+api_call!(set_topic, "groups.setTopic", SetTopicRequest => SetTopicResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct SetTopicRequest<'a> {
@@ -320,7 +320,7 @@ pub struct SetTopicResponse {
 ///
 /// Wraps https://api.slack.com/methods/groups.unarchive
 
-api_call!(unarchive, "groups.unarchive", UnarchiveRequest => ());
+api_call!(unarchive, "groups.unarchive", UnarchiveRequest =>);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct UnarchiveRequest {

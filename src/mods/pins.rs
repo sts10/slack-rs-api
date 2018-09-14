@@ -11,7 +11,7 @@ pub enum Pinnable {
     Timestamp(::Timestamp),
 }
 
-api_call!(add, "pins.add", AddRequest => ());
+api_call!(add, "pins.add", AddRequest =>);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct AddRequest {
@@ -25,7 +25,7 @@ pub struct AddRequest {
 ///
 /// Wraps https://api.slack.com/methods/pins.list
 
-api_call!(list, "pins.list", ListRequest, ListResponse);
+api_call!(list, "pins.list", ListRequest => ListResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct ListRequest {
@@ -78,7 +78,7 @@ pub struct ListResponseItemMessage {
 ///
 /// Wraps https://api.slack.com/methods/pins.remove
 
-api_call!(remove, "pins.remove", RemoveRequest => ());
+api_call!(remove, "pins.remove", RemoveRequest =>);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct RemoveRequest {

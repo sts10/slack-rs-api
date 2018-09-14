@@ -18,7 +18,7 @@ pub struct TestResponse {
     args: HashMap<String, String>,
 }
 
-api_call!(test, "api.test", TestRequest, TestResponse);
+api_call!(test, "api.test", TestRequest => TestResponse);
 
 #[cfg(test)]
 mod tests {
@@ -26,13 +26,13 @@ mod tests {
 
     #[test]
     fn test_test() {
-        let client = ::requests::default_client();
+        let client = ::requests::Client::new();
         let token = ::std::env::var("SLACK_API_TOKEN").unwrap();
 
         let mut req = TestRequest::new();
         req.foo = Some("bar");
 
-        let response = test(&client, &token, &req).unwrap();
+        let response = test(&&client, &token, &req).unwrap();
         assert_eq!(response.args["foo"], "bar".to_string());
     }
 }

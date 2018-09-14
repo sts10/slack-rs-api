@@ -2,7 +2,7 @@
 ///
 /// Wraps https://api.slack.com/methods/rtm.connect
 
-api_call!(connect, "rtm.connect", ConnectRequest, ConnectResponse);
+api_call!(connect, "rtm.connect", ConnectRequest => ConnectResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct ConnectRequest {
@@ -43,7 +43,7 @@ pub struct ConnectResponseTeam {
 ///
 /// Wraps https://api.slack.com/methods/rtm.start
 
-api_call!(start, "rtm.start", StartRequest, StartResponse);
+api_call!(start, "rtm.start", StartRequest => StartResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct StartRequest {

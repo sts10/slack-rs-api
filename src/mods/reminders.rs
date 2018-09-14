@@ -2,7 +2,7 @@
 ///
 /// Wraps https://api.slack.com/methods/reminders.add
 
-api_call!(add, "reminders.add", AddRequest, AddResponse);
+api_call!(add, "reminders.add", AddRequest => AddResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct AddRequest<'a> {
@@ -26,7 +26,7 @@ pub struct AddResponse {
 ///
 /// Wraps https://api.slack.com/methods/reminders.complete
 
-api_call!(complete, "reminders.complete", CompleteRequest => ());
+api_call!(complete, "reminders.complete", CompleteRequest =>);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct CompleteRequest {
@@ -38,7 +38,7 @@ pub struct CompleteRequest {
 ///
 /// Wraps https://api.slack.com/methods/reminders.delete
 
-api_call!(delete, "reminders.delete", DeleteRequest => ());
+api_call!(delete, "reminders.delete", DeleteRequest =>);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct DeleteRequest {
@@ -50,7 +50,7 @@ pub struct DeleteRequest {
 ///
 /// Wraps https://api.slack.com/methods/reminders.info
 
-api_call!(info, "reminders.info", InfoRequest, InfoResponse);
+api_call!(info, "reminders.info", InfoRequest => InfoResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct InfoRequest {
@@ -70,7 +70,7 @@ pub struct InfoResponse {
 /// Wraps https://api.slack.com/methods/reminders.list
 // TODO: Docs say "created by or for a given user", but also do not mention how to indicate said
 // user
-api_call!(list, "reminders.list", () => ListResponse);
+api_call!(list, "reminders.list", => ListResponse);
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct ListResponse {
