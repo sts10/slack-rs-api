@@ -41,13 +41,12 @@ pub struct InfoResponseBotIcons {
 mod tests {
     use super::*;
     use std::env;
-    extern crate reqwest;
 
     #[test]
     fn test_info() {
         let client = ::reqwest::Client::new();
         let token = env::var("SLACK_API_TOKEN").unwrap();
 
-        info(&&client, &token, &InfoRequest::new()).unwrap();
+        info(&client, &token, &InfoRequest::new()).unwrap();
     }
 }

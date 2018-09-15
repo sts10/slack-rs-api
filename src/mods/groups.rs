@@ -240,14 +240,14 @@ pub struct RenameRequest<'a> {
 #[serde(deny_unknown_fields)]
 pub struct RenameResponse {
     ok: bool,
-    pub channel: Option<RenameResponseChannel>,
+    pub channel: Option<RenameResponseGroup>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
-pub struct RenameResponseChannel {
+pub struct RenameResponseGroup {
     pub created: Option<::Timestamp>,
-    pub id: Option<::ChannelId>,
+    pub id: Option<::GroupId>,
     pub is_group: Option<bool>,
     pub name: Option<String>,
 }

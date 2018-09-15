@@ -16,7 +16,7 @@ api_call!(add, "pins.add", AddRequest =>);
 #[derive(Clone, Debug, Serialize, new)]
 pub struct AddRequest {
     /// Channel to pin the item in.
-    pub channel: ::ChannelId,
+    pub channel: ::ConversationId,
     #[serde(flatten)]
     pub item: Pinnable,
 }
@@ -30,7 +30,7 @@ api_call!(list, "pins.list", ListRequest => ListResponse);
 #[derive(Clone, Debug, Serialize, new)]
 pub struct ListRequest {
     /// Channel to get pinned items for.
-    pub channel: ::ChannelId,
+    pub channel: ::ConversationId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -68,7 +68,7 @@ pub struct ListResponseItemFileComment {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ListResponseItemMessage {
-    pub channel: ::ChannelId,
+    pub channel: ::ConversationId,
     pub created: Option<::Timestamp>,
     pub created_by: Option<::UserId>,
     pub message: ::Message,
@@ -83,7 +83,7 @@ api_call!(remove, "pins.remove", RemoveRequest =>);
 #[derive(Clone, Debug, Serialize, new)]
 pub struct RemoveRequest {
     /// Channel where the item is pinned to.
-    pub channel: ::ChannelId,
+    pub channel: ::ConversationId,
     #[serde(flatten)]
     pub item: Pinnable,
 }

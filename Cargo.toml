@@ -12,21 +12,21 @@ serde = "1.0"
 serde_derive = "1.0"
 serde_json = "1.0"
 serde_urlencoded = "0.5"
-reqwest = "0.8"
-uuid = { version = "0.6", features = ["serde", "v4"] }
-chrono = "0.4"
+uuid = { version = "0.7", features = ["serde", "v4"] }
 derive-new = "0.5"
+chrono = { version = "0.4", optional = true }
+reqwest = { version = "0.8", optional = true }
 
 [dev-dependencies]
-openssl-probe = "*"
-criterion = "0.2"
+openssl-probe = "0.1"
 lazy_static = "1.0"
+openssl = { version = "0.10", features = ["vendored"] }
 
-[[bench]]
-name = "id"
-harness = false
+[[example]]
+name = "start_rtm"
+required-features = ["reqwest"]
 
-[[bench]]
-name = "history"
-harness = false
+[[example]]
+name = "channel_history"
+required-features = ["reqwest"]
 

@@ -9,15 +9,8 @@ api_call!(add, "reactions.add", AddRequest =>);
 pub struct AddRequest<'a> {
     /// Reaction (emoji) name.
     pub name: &'a str,
-    /// File to add reaction to.
-    #[new(default)]
-    pub file: Option<::FileId>,
-    /// Channel where the message to add reaction to was posted.
-    #[new(default)]
-    pub channel: Option<::ConversationId>,
-    /// Timestamp of the message to add reaction to.
-    #[new(default)]
-    pub timestamp: Option<::Timestamp>,
+    #[serde(flatten)]
+    pub item: Reactable,
 }
 
 /// Gets reactions for an item.
@@ -28,15 +21,8 @@ api_call!(get, "reactions.get", GetRequest => GetResponse);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct GetRequest {
-    /// File to get reactions for.
-    #[new(default)]
-    pub file: Option<::FileId>,
-    /// Channel where the message to get reactions for was posted.
-    #[new(default)]
-    pub channel: Option<::ConversationId>,
-    /// Timestamp of the message to get reactions for.
-    #[new(default)]
-    pub timestamp: Option<::Timestamp>,
+    #[serde(flatten)]
+    pub item: Reactable,
     /// If true always return the complete reaction list.
     #[new(default)]
     pub full: Option<bool>,
@@ -140,13 +126,37 @@ api_call!(remove, "reactions.remove", RemoveRequest =>);
 pub struct RemoveRequest<'a> {
     /// Reaction (emoji) name.
     pub name: &'a str,
-    /// File to remove reaction from.
-    #[serde(default)]
-    pub file: Option<::FileId>,
-    /// Channel where the message to remove reaction from was posted.
-    #[serde(default)]
-    pub channel: Option<::ConversationId>,
-    /// Timestamp of the message to remove reaction from.
-    #[serde(default)]
-    pub timestamp: Option<::Timestamp>,
+    #[serde(flatten)]
+    pub item: Reactable,
+}
+
+#[derive(Clone, Debug)]
+pub enum Reactable {
+    File(::FileId),
+    Message {
+        channel: ::ConversationId,
+        timestamp: ::Timestamp,
+    },
+}
+
+impl ::serde::Serialize for Reactable {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: ::serde::Serializer,
+    {
+        use serde::ser::SerializeMap;
+        match self {
+            Reactable::File(file) => {
+                let mut map = serializer.serialize_map(Some(1))?;
+                map.serialize_entry("File", file)?;
+                map.end()
+            }
+            Reactable::Message { channel, timestamp } => {
+                let mut map = serializer.serialize_map(Some(2))?;
+                map.serialize_entry("Channel", channel)?;
+                map.serialize_entry("timestamp", timestamp)?;
+                map.end()
+            }
+        }
+    }
 }

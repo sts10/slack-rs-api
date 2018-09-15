@@ -38,21 +38,20 @@ pub struct TestResponse {
 #[cfg(test)]
 mod tests {
     use super::*;
-    extern crate reqwest;
 
     lazy_static! {
-        pub static ref CLIENT: ::requests::Client = ::reqwest::Client::new();
+        pub static ref CLIENT: ::reqwest::Client = ::reqwest::Client::new();
         pub static ref TOKEN: String = ::std::env::var("SLACK_API_TOKEN").unwrap();
     }
 
     #[test]
     fn test_revoke() {
         let req = RevokeRequest { test: Some(true) };
-        assert_eq!(revoke(&CLIENT, &TOKEN, &req).unwrap().revoked, false);
+        assert_eq!(revoke(&*CLIENT, &TOKEN, &req).unwrap().revoked, false);
     }
 
     #[test]
     fn test_test() {
-        test(&CLIENT, &TOKEN).unwrap();
+        test(&*CLIENT, &TOKEN).unwrap();
     }
 }

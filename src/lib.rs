@@ -17,7 +17,9 @@
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
+#[cfg(feature = "chrono")]
 extern crate chrono;
+#[cfg(any(feature = "reqwest", test))]
 extern crate reqwest;
 extern crate serde_json;
 extern crate serde_urlencoded;

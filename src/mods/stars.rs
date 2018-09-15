@@ -4,18 +4,10 @@
 
 api_call!(add, "stars.add", AddRequest =>);
 
-//TODO: These requests also require combinations of fields- file, channel, or channel and timestamp
 #[derive(Clone, Debug, Serialize, new)]
 pub struct AddRequest {
-    /// File to add star to.
-    #[new(default)]
-    pub file: Option<::FileId>,
-    /// Channel to add star to, or channel where the message to add star to was posted (used with timestamp).
-    #[new(default)]
-    pub channel: Option<::ChannelId>,
-    /// Timestamp of the message to add star to.
-    #[new(default)]
-    pub timestamp: Option<::Timestamp>,
+    #[serde(flatten)]
+    pub item: Starrable,
 }
 
 /// Lists stars for a user.
@@ -61,13 +53,43 @@ api_call!(remove, "stars.remove", RemoveRequest =>);
 
 #[derive(Clone, Debug, Serialize, new)]
 pub struct RemoveRequest {
-    /// File to remove star from.
-    #[new(default)]
-    pub file: Option<::FileId>,
-    /// Channel to remove star from, or channel where the message to remove star from was posted (used with timestamp).
-    #[new(default)]
-    pub channel: Option<::ChannelId>,
-    /// Timestamp of the message to remove star from.
-    #[new(default)]
-    pub timestamp: Option<::Timestamp>,
+    #[serde(flatten)]
+    pub item: Starrable,
+}
+
+#[derive(Clone, Debug)]
+pub enum Starrable {
+    File(::FileId),
+    Channel(::ConversationId),
+    Message {
+        channel: ::ConversationId,
+        timestamp: ::Timestamp,
+    },
+}
+
+impl ::serde::Serialize for Starrable {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: ::serde::Serializer,
+    {
+        use serde::ser::SerializeMap;
+        match self {
+            Starrable::File(file) => {
+                let mut map = serializer.serialize_map(Some(1))?;
+                map.serialize_entry("File", file)?;
+                map.end()
+            }
+            Starrable::Channel(channel) => {
+                let mut map = serializer.serialize_map(Some(1))?;
+                map.serialize_entry("Channel", channel)?;
+                map.end()
+            }
+            Starrable::Message { channel, timestamp } => {
+                let mut map = serializer.serialize_map(Some(2))?;
+                map.serialize_entry("Channel", channel)?;
+                map.serialize_entry("timestamp", timestamp)?;
+                map.end()
+            }
+        }
+    }
 }

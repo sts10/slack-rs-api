@@ -7,6 +7,7 @@ pub struct Timestamp {
     microseconds: u64, // TODO: should this be an i64?
 }
 
+#[cfg(feature = "chrono")]
 impl Into<::chrono::DateTime<::chrono::Utc>> for Timestamp {
     fn into(self) -> ::chrono::DateTime<::chrono::Utc> {
         let seconds = self.microseconds / 1_000_000;
@@ -16,6 +17,7 @@ impl Into<::chrono::DateTime<::chrono::Utc>> for Timestamp {
     }
 }
 
+#[cfg(feature = "chrono")]
 impl From<::chrono::DateTime<::chrono::Utc>> for Timestamp {
     fn from(datetime: ::chrono::DateTime<::chrono::Utc>) -> Timestamp {
         Timestamp {

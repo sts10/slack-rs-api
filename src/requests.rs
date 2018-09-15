@@ -1,16 +1,12 @@
 //! Functionality for sending requests to Slack.
-pub use reqwest::Client;
-
 pub trait SlackSender {
     type Error: ::std::error::Error;
 
     fn send_structured<T: ::serde::Serialize>(&self, method_url: &str, params: &T) -> Result<String, Self::Error>;
 }
 
-impl<C> SlackSender for C
-where
-    C: ::std::ops::Deref<Target = ::reqwest::Client>,
-{
+#[cfg(any(feature = "reqwest", test))]
+impl SlackSender for ::reqwest::Client {
     type Error = ::reqwest::Error;
     /// Make an API call to Slack. Takes a struct that describes the request params
     fn send_structured<T: ::serde::Serialize>(&self, method_url: &str, params: &T) -> Result<String, ::reqwest::Error> {

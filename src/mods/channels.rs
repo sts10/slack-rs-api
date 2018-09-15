@@ -320,23 +320,23 @@ mod tests {
     use super::*;
 
     lazy_static! {
-        pub static ref CLIENT: ::requests::Client = ::requests::Client::new();
+        pub static ref CLIENT: ::reqwest::Client = ::reqwest::Client::new();
         pub static ref TOKEN: String = ::std::env::var("SLACK_API_TOKEN").unwrap();
     }
 
     #[test]
     fn test_archive_unarchive() {
         let id = ::ChannelId::from("CAGMCM14K");
-        let _ = unarchive(&CLIENT, &TOKEN, &UnarchiveRequest::new(id));
+        let _ = unarchive(&*CLIENT, &TOKEN, &UnarchiveRequest::new(id));
 
-        archive(&CLIENT, &TOKEN, &ArchiveRequest::new(id)).unwrap();
+        archive(&*CLIENT, &TOKEN, &ArchiveRequest::new(id)).unwrap();
 
-        unarchive(&CLIENT, &TOKEN, &UnarchiveRequest::new(id)).unwrap();
+        unarchive(&*CLIENT, &TOKEN, &UnarchiveRequest::new(id)).unwrap();
     }
 
     #[test]
     fn test_create() {
-        match create(&CLIENT, &TOKEN, &CreateRequest::new("testchannel")) {
+        match create(&*CLIENT, &TOKEN, &CreateRequest::new("testchannel")) {
             Ok(_) => {}
             Err(::requests::Error::Slack(cause)) => {
                 if cause != "name_taken" {
@@ -350,39 +350,39 @@ mod tests {
     #[test]
     fn test_history() {
         let id = ::ChannelId::from("CAGMCM14K");
-        history(&CLIENT, &TOKEN, &HistoryRequest::new(id)).unwrap();
+        history(&*CLIENT, &TOKEN, &HistoryRequest::new(id)).unwrap();
     }
 
     #[test]
     fn test_info() {
         let id = ::ChannelId::from("CAGMCM14K");
-        info(&CLIENT, &TOKEN, &InfoRequest::new(id)).unwrap();
+        info(&*CLIENT, &TOKEN, &InfoRequest::new(id)).unwrap();
     }
 
     #[test]
     fn test_invite_kick() {
         let chan_id = ::ChannelId::from("CAGMCM14K");
         let user_id = ::UserId::from("UAJHFUB0C");
-        let _ = kick(&CLIENT, &TOKEN, &KickRequest::new(chan_id, user_id));
+        let _ = kick(&*CLIENT, &TOKEN, &KickRequest::new(chan_id, user_id));
 
-        invite(&CLIENT, &TOKEN, &InviteRequest::new(chan_id, user_id)).unwrap();
+        invite(&*CLIENT, &TOKEN, &InviteRequest::new(chan_id, user_id)).unwrap();
 
-        kick(&CLIENT, &TOKEN, &KickRequest::new(chan_id, user_id)).unwrap();
+        kick(&*CLIENT, &TOKEN, &KickRequest::new(chan_id, user_id)).unwrap();
     }
 
     #[test]
     fn test_join_leave() {
         let id = ::ChannelId::from("CAGMCM14K");
-        let _ = leave(&CLIENT, &TOKEN, &LeaveRequest::new(id));
+        let _ = leave(&*CLIENT, &TOKEN, &LeaveRequest::new(id));
 
-        join(&CLIENT, &TOKEN, &JoinRequest::new("#testchannel")).unwrap();
+        join(&*CLIENT, &TOKEN, &JoinRequest::new("#testchannel")).unwrap();
 
-        leave(&CLIENT, &TOKEN, &LeaveRequest::new(id)).unwrap();
+        leave(&*CLIENT, &TOKEN, &LeaveRequest::new(id)).unwrap();
     }
 
     #[test]
     fn test_list() {
-        list(&CLIENT, &TOKEN, &ListRequest::new()).unwrap();
+        list(&*CLIENT, &TOKEN, &ListRequest::new()).unwrap();
     }
 
     #[test]
@@ -395,48 +395,54 @@ mod tests {
         let ts = ::serde_json::from_str(&time_string).unwrap();
 
         let id = ::ChannelId::from("C9VGPGBL4");
-        mark(&CLIENT, &TOKEN, &MarkRequest::new(id, ts)).unwrap();
+        mark(&*CLIENT, &TOKEN, &MarkRequest::new(id, ts)).unwrap();
     }
 
     #[test]
     fn test_rename() {
         let id = ::ChannelId::from("CAGMCM14K");
-        let _ = rename(&CLIENT, &TOKEN, &RenameRequest::new(id, "testchannel"));
+        let _ = rename(&*CLIENT, &TOKEN, &RenameRequest::new(id, "testchannel"));
 
-        rename(&CLIENT, &TOKEN, &RenameRequest::new(id, "other_testchannel")).unwrap();
+        rename(&*CLIENT, &TOKEN, &RenameRequest::new(id, "other_testchannel")).unwrap();
 
-        rename(&CLIENT, &TOKEN, &RenameRequest::new(id, "testchannel")).unwrap();
+        rename(&*CLIENT, &TOKEN, &RenameRequest::new(id, "testchannel")).unwrap();
     }
 
     #[test]
     fn test_replies() {
         let id = ::ChannelId::from("CAGMCM14K");
-        let ts = ::serde_json::from_str("1525306421.000207").unwrap();
-        replies(&CLIENT, &TOKEN, &RepliesRequest::new(id, ts)).unwrap();
+        let ts = ::serde_json::from_str("\"1525306421.000207\"").unwrap();
+        replies(&*CLIENT, &TOKEN, &RepliesRequest::new(id, ts)).unwrap();
     }
 
     #[test]
     fn test_set_purpose() {
         let id = ::ChannelId::from("CAGMCM14K");
+
+        join(&*CLIENT, &TOKEN, &JoinRequest::new("#testchannel"));
+
         let mut req = SetPurposeRequest::new(id, "test_purpose");
-        let response = set_purpose(&CLIENT, &TOKEN, &req).unwrap();
+        let response = set_purpose(&*CLIENT, &TOKEN, &req).unwrap();
         assert_eq!(response.purpose, "test_purpose");
 
         req.purpose = "other_test_purpose";
-        let response = set_purpose(&CLIENT, &TOKEN, &req).unwrap();
+        let response = set_purpose(&*CLIENT, &TOKEN, &req).unwrap();
         assert_eq!(response.purpose, "other_test_purpose");
     }
 
     #[test]
     fn test_set_topic() {
         let id = ::ChannelId::from("CAGMCM14K");
+
+        join(&*CLIENT, &TOKEN, &JoinRequest::new("#testchannel"));
+
         let mut req = SetTopicRequest::new(id, "test_topic");
 
-        let response = set_topic(&CLIENT, &TOKEN, &req).unwrap();
+        let response = set_topic(&*CLIENT, &TOKEN, &req).unwrap();
         assert_eq!(response.topic, "test_topic");
 
         req.topic = "other_test_topic";
-        let response = set_topic(&CLIENT, &TOKEN, &req).unwrap();
+        let response = set_topic(&*CLIENT, &TOKEN, &req).unwrap();
         assert_eq!(response.topic, "other_test_topic");
     }
 }
