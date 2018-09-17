@@ -343,7 +343,7 @@ deserialize_internally_tagged! {
         //ChannelJoined,
         //ChannelLeft,
         ChannelMarked(EventChannelMarked),
-        //ChannelRename,
+        ChannelRename(EventChannelRename),
         //ChannelUnarchive,
         //CommandsChanged,
         DesktopNotification(EventDesktopNotification),
@@ -405,6 +405,23 @@ deserialize_internally_tagged! {
         UserChange(EventUserChange),
         UserTyping(EventUserTyping),
     }
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventChannelRename {
+    channel: ShortChannelDescription,
+    event_ts: ::Timestamp,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ShortChannelDescription {
+    id: ::ConversationId,
+    is_channel: bool,
+    name: String,
+    name_normalized: String,
+    created: ::Timestamp,
 }
 
 #[derive(Clone, Debug, Deserialize)]

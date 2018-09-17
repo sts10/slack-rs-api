@@ -8,6 +8,12 @@ macro_rules! make_id {
             buf: [u8; ID_LENGTH],
         }
 
+        impl $name {
+            pub fn as_str(&self) -> &str {
+                ::std::str::from_utf8(&self.buf[..self.len as usize]).unwrap()
+            }
+        }
+
         impl<'a> From<&'a str> for $name {
             #[inline]
             fn from(input: &'a str) -> Self {
