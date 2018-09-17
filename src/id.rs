@@ -104,6 +104,16 @@ pub enum ConversationId {
     DirectMessage(DmId),
 }
 
+impl ConversationId {
+    pub fn as_str(&self) -> &str {
+        match &self {
+            ConversationId::Channel(id) => id.as_str(),
+            ConversationId::Group(id) => id.as_str(),
+            ConversationId::DirectMessage(id) => id.as_str(),
+        }
+    }
+}
+
 impl ::std::fmt::Display for ConversationId {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         match &self {
