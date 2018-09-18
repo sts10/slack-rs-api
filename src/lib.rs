@@ -33,6 +33,7 @@ extern crate lazy_static;
 
 #[macro_use]
 mod requests;
+pub use requests::Error;
 
 mod types;
 pub use types::*;
