@@ -253,7 +253,7 @@ macro_rules! deserialize_internally_tagged {
                 where
                 D: ::serde::Deserializer<'de>,
             {
-                let v: ::serde_json::Value = ::serde::Deserialize::deserialize(deserializer)?;
+                let mut v: ::serde_json::Value = ::serde::Deserialize::deserialize(deserializer)?;
 
                 #[derive(Deserialize)]
                 #[serde(field_identifier, rename_all = "snake_case")]
@@ -261,18 +261,27 @@ macro_rules! deserialize_internally_tagged {
                     $($variant_name,)*
                 }
 
-                match Option::deserialize(&v[$tagfield]).map_err(::serde::de::Error::custom)? {
-                    $(
-                    Some(Tag::$variant_name) => {
-                        ::serde::Deserialize::deserialize(v)
-                        .map($enumname::$variant_name)
-                        .map_err(|e| ::serde::de::Error::custom(format!("{} while deserializing {}", e, stringify!($struct_name))))
-                    }
-                    )*
+                let maybe_tag = v
+                    .as_object_mut()
+                    .ok_or(::serde::de::Error::custom("Must be an object"))?
+                    .remove($tagfield);
+
+                match maybe_tag {
                     None => {
                         ::serde::Deserialize::deserialize(v)
                             .map($enumname::$default_variant)
                             .map_err(|e| ::serde::de::Error::custom(format!("{} while deserializing {}", e, stringify!($default_struct))))
+                    }
+                    Some(tag) => {
+                        match ::serde::Deserialize::deserialize(tag).map_err(::serde::de::Error::custom)? {
+                            $(
+                            Tag::$variant_name => {
+                                ::serde::Deserialize::deserialize(v)
+                                .map($enumname::$variant_name)
+                                .map_err(|e| ::serde::de::Error::custom(format!("{} while deserializing {}", e, stringify!($struct_name))))
+                            }
+                            )*
+                        }
                     }
                 }
             }
@@ -676,7 +685,6 @@ deserialize_internally_tagged! {
         GroupTopic(MessageGroupTopic),
         GroupUnarchive(MessageGroupUnarchive),
         MeMessage(MessageMeMessage),
-        //Message(MessageMessageChanged),
         MessageChanged(MessageMessageChanged),
         MessageDeleted(MessageMessageDeleted),
         MessageReplied(MessageMessageReplied),
@@ -685,8 +693,29 @@ deserialize_internally_tagged! {
         ReminderAdd(MessageReminderAdd),
         SlackbotResponse(MessageSlackbotResponse),
         ThreadBroadcast(Box<MessageThreadBroadcast>),
+        Tombstone(MessageTombstone),
         UnpinnedItem(MessageUnpinnedItem),
     }
+}
+
+//TODO: Have only seen this once...
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MessageTombstone {
+    pub edited: Box<Message>,
+    pub hidden: bool,
+    pub replies: Vec<Message>,
+    pub reply_count: Option<u32>,
+    pub subscribed: bool,
+    pub text: String,
+    pub user: UserId,
+    pub unread_count: Option<u32>,
+    pub thread_ts: Timestamp,
+    pub ts: Timestamp,
+    // It looks like tombstone messages are actually events even though they end up coming through
+    // a conversations.history call
+    #[serde(rename = "type")]
+    pub ty: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
