@@ -389,7 +389,7 @@ deserialize_internally_tagged! {
         Message(Message),
         PinAdded(EventPinAdded),
         //PinRemoved,
-        PrefChange(EventPrefChange),
+        //PrefChange,
         //PresenceChange,
         //PresenceQuery,
         //PresenceSub,
@@ -433,11 +433,6 @@ pub struct EventMemberJoinedChannel {
     pub event_ts: Timestamp,
     pub ts: Timestamp,
 }
-
-// TODO: This is a black hole of suffering but I just want it out of my logs for now
-// I know it exists, don't care, just go away
-#[derive(Clone, Debug, Deserialize)]
-pub enum EventPrefChange {}
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
