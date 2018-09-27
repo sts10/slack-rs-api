@@ -389,7 +389,7 @@ deserialize_internally_tagged! {
         Message(Message),
         PinAdded(EventPinAdded),
         //PinRemoved,
-        //PrefChange,
+        PrefChange(EventPrefChange),
         //PresenceChange,
         //PresenceQuery,
         //PresenceSub,
@@ -416,51 +416,56 @@ deserialize_internally_tagged! {
     }
 }
 
+// TODO: This is a black hole of suffering but I just want it out of my logs for now
+// I know it exists, don't care, just go away
+#[derive(Clone, Debug, Deserialize)]
+pub enum EventPrefChange {}
+
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct EventChannelRename {
-    channel: ShortChannelDescription,
-    event_ts: ::Timestamp,
+    pub channel: ShortChannelDescription,
+    pub event_ts: ::Timestamp,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ShortChannelDescription {
-    id: ::ConversationId,
-    is_channel: bool,
-    name: String,
-    name_normalized: String,
-    created: ::Timestamp,
+    pub id: ::ConversationId,
+    pub is_channel: bool,
+    pub name: String,
+    pub name_normalized: String,
+    pub created: ::Timestamp,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct EventImMarked {
-    channel: ::DmId,
-    ts: Timestamp,
-    dm_count: u32,
-    unread_count_display: u32,
-    num_mentions_display: u32,
-    mention_count_display: Option<u32>,
-    event_ts: Timestamp,
+    pub channel: ::DmId,
+    pub ts: Timestamp,
+    pub dm_count: u32,
+    pub unread_count_display: u32,
+    pub num_mentions_display: u32,
+    pub mention_count_display: Option<u32>,
+    pub event_ts: Timestamp,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[allow(non_snake_case)]
 pub struct EventDesktopNotification {
-    title: String,
-    subtitle: String,
-    msg: Timestamp,
-    ts: Timestamp,
-    content: String,
-    channel: ConversationId,
-    launchUri: String,
-    avatarImage: String,
-    ssbFilename: String,
-    imageUri: String,
-    is_shared: bool,
-    event_ts: Timestamp,
+    pub title: String,
+    pub subtitle: String,
+    pub msg: Timestamp,
+    pub ts: Timestamp,
+    pub content: String,
+    pub channel: ConversationId,
+    pub launchUri: String,
+    pub avatarImage: String,
+    pub ssbFilename: String,
+    pub imageUri: String,
+    pub is_shared: bool,
+    pub event_ts: Timestamp,
 }
 
 #[derive(Clone, Debug, Deserialize)]

@@ -148,12 +148,12 @@ impl ::serde::Serialize for Reactable {
         match self {
             Reactable::File(file) => {
                 let mut map = serializer.serialize_map(Some(1))?;
-                map.serialize_entry("File", file)?;
+                map.serialize_entry("file", file)?;
                 map.end()
             }
             Reactable::Message { channel, timestamp } => {
                 let mut map = serializer.serialize_map(Some(2))?;
-                map.serialize_entry("Channel", channel)?;
+                map.serialize_entry("channel", channel)?;
                 map.serialize_entry("timestamp", timestamp)?;
                 map.end()
             }
