@@ -384,7 +384,7 @@ deserialize_internally_tagged! {
         ImMarked(EventImMarked),
         //ImOpen,
         //ManualPresenceChange,
-        //MemberJoinedChannel,
+        MemberJoinedChannel(EventMemberJoinedChannel),
         //MemberLeftChannel,
         Message(Message),
         PinAdded(EventPinAdded),
@@ -414,6 +414,24 @@ deserialize_internally_tagged! {
         UserChange(EventUserChange),
         UserTyping(EventUserTyping),
     }
+}
+
+// TODO: Need to test this for more variants and capitalization
+#[derive(Clone, Copy, Debug, Deserialize)]
+pub enum ChannelType {
+    C,
+    G,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventMemberJoinedChannel {
+    pub user: UserId,
+    pub channel: ConversationId,
+    pub channel_type: ChannelType,
+    pub team: TeamId,
+    pub event_ts: Timestamp,
+    pub ts: Timestamp,
 }
 
 // TODO: This is a black hole of suffering but I just want it out of my logs for now
