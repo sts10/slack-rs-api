@@ -474,9 +474,9 @@ pub struct EventDesktopNotification {
     pub content: String,
     pub channel: ConversationId,
     pub launchUri: String,
-    pub avatarImage: String,
+    pub avatarImage: Option<String>,
     pub ssbFilename: String,
-    pub imageUri: String,
+    pub imageUri: Option<String>,
     pub is_shared: bool,
     pub event_ts: Timestamp,
 }
