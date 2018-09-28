@@ -403,7 +403,7 @@ deserialize_internally_tagged! {
         //SubteamSelfAdded,
         //SubteamUpdated,
         //TeamDomainChange,
-        //TeamJoin,
+        TeamJoin(EventTeamJoin),
         //TeamMigrationStarted,
         //TeamPlanChange,
         //TeamPrefChange,
@@ -414,6 +414,14 @@ deserialize_internally_tagged! {
         UserChange(EventUserChange),
         UserTyping(EventUserTyping),
     }
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventTeamJoin {
+    pub user: User,
+    pub cache_ts: Timestamp,
+    pub event_ts: Timestamp,
 }
 
 // TODO: Need to test this for more variants and capitalization
