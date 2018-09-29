@@ -80,6 +80,9 @@ pub struct BotIcons {
     pub image_72: Option<String>,
 }
 
+// TODO: Actually implement a type
+pub type Conversation = Channel;
+
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Channel {
@@ -385,11 +388,11 @@ deserialize_internally_tagged! {
         //ImOpen,
         //ManualPresenceChange,
         MemberJoinedChannel(EventMemberJoinedChannel),
-        //MemberLeftChannel,
+        MemberLeftChannel(EventMemberLeftChannel),
         Message(Message),
         PinAdded(EventPinAdded),
         //PinRemoved,
-        //PrefChange,
+        PrefChange(EventPrefChange),
         //PresenceChange,
         //PresenceQuery,
         //PresenceSub,
@@ -414,6 +417,24 @@ deserialize_internally_tagged! {
         UserChange(EventUserChange),
         UserTyping(EventUserTyping),
     }
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventMemberLeftChannel {
+    pub user: ::UserId,
+    pub channel: ::ConversationId,
+    pub channel_type: ChannelType,
+    pub team: ::TeamId,
+    pub ts: ::Timestamp,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventPrefChange {
+    pub name: String,
+    pub value: ::serde_json::Value,
+    pub event_ts: Timestamp,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -517,7 +538,6 @@ pub struct PinnedInfo {
     channel: ConversationId,
     pinned_by: UserId,
     pinned_ts: Timestamp,
-    event_ts: Timestamp,
     ts: Option<Timestamp>,
 }
 
@@ -1189,6 +1209,9 @@ pub struct MessageStandard {
     pub x_files: Option<Vec<FileId>>,
     pub user_profile: Option<UserProfile>,
     pub user_team: Option<TeamId>,
+    // TODO: this is only present when deserializing a history message,
+    // eventually there should probably be a HistoryMessage struct that handles this more
+    // gracefully
     #[serde(rename = "type")]
     ty: Option<String>,
 }

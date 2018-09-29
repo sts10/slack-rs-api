@@ -2,7 +2,7 @@ pub const ID_LENGTH: usize = 9;
 
 macro_rules! make_id {
     ($name:ident, $firstchar:expr, $visname:ident) => {
-        #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+        #[derive(Clone, Copy, PartialEq, Eq, Hash)]
         pub struct $name {
             len: u8,
             buf: [u8; ID_LENGTH],
@@ -80,6 +80,12 @@ macro_rules! make_id {
                     "{}",
                     ::std::str::from_utf8(&self.buf[..self.len as usize]).unwrap()
                 ).map(|_| ())
+            }
+        }
+
+        impl ::std::fmt::Debug for $name {
+            fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+                write!(f, "{}", self)
             }
         }
     };
