@@ -360,6 +360,7 @@ deserialize_internally_tagged! {
         //CommandsChanged,
         DesktopNotification(EventDesktopNotification),
         DndUpdatedUser(EventDndUpdatedUser),
+        EmojiChanged(EventEmojiChanged),
         //EmailDomainChanged,
         FileChange(EventFileChange),
         //FileCommentAdded,
@@ -372,21 +373,23 @@ deserialize_internally_tagged! {
         //FileUnshared,
         //Goodbye,
         //GroupArchive,
-        //GroupClose,
+        GroupClose(EventGroupClose),
         //GroupHistoryChanged,
         //GroupJoined,
         //GroupLeft,
         GroupMarked(EventGroupMarked),
-        //GroupOpen,
+        GroupOpen(EventGroupOpen),
         //GroupRename,
         //GroupUnarchive,
         Hello(EventHello),
-        //ImClose,
+        ImClose(EventImClose),
         //ImCreated,
         //ImHistoryChanged,
         ImMarked(EventImMarked),
         //ImOpen,
         //ManualPresenceChange,
+        MpimClose(EventMpimClose),
+        MpimOpen(EventMpimOpen),
         MemberJoinedChannel(EventMemberJoinedChannel),
         MemberLeftChannel(EventMemberLeftChannel),
         Message(Message),
@@ -400,7 +403,6 @@ deserialize_internally_tagged! {
         ReactionRemoved(EventReactionRemoved),
         //ReconnectUrl, // Experimental?
         //StarAdded,
-        //StarRemoved,
         //SubteamCreated,
         //SubteamMembersChanged,
         //SubteamSelfAdded,
@@ -417,6 +419,62 @@ deserialize_internally_tagged! {
         UserChange(EventUserChange),
         UserTyping(EventUserTyping),
     }
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventImClose {
+    pub channel: DmId,
+    pub user: UserId,
+    pub event_ts: Timestamp,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventMpimClose {
+    pub channel: GroupId,
+    pub user: UserId,
+    pub event_ts: Timestamp,
+    pub is_mpim: bool,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventMpimOpen {
+    pub channel: GroupId,
+    pub user: UserId,
+    pub event_ts: Timestamp,
+    pub is_mpim: bool,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventGroupClose {
+    pub channel: GroupId,
+    pub user: UserId,
+    pub event_ts: Timestamp,
+    pub is_mpim: bool,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventGroupOpen {
+    pub channel: GroupId,
+    pub user: UserId,
+    pub event_ts: Timestamp,
+    pub is_mpim: bool,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(tag = "type")]
+#[serde(rename_all = "snake_case")]
+pub enum EventEmojiChanged {
+    Add {
+        name: String,
+        value: String,
+        event_ts: Timestamp,
+    },
 }
 
 #[derive(Clone, Debug, Deserialize)]
