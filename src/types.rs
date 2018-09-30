@@ -352,8 +352,8 @@ deserialize_internally_tagged! {
         //ChannelCreated,
         //ChannelDeleted,
         //ChannelHistoryChanged,
-        //ChannelJoined,
-        //ChannelLeft,
+        ChannelJoined(EventChannelJoined),
+        ChannelLeft(EventChannelLeft),
         ChannelMarked(EventChannelMarked),
         ChannelRename(EventChannelRename),
         //ChannelUnarchive,
@@ -363,9 +363,6 @@ deserialize_internally_tagged! {
         EmojiChanged(EventEmojiChanged),
         //EmailDomainChanged,
         FileChange(EventFileChange),
-        //FileCommentAdded,
-        //FileCommentDeleted,
-        //FileCommentEdited,
         FileCreated(EventFileCreated),
         //FileDeleted,
         FilePublic(EventFilePublic),
@@ -386,7 +383,7 @@ deserialize_internally_tagged! {
         //ImCreated,
         //ImHistoryChanged,
         ImMarked(EventImMarked),
-        //ImOpen,
+        ImOpen(EventImOpen),
         //ManualPresenceChange,
         MpimClose(EventMpimClose),
         MpimOpen(EventMpimOpen),
@@ -402,7 +399,8 @@ deserialize_internally_tagged! {
         ReactionAdded(EventReactionAdded),
         ReactionRemoved(EventReactionRemoved),
         //ReconnectUrl, // Experimental?
-        //StarAdded,
+        StarAdded(EventStarAdded),
+        StarRemoved(EventStarRemoved),
         //SubteamCreated,
         //SubteamMembersChanged,
         //SubteamSelfAdded,
@@ -416,9 +414,79 @@ deserialize_internally_tagged! {
         //TeamProfileDelete,
         //TeamProfileReorder,
         //TeamRename,
+        ThreadSubscribed(EventThreadSubscribed),
+        UpdateThreadState(EventUpdateThreadState),
         UserChange(EventUserChange),
         UserTyping(EventUserTyping),
     }
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventThreadSubscribed {
+    pub event_ts: Timestamp,
+    pub subscription: Subscription,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(tag = "type")]
+pub enum Subscription {
+    Thread {
+        active: bool,
+        channel: ConversationId,
+        date_create: Timestamp,
+        last_read: Timestamp,
+        thread_ts: Timestamp,
+    },
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventUpdateThreadState {
+    pub event_ts: Timestamp,
+    pub has_unreads: bool,
+    pub mention_count: u32,
+    pub mention_count_by_channel: Vec<u32>,
+    pub timestamp: Timestamp,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventStarRemoved {
+    pub item: Message,
+    pub user: UserId,
+    pub event_ts: Timestamp,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventStarAdded {
+    pub item: Message,
+    pub user: UserId,
+    pub event_ts: Timestamp,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventChannelJoined {
+    pub channel: Channel,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventChannelLeft {
+    pub actor_id: UserId,
+    pub channel: ChannelId,
+    pub event_ts: Timestamp,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventImOpen {
+    pub channel: DmId,
+    pub user: UserId,
+    pub event_ts: Timestamp,
 }
 
 #[derive(Clone, Debug, Deserialize)]
