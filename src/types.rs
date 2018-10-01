@@ -345,8 +345,8 @@ deserialize_internally_tagged! {
     #[derive(Clone, Debug)]
     pub enum Event {
         AppsChanged(EventAppsChanged),
-        //AccountsChanged,
-        //BotAdded,
+        AccountsChanged(EventAccountsChanged),
+        BotAdded(EventBotAdded),
         BotChanged(EventBotChanged),
         //ChannelArchive,
         //ChannelCreated,
@@ -419,6 +419,18 @@ deserialize_internally_tagged! {
         UserChange(EventUserChange),
         UserTyping(EventUserTyping),
     }
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventBotAdded {
+    pub bot: Bot,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventAccountsChanged {
+    pub event_ts: Timestamp,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -553,6 +565,7 @@ pub struct EventMemberLeftChannel {
     pub channel_type: ChannelType,
     pub team: ::TeamId,
     pub ts: ::Timestamp,
+    pub event_ts: ::Timestamp,
 }
 
 #[derive(Clone, Debug, Deserialize)]
