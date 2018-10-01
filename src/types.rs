@@ -391,7 +391,7 @@ deserialize_internally_tagged! {
         MemberLeftChannel(EventMemberLeftChannel),
         Message(Message),
         PinAdded(EventPinAdded),
-        //PinRemoved,
+        PinRemoved(EventPinRemoved),
         PrefChange(EventPrefChange),
         //PresenceChange,
         //PresenceQuery,
@@ -407,6 +407,7 @@ deserialize_internally_tagged! {
         //SubteamUpdated,
         //TeamDomainChange,
         TeamJoin(EventTeamJoin),
+        TeamIconChange(EventTeamIconChange),
         //TeamMigrationStarted,
         //TeamPlanChange,
         //TeamPrefChange,
@@ -419,6 +420,26 @@ deserialize_internally_tagged! {
         UserChange(EventUserChange),
         UserTyping(EventUserTyping),
     }
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventTeamIconChange {
+    event_ts: Timestamp,
+    icon: TeamIcon,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventPinRemoved {
+    pub channel_id: ConversationId,
+    pub event_ts: Timestamp,
+    pub has_pins: bool,
+    pub item: Message,
+    pub pin_count: u32,
+    pub pinned_info: PinnedInfo,
+    pub ts: Timestamp,
+    pub user: UserId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -1499,14 +1520,16 @@ pub struct Team {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct TeamIcon {
-    pub image_102: Option<String>,
-    pub image_132: Option<String>,
-    pub image_34: Option<String>,
-    pub image_44: Option<String>,
-    pub image_68: Option<String>,
-    pub image_88: Option<String>,
-    pub image_default: Option<bool>,
+    pub image_102: String,
+    pub image_132: String,
+    pub image_230: String,
+    pub image_34: String,
+    pub image_44: String,
+    pub image_68: String,
+    pub image_88: String,
+    pub image_original: String,
 }
 
 #[derive(Clone, Debug, Deserialize)]
