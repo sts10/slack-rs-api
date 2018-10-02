@@ -1,3 +1,6 @@
+use rtm::{Conversation, Cursor, Message};
+use timestamp::Timestamp;
+
 /// Archives a conversation.
 ///
 /// Wraps https://api.slack.com/methods/conversations.archive
@@ -55,7 +58,7 @@ pub struct CreateRequest<'a> {
 #[serde(deny_unknown_fields)]
 pub struct CreateResponse {
     ok: bool,
-    pub channel: Option<::Conversation>,
+    pub channel: Option<Conversation>,
 }
 
 /// Fetches a conversation's history of messages and events.
@@ -71,7 +74,7 @@ pub struct HistoryRequest {
 
     /// Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous request's response_metadata. Default value fetches the first "page" of the collection. See pagination for more detail.
     #[new(default)]
-    pub cursor: Option<::Cursor>,
+    pub cursor: Option<Cursor>,
 
     /// Include messages with latest or oldest timestamp in results only when either timestamp is specified
     #[new(default)]
@@ -79,7 +82,7 @@ pub struct HistoryRequest {
 
     /// End of time range of messages to include in results.
     #[new(default)]
-    pub latest: Option<::Timestamp>,
+    pub latest: Option<Timestamp>,
 
     /// The maximum number of items to return. Fewer than the requested number of items may be returned, even if the end of the users list hasn't been reached.
     #[new(default)]
@@ -94,7 +97,7 @@ pub struct HistoryRequest {
 #[serde(deny_unknown_fields)]
 pub struct HistoryResponse {
     ok: bool,
-    pub messages: Vec<::Message>,
+    pub messages: Vec<Message>,
     pub has_more: bool,
     pub pin_count: u32,
     pub response_metadata: ResponseMetadata,
@@ -104,7 +107,7 @@ pub struct HistoryResponse {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ResponseMetadata {
-    next_cursor: ::Cursor,
+    next_cursor: Cursor,
 }
 
 /// Retrieve information about a conversation.
@@ -126,7 +129,7 @@ pub struct InfoRequest {
 #[serde(deny_unknown_fields)]
 pub struct InfoResponse {
     ok: bool,
-    pub channel: ::Conversation,
+    pub channel: Conversation,
 }
 
 /// Invites users to a channel.
@@ -149,7 +152,7 @@ pub struct InviteRequest {
 #[serde(deny_unknown_fields)]
 pub struct InviteResponse {
     ok: bool,
-    pub channel: ::Conversation,
+    pub channel: Conversation,
 }
 
 /// Joins an existing conversation.
@@ -167,7 +170,7 @@ pub struct JoinRequest {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct JoinResponse {
-    pub channel: ::Conversation,
+    pub channel: Conversation,
     pub warning: Option<String>,
     pub response_metadata: Option<JoinResponseMetadata>,
 }
@@ -213,7 +216,7 @@ api_call!(list, "conversations.list", ListRequest => ListResponse);
 pub struct ListRequest {
     /// Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous request's response_metadata. Default value fetches the first "page" of the collection. See pagination for more detail.
     #[new(default)]
-    pub cursor: Option<::Cursor>,
+    pub cursor: Option<Cursor>,
 
     /// Set to true to exclude archived channels from the list
     #[new(default)]
@@ -242,7 +245,7 @@ pub enum ChannelType {
 #[serde(deny_unknown_fields)]
 pub struct ListResponse {
     ok: bool,
-    pub channels: Vec<::Conversation>,
+    pub channels: Vec<Conversation>,
     pub response_metadata: Option<ResponseMetadata>,
 }
 
@@ -259,7 +262,7 @@ pub struct MembersRequest {
 
     /// Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous request's response_metadata. Default value fetches the first "page" of the collection. See pagination for more detail.
     #[new(default)]
-    pub cursor: Option<::Cursor>,
+    pub cursor: Option<Cursor>,
 
     /// The maximum number of items to return. Fewer than the requested number of items may be returned, even if the end of the users list hasn't been reached.
     #[new(default)]
@@ -286,7 +289,7 @@ pub struct MarkRequest {
     /// Private channel to set reading cursor in.
     pub channel: ::ConversationId,
     /// Timestamp of the most recently seen message.
-    pub ts: ::Timestamp,
+    pub ts: Timestamp,
 }
 
 /// Renames a conversation.
@@ -307,7 +310,7 @@ pub struct RenameRequest<'a> {
 #[serde(deny_unknown_fields)]
 pub struct RenameResponse {
     ok: bool,
-    pub channel: ::Conversation,
+    pub channel: Conversation,
 }
 
 /// Retrieve a thread of messages posted to a conversation
@@ -321,11 +324,11 @@ pub struct RepliesRequest {
     /// Conversation ID to fetch thread from.
     pub channel: ::ConversationId,
     /// Unique identifier of a thread's parent message.
-    pub ts: ::Timestamp,
+    pub ts: Timestamp,
 
     /// Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous request's response_metadata. Default value fetches the first "page" of the collection. See pagination for more detail.
     #[new(default)]
-    pub cursor: Option<::Cursor>,
+    pub cursor: Option<Cursor>,
 
     /// Include messages with latest or oldest timestamp in results only when either timestamp is specified.
     #[new(default)]
@@ -333,7 +336,7 @@ pub struct RepliesRequest {
 
     /// End of time range of messages to include in results.
     #[new(default)]
-    pub latest: ::Timestamp,
+    pub latest: Timestamp,
 
     /// The maximum number of items to return. Fewer than the requested number of items may be returned, even if the end of the users list hasn't been reached.
     #[new(default)]
@@ -341,7 +344,7 @@ pub struct RepliesRequest {
 
     /// Start of time range of messages to include in results.
     #[new(default)]
-    pub oldest: Option<::Timestamp>,
+    pub oldest: Option<Timestamp>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -349,7 +352,7 @@ pub struct RepliesRequest {
 pub struct RepliesResponse {
     ok: bool,
     #[serde(default)]
-    pub messages: Vec<::Message>,
+    pub messages: Vec<Message>,
     pub has_more: Option<bool>,
     pub response_metadata: Option<ResponseMetadata>,
 }
@@ -418,7 +421,7 @@ api_call!(conversations, "users.conversations", ConversationsRequest => Conversa
 pub struct ConversationsRequest {
     /// Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous request's response_metadata. Default value fetches the first "page" of the collection. See pagination for more detail.
     #[new(default)]
-    pub cursor: Option<::Cursor>,
+    pub cursor: Option<Cursor>,
 
     /// Set to true to exclude archived channels from the list
     #[new(default)]
@@ -441,6 +444,6 @@ pub struct ConversationsRequest {
 #[serde(deny_unknown_fields)]
 pub struct ConversationsResponse {
     ok: bool,
-    pub channels: Vec<::Conversation>,
+    pub channels: Vec<Conversation>,
     pub response_metadata: Option<ResponseMetadata>,
 }

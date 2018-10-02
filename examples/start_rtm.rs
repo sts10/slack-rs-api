@@ -1,5 +1,6 @@
 extern crate reqwest;
 extern crate slack_api as slack;
+use slack::http::rtm;
 use std::error::Error;
 
 fn main() {
@@ -7,8 +8,8 @@ fn main() {
     let client = ::reqwest::Client::new();
 
     {
-        let request = slack::rtm::StartRequest::new();
-        let response = slack::rtm::start(&client, &token, &request);
+        let request = rtm::StartRequest::new();
+        let response = rtm::start(&client, &token, &request);
 
         match response {
             Ok(response) => {

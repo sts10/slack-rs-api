@@ -1,3 +1,6 @@
+use rtm::{File, Message};
+use timestamp::Timestamp;
+
 /// Pins an item to a channel.
 ///
 /// Wraps https://api.slack.com/methods/pins.add
@@ -45,33 +48,23 @@ pub struct ListResponse {
 pub enum ListResponseItem {
     Message(ListResponseItemMessage),
     File(ListResponseItemFile),
-    FileComment(ListResponseItemFileComment),
 }
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ListResponseItemFile {
-    pub created: Option<::Timestamp>,
+    pub created: Option<Timestamp>,
     pub created_by: Option<::UserId>,
-    pub file: ::File,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct ListResponseItemFileComment {
-    pub comment: ::FileComment,
-    pub created: Option<::Timestamp>,
-    pub created_by: Option<::UserId>,
-    pub file: ::File,
+    pub file: File,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ListResponseItemMessage {
     pub channel: ::ConversationId,
-    pub created: Option<::Timestamp>,
+    pub created: Option<Timestamp>,
     pub created_by: Option<::UserId>,
-    pub message: ::Message,
+    pub message: Message,
 }
 
 /// Un-pins an item from a channel.

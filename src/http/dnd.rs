@@ -1,5 +1,7 @@
 //! Adjust and view Do Not Disturb settings for team members.
 
+use rtm::Team;
+
 /// Ends the current user's Do Not Disturb session immediately.
 ///
 /// Wraps https://api.slack.com/methods/dnd.endDnd
@@ -86,5 +88,5 @@ pub struct TeamInfoRequest<'a> {
 #[serde(deny_unknown_fields)]
 pub struct TeamInfoResponse {
     ok: bool,
-    pub team: ::Team,
+    pub team: Team,
 }

@@ -11,14 +11,13 @@ version = "0.19.0"
 serde = "1.0"
 serde_derive = "1.0"
 serde_json = "1.0"
-serde_urlencoded = "0.5"
-uuid = { version = "0.7", features = ["serde", "v4"] }
 derive-new = "0.5"
+uuid = { version = "0.7", features = ["serde", "v4"] }
+serde_urlencoded = { version = "0.5", optional = true }
 chrono = { version = "0.4", optional = true }
 reqwest = { version = "0.9", optional = true }
 
 [dev-dependencies]
-openssl-probe = "0.1"
 lazy_static = "1.0"
 openssl = { version = "0.10", features = ["vendored"] }
 
@@ -30,3 +29,5 @@ required-features = ["reqwest"]
 name = "channel_history"
 required-features = ["reqwest"]
 
+[features]
+reqwest_support = ["reqwest", "serde_urlencoded"]

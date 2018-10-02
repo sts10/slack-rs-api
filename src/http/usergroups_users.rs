@@ -1,3 +1,5 @@
+use rtm::Usergroup;
+
 /// List all users in a User Group
 ///
 /// Wraps https://api.slack.com/methods/usergroups.users.list
@@ -43,5 +45,5 @@ pub struct UpdateRequest<'a> {
 #[serde(deny_unknown_fields)]
 pub struct UpdateResponse {
     ok: bool,
-    pub usergroup: Option<::Usergroup>,
+    pub usergroup: Option<Usergroup>,
 }

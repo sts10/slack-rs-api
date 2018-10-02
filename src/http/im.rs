@@ -1,5 +1,8 @@
 //! Get info on your direct messages.
 
+use rtm::{Cursor, Im, Message, ThreadInfo};
+use timestamp::Timestamp;
+
 /// Close a direct message channel.
 ///
 /// Wraps https://api.slack.com/methods/im.close
@@ -46,7 +49,7 @@ pub struct HistoryResponse {
     pub has_more: Option<bool>,
     pub latest: Option<String>,
     #[serde(default)]
-    pub messages: Vec<::Message>,
+    pub messages: Vec<Message>,
     pub is_limited: Option<bool>,
 }
 
@@ -60,7 +63,7 @@ api_call!(list, "im.list", ListRequest => ListResponse);
 pub struct ListRequest {
     /// Paginate through collections of data by setting the `cursor` parameter to a `next_cursor` attribute returned by a previous request's `response_metadata`. Default value fetches the first "page" of the collection. See pagination for more detail.
     #[new(default)]
-    pub cursor: Option<::Cursor>,
+    pub cursor: Option<Cursor>,
     /// The maximum number of items to return. Fewer than the requested number of items may be returned, even if the end of the users list hasn't been reached.
     #[new(default)]
     pub limit: Option<u32>,
@@ -71,7 +74,7 @@ pub struct ListRequest {
 pub struct ListResponse {
     ok: bool,
     #[serde(default)]
-    pub ims: Vec<::Im>,
+    pub ims: Vec<Im>,
 }
 
 /// Sets the read cursor in a direct message channel.
@@ -85,7 +88,7 @@ pub struct MarkRequest {
     /// Direct message channel to set reading cursor in.
     pub channel: ::DmId,
     /// Timestamp of the most recently seen message.
-    pub ts: ::Timestamp,
+    pub ts: Timestamp,
 }
 
 /// Opens a direct message channel.
@@ -106,7 +109,7 @@ pub struct OpenRequest {
 #[derive(Clone, Debug, Deserialize)]
 pub struct OpenResponse {
     ok: bool,
-    pub channel: Option<::Im>,
+    pub channel: Option<Im>,
 }
 
 /// Retrieve a thread of messages posted to a direct message conversation
@@ -120,13 +123,13 @@ pub struct RepliesRequest {
     /// Direct message channel to fetch thread from
     pub channel: ::DmId,
     /// Unique identifier of a thread's parent message
-    pub thread_ts: ::Timestamp,
+    pub thread_ts: Timestamp,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct RepliesResponse {
     ok: bool,
-    pub messages: Option<Vec<::Message>>,
-    pub thread_info: Option<::ThreadInfo>,
+    pub messages: Option<Vec<Message>>,
+    pub thread_info: Option<ThreadInfo>,
 }

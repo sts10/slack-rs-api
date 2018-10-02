@@ -22,6 +22,7 @@ extern crate chrono;
 #[cfg(any(feature = "reqwest", test))]
 extern crate reqwest;
 extern crate serde_json;
+#[cfg(any(feature = "reqwest", test))]
 extern crate serde_urlencoded;
 extern crate uuid;
 #[macro_use]
@@ -35,11 +36,8 @@ extern crate lazy_static;
 mod requests;
 pub use requests::Error;
 
-mod types;
-pub use types::*;
-
-mod mods;
-pub use mods::*;
+pub mod http;
+pub mod rtm;
 
 mod timestamp;
 pub use timestamp::Timestamp;

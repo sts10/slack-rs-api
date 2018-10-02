@@ -1,5 +1,7 @@
 //! Search your team's files and messages.
 
+use rtm::{File, Message, Paging};
+
 #[derive(Clone, Debug, Serialize)]
 pub enum SortDirection {
     #[serde(rename = "asc")]
@@ -49,15 +51,15 @@ pub struct AllResponse {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct AllResponseFiles {
-    pub matches: Vec<::File>,
-    pub paging: ::Paging,
+    pub matches: Vec<File>,
+    pub paging: Paging,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct AllResponseMessages {
-    pub matches: Vec<::Message>,
-    pub paging: ::Paging,
+    pub matches: Vec<Message>,
+    pub paging: Paging,
 }
 
 /// Searches for files matching a query.
@@ -99,8 +101,8 @@ pub struct FilesResponse {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct FilesResponseFiles {
-    pub matches: Option<Vec<::File>>,
-    pub paging: Option<::Paging>,
+    pub matches: Option<Vec<File>>,
+    pub paging: Option<Paging>,
     pub total: Option<i32>,
 }
 
@@ -142,7 +144,7 @@ pub struct MessagesResponse {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct MessagesResponseMessages {
-    pub matches: Option<Vec<::Message>>,
-    pub paging: Option<::Paging>,
+    pub matches: Option<Vec<Message>>,
+    pub paging: Option<Paging>,
     pub total: Option<i32>,
 }

@@ -1,10 +1,12 @@
+use rtm::{File, Message, Paging};
+use timestamp::Timestamp;
+
 /// Adds a reaction to an item.
 ///
 /// Wraps https://api.slack.com/methods/reactions.add
 
 api_call!(add, "reactions.add", AddRequest =>);
 
-// TODO: one of these must be specified
 #[derive(Clone, Debug, Serialize, new)]
 pub struct AddRequest<'a> {
     /// Reaction (emoji) name.
@@ -33,28 +35,20 @@ pub struct GetRequest {
 pub enum GetResponse {
     Message(GetResponseMessage),
     File(GetResponseFile),
-    FileComment(GetResponseFileComment),
 }
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct GetResponseFile {
     ok: bool,
-    pub file: ::File,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-pub struct GetResponseFileComment {
-    ok: bool,
-    pub comment: ::FileComment,
-    pub file: ::File,
+    pub file: File,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct GetResponseMessage {
     ok: bool,
     pub channel: String,
-    pub message: ::Message,
+    pub message: Message,
 }
 
 /// Lists reactions made by a user.
@@ -84,7 +78,7 @@ pub struct ListRequest {
 pub struct ListResponse {
     ok: bool,
     pub items: Option<Vec<ListResponseItem>>,
-    pub paging: Option<::Paging>,
+    pub paging: Option<Paging>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -93,27 +87,19 @@ pub struct ListResponse {
 pub enum ListResponseItem {
     Message(ListResponseItemMessage),
     File(ListResponseItemFile),
-    FileComment(ListResponseItemFileComment),
 }
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ListResponseItemFile {
-    pub file: ::File,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct ListResponseItemFileComment {
-    pub comment: ::FileComment,
-    pub file: ::File,
+    pub file: File,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ListResponseItemMessage {
-    pub channel: String,
-    pub message: ::Message,
+    pub channel: String, // TODO: ConversationId probably
+    pub message: Message,
 }
 
 /// Removes a reaction from an item.
@@ -135,7 +121,7 @@ pub enum Reactable {
     File(::FileId),
     Message {
         channel: ::ConversationId,
-        timestamp: ::Timestamp,
+        timestamp: Timestamp,
     },
 }
 

@@ -1,5 +1,7 @@
 //! Get info on your team's User Groups.
 
+use rtm::Usergroup;
+
 /// Create a User Group
 ///
 /// Wraps https://api.slack.com/methods/usergroups.create
@@ -28,7 +30,7 @@ pub struct CreateRequest<'a> {
 #[serde(deny_unknown_fields)]
 pub struct CreateResponse {
     ok: bool,
-    pub usergroup: Option<::Usergroup>,
+    pub usergroup: Option<Usergroup>,
 }
 
 /// Disable an existing User Group
@@ -50,7 +52,7 @@ pub struct DisableRequest {
 #[serde(deny_unknown_fields)]
 pub struct DisableResponse {
     ok: bool,
-    pub usergroup: Option<::Usergroup>,
+    pub usergroup: Option<Usergroup>,
 }
 
 /// Enable a User Group
@@ -72,7 +74,7 @@ pub struct EnableRequest {
 #[serde(deny_unknown_fields)]
 pub struct EnableResponse {
     ok: bool,
-    pub usergroup: Option<::Usergroup>,
+    pub usergroup: Option<Usergroup>,
 }
 
 /// List all User Groups for a team
@@ -98,7 +100,7 @@ pub struct ListRequest {
 #[serde(deny_unknown_fields)]
 pub struct ListResponse {
     ok: bool,
-    pub usergroups: Option<Vec<::Usergroup>>,
+    pub usergroups: Option<Vec<Usergroup>>,
 }
 
 /// Update an existing User Group
@@ -133,5 +135,5 @@ pub struct UpdateRequest<'a> {
 #[serde(deny_unknown_fields)]
 pub struct UpdateResponse {
     ok: bool,
-    pub usergroup: Option<::Usergroup>,
+    pub usergroup: Option<Usergroup>,
 }

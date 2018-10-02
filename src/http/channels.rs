@@ -1,5 +1,8 @@
 //! Get info on your team's Slack channels, create or archive channels, invite users, set the topic and purpose, and mark a channel as read.
 
+use rtm::{Channel, Cursor, Message, Paging};
+use timestamp::Timestamp;
+
 /// Archives a channel.
 ///
 /// Wraps https://api.slack.com/methods/channels.archive
@@ -30,7 +33,7 @@ pub struct CreateRequest<'a> {
 #[serde(deny_unknown_fields)]
 pub struct CreateResponse {
     ok: bool,
-    pub channel: ::Channel,
+    pub channel: Channel,
 }
 
 /// Fetches history of messages and events from a channel.
@@ -45,10 +48,10 @@ pub struct HistoryRequest {
     pub channel: ::ChannelId,
     /// End of time range of messages to include in results.
     #[new(default)]
-    pub latest: Option<::Timestamp>,
+    pub latest: Option<Timestamp>,
     /// Start of time range of messages to include in results.
     #[new(default)]
-    pub oldest: Option<::Timestamp>,
+    pub oldest: Option<Timestamp>,
     /// Include messages with latest or oldest timestamp in results.
     #[new(default)]
     pub inclusive: Option<bool>,
@@ -65,8 +68,8 @@ pub struct HistoryRequest {
 pub struct HistoryResponse {
     ok: bool,
     pub has_more: Option<bool>,
-    pub latest: Option<::Timestamp>,
-    pub messages: Vec<::Message>,
+    pub latest: Option<Timestamp>,
+    pub messages: Vec<Message>,
     pub is_limited: Option<bool>,
 }
 
@@ -88,7 +91,7 @@ pub struct InfoRequest {
 #[serde(deny_unknown_fields)]
 pub struct InfoResponse {
     ok: bool,
-    pub channel: ::Channel,
+    pub channel: Channel,
 }
 
 /// Invites a user to a channel.
@@ -109,7 +112,7 @@ pub struct InviteRequest {
 #[serde(deny_unknown_fields)]
 pub struct InviteResponse {
     ok: bool,
-    pub channel: ::Channel,
+    pub channel: Channel,
 }
 
 /// Joins a channel, creating it if needed.
@@ -131,7 +134,7 @@ pub struct JoinRequest<'a> {
 #[serde(deny_unknown_fields)]
 pub struct JoinResponse {
     ok: bool,
-    pub channel: ::Channel, //TODO: This contains different attributes depending on already_in_channel
+    pub channel: Channel, //TODO: This contains different attributes depending on already_in_channel
     pub already_in_channel: Option<bool>,
 }
 
@@ -183,7 +186,7 @@ pub struct ListRequest {
     #[new(default)]
     pub exclude_members: Option<bool>,
     #[new(default)]
-    pub cursor: Option<::Cursor>,
+    pub cursor: Option<Cursor>,
     #[new(default)]
     pub limit: Option<usize>,
 }
@@ -192,8 +195,8 @@ pub struct ListRequest {
 #[serde(deny_unknown_fields)]
 pub struct ListResponse {
     ok: bool,
-    pub channels: Vec<::Channel>,
-    pub response_metadata: Option<::Paging>,
+    pub channels: Vec<Channel>,
+    pub response_metadata: Option<Paging>,
 }
 
 /// Sets the read cursor in a channel.
@@ -207,7 +210,7 @@ pub struct MarkRequest {
     /// Channel to set reading cursor in.
     pub channel: ::ChannelId,
     /// Timestamp of the most recently seen message.
-    pub ts: ::Timestamp,
+    pub ts: Timestamp,
 }
 
 /// Renames a channel.
@@ -231,7 +234,7 @@ pub struct RenameRequest<'a> {
 #[serde(deny_unknown_fields)]
 pub struct RenameResponse {
     ok: bool,
-    pub channel: ::Channel,
+    pub channel: Channel,
 }
 
 /// Retrieve a thread of messages posted to a channel
@@ -245,7 +248,7 @@ pub struct RepliesRequest {
     /// Channel to fetch thread from
     pub channel: ::ChannelId,
     /// Unique identifier of a thread's parent message
-    pub thread_ts: ::Timestamp,
+    pub thread_ts: Timestamp,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -253,7 +256,7 @@ pub struct RepliesRequest {
 pub struct RepliesResponse {
     ok: bool,
     pub has_more: bool,
-    pub messages: Vec<::Message>,
+    pub messages: Vec<Message>,
 }
 
 /// Sets the purpose for a channel.

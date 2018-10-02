@@ -1,3 +1,6 @@
+use rtm::{File, Message, Paging};
+use timestamp::Timestamp;
+
 /// Adds a star to an item.
 ///
 /// Wraps https://api.slack.com/methods/stars.add
@@ -31,15 +34,14 @@ pub struct ListRequest {
 pub struct ListResponse {
     ok: bool,
     pub items: Option<Vec<ListResponseItem>>,
-    pub paging: Option<::Paging>,
+    pub paging: Option<Paging>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(tag = "type")]
 pub enum ListResponseItem {
-    Message { channel: String, message: ::Message },
-    File { file: ::File },
-    FileComment { comment: ::FileComment, file: ::File },
+    Message { channel: String, message: Message },
+    File { file: File },
     Channel { channel: String },
     Im { channel: String },
     Group { group: String },
@@ -63,7 +65,7 @@ pub enum Starrable {
     Channel(::ConversationId),
     Message {
         channel: ::ConversationId,
-        timestamp: ::Timestamp,
+        timestamp: Timestamp,
     },
 }
 

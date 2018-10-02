@@ -1,3 +1,5 @@
+use rtm::UserProfile;
+
 /// Retrieves a user's profile information.
 ///
 /// Wraps https://api.slack.com/methods/users.profile.get
@@ -18,7 +20,7 @@ pub struct GetRequest {
 #[serde(deny_unknown_fields)]
 pub struct GetResponse {
     ok: bool,
-    pub profile: Option<::UserProfile>,
+    pub profile: Option<UserProfile>,
 }
 
 /// Set the profile information for a user.
@@ -47,5 +49,5 @@ pub struct SetRequest<'a> {
 #[serde(deny_unknown_fields)]
 pub struct SetResponse {
     ok: bool,
-    pub profile: Option<::UserProfile>,
+    pub profile: Option<UserProfile>,
 }

@@ -1,3 +1,5 @@
+use rtm::Reminder;
+
 /// Creates a reminder.
 ///
 /// Wraps https://api.slack.com/methods/reminders.add
@@ -19,7 +21,7 @@ pub struct AddRequest<'a> {
 #[serde(deny_unknown_fields)]
 pub struct AddResponse {
     ok: bool,
-    pub reminder: Option<::Reminder>,
+    pub reminder: Option<Reminder>,
 }
 
 /// Marks a reminder as complete.
@@ -62,7 +64,7 @@ pub struct InfoRequest {
 #[serde(deny_unknown_fields)]
 pub struct InfoResponse {
     ok: bool,
-    pub reminder: Option<::Reminder>,
+    pub reminder: Option<Reminder>,
 }
 
 /// Lists all reminders created by or for a given user.
@@ -75,5 +77,5 @@ api_call!(list, "reminders.list", => ListResponse);
 #[derive(Clone, Debug, Deserialize)]
 pub struct ListResponse {
     ok: bool,
-    pub reminders: Option<Vec<::Reminder>>,
+    pub reminders: Option<Vec<Reminder>>,
 }

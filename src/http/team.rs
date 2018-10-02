@@ -1,3 +1,6 @@
+use rtm::Paging;
+use rtm::Team;
+
 /// Gets the access logs for the current team.
 ///
 /// Wraps https://api.slack.com/methods/team.accessLogs
@@ -23,7 +26,7 @@ pub struct AccessLogsRequest {
 pub struct AccessLogsResponse {
     ok: bool,
     pub logins: Option<Vec<AccessLogsResponseLogin>>,
-    pub paging: Option<::Paging>,
+    pub paging: Option<Paging>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -76,7 +79,7 @@ api_call!(info, "team.info", => InfoResponse);
 #[serde(deny_unknown_fields)]
 pub struct InfoResponse {
     ok: bool,
-    pub team: Option<::Team>,
+    pub team: Option<Team>,
 }
 
 /// Gets the integration logs for the current team.
@@ -117,7 +120,7 @@ pub struct IntegrationLogsRequest<'a> {
 pub struct IntegrationLogsResponse {
     ok: bool,
     pub logs: Option<Vec<IntegrationLogsResponseLog>>,
-    pub paging: Option<::Paging>,
+    pub paging: Option<Paging>,
 }
 
 #[derive(Clone, Debug, Deserialize)]

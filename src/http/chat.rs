@@ -1,5 +1,8 @@
 //! Post chat messages to Slack.
 
+use rtm::Message;
+use timestamp::Timestamp;
+
 /// Deletes a message.
 ///
 /// Wraps https://api.slack.com/methods/chat.delete
@@ -9,7 +12,7 @@ api_call!(delete, "chat.delete", DeleteRequest => DeleteResponse);
 #[derive(Clone, Debug, Serialize, new)]
 pub struct DeleteRequest {
     /// Timestamp of the message to be deleted.
-    pub ts: ::Timestamp,
+    pub ts: Timestamp,
     /// Channel containing the message to be deleted.
     pub channel: ::ConversationId,
     /// Pass true to delete the message as the authed user. Bot users in this context are considered authed users.
@@ -22,7 +25,7 @@ pub struct DeleteRequest {
 pub struct DeleteResponse {
     ok: bool,
     pub channel: ::ChannelId,
-    pub ts: ::Timestamp,
+    pub ts: Timestamp,
 }
 
 /// Share a me message into a channel.
@@ -44,7 +47,7 @@ pub struct MeMessageRequest<'a> {
 pub struct MeMessageResponse {
     ok: bool,
     pub channel: Option<String>,
-    pub ts: Option<::Timestamp>,
+    pub ts: Option<Timestamp>,
 }
 
 /// Sends a message to a channel.
@@ -121,8 +124,8 @@ impl Default for ParseMode {
 pub struct PostMessageResponse {
     ok: bool,
     pub channel: ::ConversationId,
-    pub message: ::Message,
-    pub ts: ::Timestamp,
+    pub message: Message,
+    pub ts: Timestamp,
 }
 
 /// Unfurl a URL that a user posted
@@ -136,7 +139,7 @@ pub struct UnfurlRequest<'a> {
     /// Channel ID of the message
     pub channel: ::ConversationId,
     /// Timestamp of the message to add unfurl behavior to
-    pub ts: ::Timestamp,
+    pub ts: Timestamp,
     /// JSON mapping a set of URLs from the message to their unfurl attachments
     pub unfurls: &'a str, // TODO: this should be a serialize_with on a Vec<String> I think?
     /// Set to true or 1 to indicate the user must install your Slack app to trigger unfurls for this domain
@@ -159,7 +162,7 @@ api_call!(update, "chat.update", UpdateRequest => UpdateResponse);
 #[derive(Clone, Debug, Serialize, new)]
 pub struct UpdateRequest<'a> {
     /// Timestamp of the message to be updated.
-    pub ts: ::Timestamp,
+    pub ts: Timestamp,
     /// Channel containing the message to be updated.
     pub channel: ::ConversationId,
     /// New text for the message, using the default formatting rules.

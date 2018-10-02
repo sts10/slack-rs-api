@@ -1,5 +1,7 @@
 //! Get info on files uploaded to Slack, upload new files to Slack.
 
+use rtm::{File, FileComment, Paging};
+
 /// Deletes a file.
 ///
 /// Wraps https://api.slack.com/methods/files.delete
@@ -34,9 +36,9 @@ pub struct InfoRequest {
 #[serde(deny_unknown_fields)]
 pub struct InfoResponse {
     ok: bool,
-    pub comments: Vec<::FileComment>,
-    pub file: ::File,
-    pub paging: ::Paging,
+    pub comments: Vec<FileComment>,
+    pub file: File,
+    pub paging: Paging,
 }
 
 /// Lists & filters team files.
@@ -104,8 +106,8 @@ impl Default for FileType {
 #[serde(deny_unknown_fields)]
 pub struct ListResponse {
     ok: bool,
-    pub files: Option<Vec<::File>>,
-    pub paging: Option<::Paging>,
+    pub files: Option<Vec<File>>,
+    pub paging: Option<Paging>,
 }
 
 /// Revokes public/external sharing access for a file
@@ -129,7 +131,7 @@ pub struct RevokePublicURLRequest {
 #[serde(deny_unknown_fields)]
 pub struct RevokePublicURLResponse {
     ok: bool,
-    pub file: ::File,
+    pub file: File,
 }
 
 /// Enables a file for public/external sharing.
@@ -153,5 +155,5 @@ pub struct SharedPublicURLRequest {
 #[serde(deny_unknown_fields)]
 pub struct SharedPublicURLResponse {
     ok: bool,
-    pub file: ::File,
+    pub file: File,
 }
