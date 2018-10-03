@@ -341,137 +341,9 @@ macro_rules! deserialize_internally_tagged {
     }
 }
 
-deserialize_internally_tagged! {
-    tag_field = "type",
-    #[derive(Clone, Debug)]
-    pub enum Event {
-        AppsChanged(EventAppsChanged),
-        AccountsChanged(EventAccountsChanged),
-        BotAdded(EventBotAdded),
-        BotChanged(EventBotChanged),
-        //ChannelArchive,
-        //ChannelCreated,
-        //ChannelDeleted,
-        //ChannelHistoryChanged,
-        ChannelJoined(EventChannelJoined),
-        ChannelLeft(EventChannelLeft),
-        ChannelMarked(EventChannelMarked),
-        ChannelRename(EventChannelRename),
-        //ChannelUnarchive,
-        //CommandsChanged,
-        DesktopNotification(EventDesktopNotification),
-        DndUpdatedUser(EventDndUpdatedUser),
-        EmojiChanged(EventEmojiChanged),
-        //EmailDomainChanged,
-        FileChange(EventFileChange),
-        FileCreated(EventFileCreated),
-        //FileDeleted,
-        FilePublic(EventFilePublic),
-        FileShared(EventFileShared),
-        FileUnshared(EventFileUnshared),
-        //Goodbye,
-        //GroupArchive,
-        GroupClose(EventGroupClose),
-        //GroupHistoryChanged,
-        //GroupJoined,
-        //GroupLeft,
-        GroupMarked(EventGroupMarked),
-        GroupOpen(EventGroupOpen),
-        //GroupRename,
-        //GroupUnarchive,
-        Hello(EventHello),
-        ImClose(EventImClose),
-        ImCreated(EventImCreated),
-        //ImHistoryChanged,
-        ImMarked(EventImMarked),
-        ImOpen(EventImOpen),
-        //ManualPresenceChange,
-        MpimClose(EventMpimClose),
-        MpimOpen(EventMpimOpen),
-        MemberJoinedChannel(EventMemberJoinedChannel),
-        MemberLeftChannel(EventMemberLeftChannel),
-        Message(Message),
-        PinAdded(EventPinAdded),
-        PinRemoved(EventPinRemoved),
-        PrefChange(EventPrefChange),
-        //PresenceChange,
-        //PresenceQuery,
-        //PresenceSub,
-        ReactionAdded(EventReactionAdded),
-        ReactionRemoved(EventReactionRemoved),
-        //ReconnectUrl, // Experimental?
-        StarAdded(EventStarAdded),
-        StarRemoved(EventStarRemoved),
-        //SubteamCreated,
-        //SubteamMembersChanged,
-        //SubteamSelfAdded,
-        //SubteamUpdated,
-        //TeamDomainChange,
-        TeamJoin(EventTeamJoin),
-        TeamIconChange(EventTeamIconChange),
-        //TeamMigrationStarted,
-        //TeamPlanChange,
-        //TeamPrefChange,
-        //TeamProfileChange,
-        //TeamProfileDelete,
-        //TeamProfileReorder,
-        //TeamRename,
-        ThreadSubscribed(EventThreadSubscribed),
-        UpdateThreadState(EventUpdateThreadState),
-        UserChange(EventUserChange),
-        UserTyping(EventUserTyping),
-    }
-}
-
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
-pub struct EventFileUnshared {
-    pub channel_id: ConversationId,
-    pub event_ts: Timestamp,
-    pub file: JustAFileId,
-    pub file_id: FileId,
-    pub ts: Timestamp,
-    pub user_id: UserId,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EventTeamIconChange {
-    pub event_ts: Timestamp,
-    pub icon: TeamIcon,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EventPinRemoved {
-    pub channel_id: ConversationId,
-    pub event_ts: Timestamp,
-    pub has_pins: bool,
-    pub item: Message,
-    pub pin_count: u32,
-    pub pinned_info: PinnedInfo,
-    pub ts: Timestamp,
-    pub user: UserId,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EventBotAdded {
-    pub bot: Bot,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EventAccountsChanged {
-    pub event_ts: Timestamp,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EventThreadSubscribed {
-    pub event_ts: Timestamp,
-    pub subscription: Subscription,
-}
+pub struct Command {}
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -486,169 +358,11 @@ pub enum Subscription {
     },
 }
 
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EventUpdateThreadState {
-    pub event_ts: Timestamp,
-    pub has_unreads: bool,
-    pub mention_count: u32,
-    pub mention_count_by_channel: Vec<u32>,
-    pub timestamp: Timestamp,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EventStarRemoved {
-    pub item: Message,
-    pub user: UserId,
-    pub event_ts: Timestamp,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EventStarAdded {
-    pub item: Message,
-    pub user: UserId,
-    pub event_ts: Timestamp,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EventChannelJoined {
-    pub channel: Channel,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EventChannelLeft {
-    pub actor_id: UserId,
-    pub channel: ChannelId,
-    pub event_ts: Timestamp,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EventImOpen {
-    pub channel: DmId,
-    pub user: UserId,
-    pub event_ts: Timestamp,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EventImClose {
-    pub channel: DmId,
-    pub user: UserId,
-    pub event_ts: Timestamp,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EventImCreated {
-    pub channel: Channel,
-    pub event_ts: Timestamp,
-    pub user: UserId,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EventMpimClose {
-    pub channel: GroupId,
-    pub user: UserId,
-    pub event_ts: Timestamp,
-    pub is_mpim: bool,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EventMpimOpen {
-    pub channel: GroupId,
-    pub user: UserId,
-    pub event_ts: Timestamp,
-    pub is_mpim: bool,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EventGroupClose {
-    pub channel: GroupId,
-    pub user: UserId,
-    pub event_ts: Timestamp,
-    pub is_mpim: bool,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EventGroupOpen {
-    pub channel: GroupId,
-    pub user: UserId,
-    pub event_ts: Timestamp,
-    pub is_mpim: bool,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-#[serde(tag = "type")]
-#[serde(rename_all = "snake_case")]
-pub enum EventEmojiChanged {
-    Add {
-        name: String,
-        value: String,
-        event_ts: Timestamp,
-    },
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EventMemberLeftChannel {
-    pub user: ::UserId,
-    pub channel: ::ConversationId,
-    pub channel_type: ChannelType,
-    pub team: ::TeamId,
-    pub ts: Timestamp,
-    pub event_ts: Timestamp,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EventPrefChange {
-    pub name: String,
-    pub value: ::serde_json::Value,
-    pub event_ts: Timestamp,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EventTeamJoin {
-    pub user: User,
-    pub cache_ts: Timestamp,
-    pub event_ts: Timestamp,
-}
-
 // TODO: Need to test this for more variants and capitalization
 #[derive(Clone, Copy, Debug, Deserialize)]
 pub enum ChannelType {
     C,
     G,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EventMemberJoinedChannel {
-    pub inviter: Option<UserId>,
-    pub user: UserId,
-    pub channel: ConversationId,
-    pub channel_type: ChannelType,
-    pub team: TeamId,
-    pub event_ts: Timestamp,
-    pub ts: Timestamp,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EventChannelRename {
-    pub channel: ShortChannelDescription,
-    pub event_ts: Timestamp,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -663,74 +377,11 @@ pub struct ShortChannelDescription {
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
-pub struct EventImMarked {
-    pub channel: ::DmId,
-    pub ts: Timestamp,
-    pub dm_count: u32,
-    pub unread_count_display: u32,
-    pub num_mentions_display: u32,
-    pub mention_count_display: Option<u32>,
-    pub event_ts: Timestamp,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-#[allow(non_snake_case)]
-pub struct EventDesktopNotification {
-    pub title: String,
-    pub subtitle: String,
-    pub msg: Timestamp,
-    pub ts: Timestamp,
-    pub content: String,
-    pub channel: ConversationId,
-    pub launchUri: String,
-    pub avatarImage: Option<String>,
-    pub ssbFilename: String,
-    pub imageUri: Option<String>,
-    pub is_shared: bool,
-    pub event_ts: Timestamp,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EventFileChange {
-    pub file_id: FileId,
-    pub user_id: UserId,
-    pub file: JustAFileId,
-    pub event_ts: Timestamp,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EventPinAdded {
-    user: UserId,
-    channel_id: ConversationId,
-    item: Message,
-    item_user: UserId,
-    pin_count: i32,
-    pinned_info: PinnedInfo,
-    event_ts: Timestamp,
-    ts: Option<Timestamp>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
 pub struct PinnedInfo {
     channel: ConversationId,
     pinned_by: UserId,
     pinned_ts: Timestamp,
     ts: Option<Timestamp>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EventHello {}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EventAppsChanged {
-    pub app: App,
-    pub event_ts: Timestamp,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -759,51 +410,6 @@ pub struct AppIcons {
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
-pub struct EventBotChanged {
-    bot: Bot,
-    cache_ts: Option<Timestamp>,
-    event_ts: Timestamp,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EventUserTyping {
-    pub channel: ConversationId,
-    pub user: UserId,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EventReactionAdded {
-    pub user: UserId,
-    pub item: Box<Event>,
-    pub reaction: String,
-    pub item_user: Option<UserId>,
-    pub event_ts: Timestamp,
-    pub ts: Timestamp,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EventReactionRemoved {
-    pub user: UserId,
-    pub item: Box<Event>,
-    pub reaction: String,
-    pub item_user: Option<UserId>,
-    pub event_ts: Timestamp,
-    pub ts: Timestamp,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EventDndUpdatedUser {
-    pub user: UserId,
-    pub dnd_status: DndStatus,
-    pub event_ts: Timestamp,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
 pub struct DndStatus {
     pub dnd_enabled: bool,
     pub next_dnd_start_ts: Timestamp,
@@ -812,76 +418,8 @@ pub struct DndStatus {
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
-pub struct EventFileShared {
-    pub file_id: FileId,
-    pub user_id: UserId,
-    pub channel_id: ConversationId,
-    pub file: JustAFileId,
-    pub event_ts: Timestamp,
-    pub ts: Option<Timestamp>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
 pub struct JustAFileId {
     pub id: FileId,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EventFilePublic {
-    pub file_id: FileId,
-    pub user_id: UserId,
-    pub file: JustAFileId,
-    pub event_ts: Timestamp,
-    pub ts: Option<Timestamp>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EventFileCreated {
-    pub file: JustAFileId,
-    pub file_id: FileId,
-    pub user_id: UserId,
-    pub event_ts: Timestamp,
-    pub ts: Option<Timestamp>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EventChannelMarked {
-    pub channel: ChannelId,
-    pub ts: Timestamp,
-    pub unread_count: u32,
-    pub unread_count_display: u32,
-    pub num_mentions: u32,
-    pub num_mentions_display: u32,
-    pub mention_count: u32,
-    pub mention_count_display: u32,
-    pub event_ts: Timestamp,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EventGroupMarked {
-    pub channel: GroupId,
-    pub ts: Timestamp,
-    pub unread_count: u32,
-    pub unread_count_display: u32,
-    pub num_mentions: u32,
-    pub num_mentions_display: u32,
-    pub mention_count: u32,
-    pub mention_count_display: u32,
-    pub event_ts: Timestamp,
-    pub is_mpim: Option<bool>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct EventUserChange {
-    pub user: User,
-    pub cache_ts: Timestamp,
-    pub event_ts: Timestamp,
 }
 
 deserialize_internally_tagged! {
@@ -1731,3 +1269,6 @@ mod tests {
         assert!(user_profile.fields.is_none());
     }
 }
+
+mod event;
+pub use self::event::Event;

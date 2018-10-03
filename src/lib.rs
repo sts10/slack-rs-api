@@ -32,10 +32,6 @@ extern crate derive_new;
 #[macro_use]
 extern crate lazy_static;
 
-#[macro_use]
-mod requests;
-pub use requests::Error;
-
 pub mod http;
 pub mod rtm;
 
