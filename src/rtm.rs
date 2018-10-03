@@ -114,6 +114,7 @@ pub struct Channel {
     pub unlinked: Option<i32>,
     pub unread_count: Option<i32>,
     pub unread_count_display: Option<i32>,
+    pub is_starred: Option<bool>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -367,7 +368,7 @@ deserialize_internally_tagged! {
         //FileDeleted,
         FilePublic(EventFilePublic),
         FileShared(EventFileShared),
-        //FileUnshared,
+        FileUnshared(EventFileUnshared),
         //Goodbye,
         //GroupArchive,
         GroupClose(EventGroupClose),
@@ -380,7 +381,7 @@ deserialize_internally_tagged! {
         //GroupUnarchive,
         Hello(EventHello),
         ImClose(EventImClose),
-        //ImCreated,
+        ImCreated(EventImCreated),
         //ImHistoryChanged,
         ImMarked(EventImMarked),
         ImOpen(EventImOpen),
@@ -424,9 +425,20 @@ deserialize_internally_tagged! {
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
+pub struct EventFileUnshared {
+    pub channel_id: ConversationId,
+    pub event_ts: Timestamp,
+    pub file: JustAFileId,
+    pub file_id: FileId,
+    pub ts: Timestamp,
+    pub user_id: UserId,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct EventTeamIconChange {
-    event_ts: Timestamp,
-    icon: TeamIcon,
+    pub event_ts: Timestamp,
+    pub icon: TeamIcon,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -532,6 +544,14 @@ pub struct EventImClose {
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
+pub struct EventImCreated {
+    pub channel: Channel,
+    pub event_ts: Timestamp,
+    pub user: UserId,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct EventMpimClose {
     pub channel: GroupId,
     pub user: UserId,
@@ -615,6 +635,7 @@ pub enum ChannelType {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct EventMemberJoinedChannel {
+    pub inviter: Option<UserId>,
     pub user: UserId,
     pub channel: ConversationId,
     pub channel_type: ChannelType,
