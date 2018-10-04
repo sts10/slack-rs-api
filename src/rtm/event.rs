@@ -48,6 +48,7 @@ pub enum Event {
         num_mentions_display: u32,
         mention_count: u32,
         mention_count_display: u32,
+        event_ts: Timestamp,
     },
     ChannelRename {},
     CommandsChanged {
