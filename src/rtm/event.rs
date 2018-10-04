@@ -46,6 +46,8 @@ pub enum Event {
         unread_count_display: u32,
         num_mentions: u32,
         num_mentions_display: u32,
+        mention_count: u32,
+        mention_count_display: u32,
     },
     ChannelRename {},
     CommandsChanged {
