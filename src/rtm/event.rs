@@ -176,7 +176,7 @@ pub enum Event {
         is_mpim: bool,
     },
     MemberJoinedChannel {
-        invited: Option<UserId>,
+        inviter: Option<UserId>,
         user: UserId,
         channel: ConversationId,
         channel_type: ChannelType,
