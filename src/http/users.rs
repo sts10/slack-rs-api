@@ -1,9 +1,8 @@
 //! Get info on members of your Slack team.
 
-use id::ChannelId;
-use id::UserId;
+use id::*;
 use rtm::Cursor;
-use rtm::{Paging, Team, User};
+use rtm::{Paging, Team};
 use timestamp::Timestamp;
 
 /// Delete the user profile photo
@@ -146,4 +145,62 @@ pub struct SetPresenceRequest {
 pub enum Presence {
     Auto,
     Away,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct User {
+    pub color: Option<String>,
+    pub deleted: bool,
+    pub has_2fa: Option<bool>,
+    pub id: UserId,
+    pub is_admin: Option<bool>,
+    pub is_app_user: bool,
+    pub is_bot: bool,
+    pub is_owner: Option<bool>,
+    pub is_primary_owner: Option<bool>,
+    pub is_restricted: Option<bool>,
+    pub is_ultra_restricted: Option<bool>,
+    pub name: String,
+    pub profile: UserProfile,
+    pub real_name: Option<String>,
+    pub team_id: TeamId,
+    pub tz: Option<String>, // TODO: Might be an enum
+    pub tz_label: Option<String>,
+    pub tz_offset: Option<i64>,
+    pub updated: Timestamp,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct UserProfile {
+    pub always_active: Option<bool>,
+    pub bot_id: Option<BotId>,
+    pub api_app_id: Option<String>,
+    pub avatar_hash: String, // TOOD: static length
+    pub display_name: String,
+    pub display_name_normalized: String,
+    pub email: Option<String>,
+    pub first_name: Option<String>,
+    pub image_1024: Option<String>,
+    pub image_192: String,
+    pub image_24: String,
+    pub image_32: String,
+    pub image_48: String,
+    pub image_512: String,
+    pub image_72: String,
+    pub image_original: Option<String>,
+    pub is_custom_image: Option<bool>,
+    pub last_name: Option<String>,
+    pub phone: String,
+    pub real_name: String,
+    pub real_name_normalized: String,
+    pub skype: String,
+    pub status_emoji: String,
+    pub status_expiration: i64,
+    pub status_text: String,
+    pub status_text_canonical: String,
+    pub team: TeamId,
+    pub title: String,
+    pub fields: Option<()>, // No idea what goes here
 }

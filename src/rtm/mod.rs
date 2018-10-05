@@ -64,6 +64,7 @@ impl<'de> Deserialize<'de> for ChannelName {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Bot {
     pub app_id: Option<AppId>,
     pub deleted: Option<bool>,
@@ -74,6 +75,7 @@ pub struct Bot {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct BotIcons {
     pub image_36: Option<String>,
     pub image_48: Option<String>,
@@ -102,7 +104,8 @@ pub struct Channel {
     pub is_read_only: Option<bool>,
     pub is_shared: Option<bool>,
     pub last_read: Option<Timestamp>,
-    pub latest: Option<Message>,
+    pub latest: Option<Box<Event>>,
+    //pub latest: Option<Message>,
     pub members: Option<Vec<UserId>>,
     pub name: String,
     pub name_normalized: Option<String>,
@@ -118,6 +121,7 @@ pub struct Channel {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct ChannelPurpose {
     pub creator: Option<String>,
     pub last_set: Option<Timestamp>,
@@ -125,6 +129,7 @@ pub struct ChannelPurpose {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct ChannelTopic {
     pub creator: Option<String>,
     pub last_set: Option<Timestamp>,
@@ -132,6 +137,7 @@ pub struct ChannelTopic {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct File {
     pub channels: Option<Vec<String>>,
     pub comments_count: Option<i32>,
@@ -172,17 +178,44 @@ pub struct File {
     pub thumb_480: Option<String>,
     pub thumb_480_h: Option<i32>,
     pub thumb_480_w: Option<i32>,
+    pub thumb_480_gif: Option<String>,
     pub thumb_64: Option<String>,
     pub thumb_80: Option<String>,
+    pub thumb_720: Option<String>,
+    pub thumb_720_w: Option<u64>,
+    pub thumb_720_h: Option<u64>,
+    pub thumb_960: Option<String>,
+    pub thumb_960_w: Option<u64>,
+    pub thumb_960_h: Option<u64>,
+    pub thumb_800: Option<String>,
+    pub thumb_800_w: Option<u64>,
+    pub thumb_800_h: Option<u64>,
+    pub thumb_1024: Option<String>,
+    pub thumb_1024_w: Option<u64>,
+    pub thumb_1024_h: Option<u64>,
     pub timestamp: Option<i32>,
     pub title: Option<String>,
     pub url_private: Option<String>,
     pub url_private_download: Option<String>,
     pub user: Option<UserId>,
     pub username: Option<String>,
+    pub deanimate_gif: Option<String>,
+    pub image_exif_rotation: Option<u64>,
+    pub thumb_video: Option<String>,
+    pub thumb_pdf: Option<String>,
+    pub thumb_pdf_h: Option<u64>,
+    pub thumb_pdf_w: Option<u64>,
+    pub preview_is_truncated: Option<bool>,
+    pub original_h: Option<u64>,
+    pub original_w: Option<u64>,
+    pub editor: Option<UserId>,
+    pub last_editor: Option<UserId>,
+    pub state: Option<String>, // TODO Probably an enum
+    pub updated: Option<Timestamp>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct FileComment {
     pub comment: Option<String>,
     pub id: Option<String>,
@@ -190,9 +223,12 @@ pub struct FileComment {
     pub reactions: Vec<Reaction>,
     pub timestamp: Option<i32>,
     pub user: Option<UserId>,
+    pub created: Option<Timestamp>,
+    pub is_intro: Option<bool>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Group {
     pub created: Option<i32>,
     pub creator: Option<String>,
@@ -200,17 +236,22 @@ pub struct Group {
     pub is_archived: Option<bool>,
     pub is_group: Option<bool>,
     pub is_mpim: Option<bool>,
+    pub is_open: Option<bool>,
     pub last_read: Option<Timestamp>,
     pub latest: Option<Message>,
     pub members: Option<Vec<String>>,
     pub name: String,
+    pub name_normalized: String,
     pub purpose: Option<GroupPurpose>,
     pub topic: Option<GroupTopic>,
     pub unread_count: Option<i32>,
     pub unread_count_display: Option<i32>,
+    pub last_set: Option<Timestamp>,
+    pub priority: Option<u32>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct GroupPurpose {
     pub creator: Option<String>,
     pub last_set: Option<i32>,
@@ -218,6 +259,7 @@ pub struct GroupPurpose {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct GroupTopic {
     pub creator: Option<String>,
     pub last_set: Option<i32>,
@@ -264,6 +306,9 @@ macro_rules! deserialize_internally_tagged {
                 enum Tag {
                     $($variant_name,)*
                 }
+
+                v.as_object_mut().unwrap().remove("type"); // TODO: hack???
+                v.as_object_mut().unwrap().remove("msg_subtype"); // TODO: hack???
 
                 let maybe_tag = v
                     .as_object_mut()
@@ -378,10 +423,10 @@ pub struct ShortChannelDescription {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct PinnedInfo {
-    channel: ConversationId,
-    pinned_by: UserId,
-    pinned_ts: Timestamp,
-    ts: Option<Timestamp>,
+    pub channel: ConversationId,
+    pub pinned_by: UserId,
+    pub pinned_ts: Timestamp,
+    pub ts: Option<Timestamp>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -484,6 +529,7 @@ pub struct MessageTombstone {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageChannelMarked {
     pub channel: Option<ChannelId>,
     pub ts: Option<Timestamp>,
@@ -496,6 +542,7 @@ pub struct MessageChannelMarked {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageBotAdd {
     pub bot_id: Option<BotId>,
     pub bot_link: Option<String>,
@@ -506,6 +553,7 @@ pub struct MessageBotAdd {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageBotRemove {
     pub bot_id: Option<BotId>,
     pub bot_link: Option<String>,
@@ -516,6 +564,7 @@ pub struct MessageBotRemove {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageBotMessage {
     pub bot_id: Option<BotId>,
     pub icons: Option<MessageBotMessageIcons>,
@@ -527,9 +576,18 @@ pub struct MessageBotMessage {
     #[serde(default)]
     pub reactions: Vec<Reaction>,
     pub attachments: Option<Vec<MessageStandardAttachment>>,
+    pub user: Option<UserId>,
+    pub replies: Option<Vec<MessageReply>>,
+    pub pinned_info: Option<PinnedInfo>,
+    pub reply_count: Option<u64>,
+    pub pinned_to: Option<Vec<ConversationId>>,
+    pub subscribed: Option<bool>,
+    pub thread_ts: Option<Timestamp>,
+    pub unread_count: Option<u64>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageBotMessageIcons {
     pub image_36: Option<String>,
     pub image_48: Option<String>,
@@ -537,6 +595,7 @@ pub struct MessageBotMessageIcons {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageChannelArchive {
     pub members: Option<Vec<String>>,
     #[serde(default)]
@@ -546,22 +605,28 @@ pub struct MessageChannelArchive {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageChannelJoin {
     #[serde(default)]
     pub text: String,
     pub ts: Option<Timestamp>,
     pub user: Option<UserId>,
+    pub reactions: Option<Vec<Reaction>>,
+    pub inviter: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageChannelLeave {
     #[serde(default)]
     pub text: String,
     pub ts: Option<Timestamp>,
     pub user: Option<UserId>,
+    pub reactions: Option<Vec<Reaction>>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageChannelName {
     pub name: Option<String>,
     pub old_name: Option<String>,
@@ -572,6 +637,7 @@ pub struct MessageChannelName {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageChannelPurpose {
     pub purpose: Option<String>,
     #[serde(default)]
@@ -581,15 +647,18 @@ pub struct MessageChannelPurpose {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageChannelTopic {
     #[serde(default)]
     pub text: String,
     pub topic: Option<String>,
     pub ts: Option<Timestamp>,
     pub user: Option<UserId>,
+    pub reactions: Option<Vec<Reaction>>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageChannelUnarchive {
     #[serde(default)]
     pub text: String,
@@ -598,15 +667,19 @@ pub struct MessageChannelUnarchive {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageFileComment {
     pub comment: Option<FileComment>,
     pub file: Option<File>,
     #[serde(default)]
     pub text: String,
     pub ts: Option<Timestamp>,
+    pub files: Option<Vec<File>>,
+    pub is_intro: Option<bool>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageFileMention {
     pub file: Option<File>,
     #[serde(default)]
@@ -616,6 +689,7 @@ pub struct MessageFileMention {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageFileShare {
     pub channel: Option<ConversationId>,
     pub file: Option<File>,
@@ -629,6 +703,7 @@ pub struct MessageFileShare {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageGroupArchive {
     pub members: Option<Vec<String>>,
     #[serde(default)]
@@ -638,6 +713,7 @@ pub struct MessageGroupArchive {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageGroupJoin {
     #[serde(default)]
     pub text: String,
@@ -646,6 +722,7 @@ pub struct MessageGroupJoin {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageGroupLeave {
     #[serde(default)]
     pub text: String,
@@ -654,6 +731,7 @@ pub struct MessageGroupLeave {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageGroupName {
     pub name: Option<String>,
     pub old_name: Option<String>,
@@ -664,6 +742,7 @@ pub struct MessageGroupName {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageGroupPurpose {
     pub purpose: Option<String>,
     #[serde(default)]
@@ -673,6 +752,7 @@ pub struct MessageGroupPurpose {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageGroupTopic {
     #[serde(default)]
     pub text: String,
@@ -682,6 +762,7 @@ pub struct MessageGroupTopic {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageGroupUnarchive {
     #[serde(default)]
     pub text: String,
@@ -690,15 +771,30 @@ pub struct MessageGroupUnarchive {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageMeMessage {
     pub channel: Option<ConversationId>,
     #[serde(default)]
     pub text: String,
     pub ts: Option<Timestamp>,
     pub user: Option<UserId>,
+    pub reactions: Option<Vec<Reaction>>,
+    pub reply_count: Option<u64>,
+    pub subscribed: Option<bool>,
+    pub unread_count: Option<u64>,
+    pub replies: Option<Vec<MessageReply>>,
+    pub thread_ts: Option<Timestamp>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MessageReply {
+    pub ts: Timestamp,
+    pub user: UserId,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageMessageChanged {
     pub channel: ConversationId,
     pub event_ts: Timestamp,
@@ -709,6 +805,7 @@ pub struct MessageMessageChanged {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageMessageChangedMessage {
     pub bot_id: Option<BotId>,
     pub edited: Option<MessageMessageChangedMessageEdited>,
@@ -723,21 +820,25 @@ pub struct MessageMessageChangedMessage {
     pub ts: Timestamp,
     pub unread_count: Option<i32>,
     pub user: Option<UserId>,
+    pub client_msg_id: Option<Uuid>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageMessageChangedMessageEdited {
     pub ts: Timestamp,
     pub user: UserId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageMessageChangedMessageReply {
     pub ts: Timestamp,
     pub user: UserId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageMessageChangedPreviousMessage {
     pub bot_id: Option<BotId>,
     pub edited: Option<MessageMessageChangedPreviousMessageEdited>,
@@ -752,21 +853,25 @@ pub struct MessageMessageChangedPreviousMessage {
     pub ts: Timestamp,
     pub unread_count: Option<i32>,
     pub user: Option<UserId>,
+    pub client_msg_id: Option<Uuid>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageMessageChangedPreviousMessageEdited {
     pub ts: Timestamp,
     pub user: UserId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageMessageChangedPreviousMessageReply {
     pub ts: Timestamp,
     pub user: UserId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageMessageDeleted {
     pub channel: Option<String>,
     pub deleted_ts: Option<String>,
@@ -777,6 +882,7 @@ pub struct MessageMessageDeleted {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageMessageDeletedPreviousMessage {
     pub bot_id: Option<BotId>,
     pub edited: Option<MessageMessageDeletedPreviousMessageEdited>,
@@ -794,18 +900,21 @@ pub struct MessageMessageDeletedPreviousMessage {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageMessageDeletedPreviousMessageEdited {
     pub ts: Timestamp,
     pub user: UserId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageMessageDeletedPreviousMessageReply {
     pub ts: Timestamp,
     pub user: UserId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageMessageReplied {
     pub channel: Option<ConversationId>,
     pub event_ts: Timestamp,
@@ -816,6 +925,7 @@ pub struct MessageMessageReplied {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageMessageRepliedMessage {
     pub bot_id: Option<BotId>,
     pub edited: Option<MessageMessageRepliedMessageEdited>,
@@ -833,18 +943,21 @@ pub struct MessageMessageRepliedMessage {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageMessageRepliedMessageEdited {
     pub ts: Timestamp,
     pub user: UserId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageMessageRepliedMessageReply {
     pub ts: Timestamp,
     pub user: UserId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessagePinnedItem {
     pub channel: Option<ConversationId>,
     pub item: Option<MessagePinnedItemItem>,
@@ -856,17 +969,21 @@ pub struct MessagePinnedItem {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessagePinnedItemItem {}
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageReminderAdd {
     pub message: Option<String>,
     pub ts: Option<Timestamp>,
     pub user: Option<UserId>,
     pub channel: Option<String>,
+    pub text: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageReplyBroadcast {
     pub attachments: Option<Vec<MessageReplyBroadcastAttachment>>,
     pub channel: Option<String>,
@@ -876,6 +993,7 @@ pub struct MessageReplyBroadcast {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageReplyBroadcastAttachment {
     pub author_icon: Option<String>,
     pub author_link: Option<String>,
@@ -916,7 +1034,7 @@ pub struct MessageStandard {
     pub reply_count: Option<i32>,
     pub last_read: Option<Timestamp>,
     pub subscribed: Option<bool>,
-    pub pinned_info: Option<MessagePinnedItem>,
+    pub pinned_info: Option<PinnedInfo>,
     pub unread_count: Option<i32>,
     pub pinned_to: Option<Vec<String>>,
     pub is_starred: Option<bool>,
@@ -944,10 +1062,13 @@ pub struct MessageStandardReply {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageStandardAttachment {
+    // TODO: This feels like an untagged enum...
     pub author_icon: Option<String>,
     pub author_link: Option<String>,
     pub author_name: Option<String>,
+    pub author_id: Option<UserId>,
     pub color: Option<String>,
     pub fallback: Option<String>,
     pub fields: Option<Vec<MessageStandardAttachmentField>>,
@@ -957,13 +1078,86 @@ pub struct MessageStandardAttachment {
     pub pretext: Option<String>,
     #[serde(default)]
     pub text: String,
-    pub thumb_url: Option<String>,
     pub title: Option<String>,
     pub title_link: Option<String>,
     pub ts: Option<Timestamp>,
+    pub author_subname: Option<String>,
+    pub from_url: Option<String>,
+    pub id: Option<i64>,
+    pub actions: Option<Vec<Action>>,
+    pub mrkdwn_in: Option<Vec<String>>,
+    pub original_url: Option<String>,
+    pub image_bytes: Option<u64>,
+    pub service_icon: Option<String>,
+    pub service_name: Option<String>,
+    pub service_url: Option<String>,
+    pub thumb_height: Option<u64>,
+    pub thumb_width: Option<u64>,
+    pub thumb_url: Option<String>,
+    pub channel_id: Option<ConversationId>,
+    pub callback_id: Option<String>,
+    pub image_height: Option<u64>,
+    pub image_width: Option<u64>,
+    pub channel_name: Option<String>,
+    pub is_msg_unfurl: Option<bool>,
+    pub video_html: Option<String>,
+    pub video_html_height: Option<u64>,
+    pub video_html_width: Option<u64>,
+    pub is_animated: Option<bool>,
+    pub is_share: Option<bool>,
+    pub audio_html: Option<String>,
+    pub audio_html_height: Option<u64>,
+    pub audio_html_width: Option<u64>,
+    pub app_unfurl_url: Option<String>,
+    pub files: Option<Vec<File>>,
+    pub video_url: Option<String>,
+    pub indent: Option<bool>,
+    pub bot_id: Option<BotId>,
+    pub is_app_unfurl: Option<bool>,
+    pub msg_subtype: Option<String>, // TODO: no idea what to do with this
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "snake_case")]
+#[serde(tag = "type")]
+pub enum Action {
+    Button {
+        id: String,
+        name: Option<String>,
+        style: String,
+        text: String,
+        url: Option<String>,
+        value: Option<String>,
+        confirm: Option<Confirmation>,
+    },
+    Select {
+        data_source: String,
+        id: String,
+        name: String,
+        options: Vec<ActionOption>,
+        text: String,
+    },
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Confirmation {
+    dismiss_text: String,
+    ok_text: String,
+    text: String,
+    title: String,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ActionOption {
+    text: String,
+    value: String,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageStandardAttachmentField {
     pub short: Option<bool>,
     pub title: Option<String>,
@@ -971,12 +1165,14 @@ pub struct MessageStandardAttachmentField {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageStandardEdited {
     pub ts: Option<Timestamp>,
     pub user: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageUnpinnedItem {
     pub channel: Option<ConversationId>,
     pub item: Option<MessageUnpinnedItemItem>,
@@ -987,9 +1183,11 @@ pub struct MessageUnpinnedItem {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageUnpinnedItemItem {}
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageSlackbotResponse {
     #[serde(default)]
     pub text: String,
@@ -1001,6 +1199,7 @@ pub struct MessageSlackbotResponse {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageThreadBroadcast {
     pub attachments: Option<Vec<MessageThreadBroadcastAttachment>>,
     pub root: Option<MessageStandard>,
@@ -1009,9 +1208,16 @@ pub struct MessageThreadBroadcast {
     pub thread_ts: Option<String>,
     pub user: Option<UserId>,
     pub ts: Option<Timestamp>,
+    pub client_msg_id: Option<Uuid>,
+    // TODO: What the fuck
+    pub is_thread_broadcast: Option<bool>,
+    pub unfurl_links: Option<bool>,
+    pub unfurl_media: Option<bool>,
+    pub reactions: Option<Vec<Reaction>>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MessageThreadBroadcastAttachment {
     pub fallback: Option<String>,
     pub from_url: Option<String>,
@@ -1025,6 +1231,7 @@ pub struct MessageThreadBroadcastAttachment {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Mpim {
     pub created: Option<i32>,
     pub creator: Option<String>,
@@ -1043,6 +1250,7 @@ pub struct Mpim {
 pub struct Cursor(String); // TODO: Type safety goes here
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Paging {
     pub count: Option<i32>,
     pub page: Option<i32>,
@@ -1051,6 +1259,7 @@ pub struct Paging {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Reaction {
     pub count: Option<i32>,
     pub name: String,
@@ -1058,6 +1267,7 @@ pub struct Reaction {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Reminder {
     pub complete_ts: Option<f32>,
     pub creator: Option<String>,
@@ -1070,6 +1280,7 @@ pub struct Reminder {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Team {
     pub domain: Option<String>,
     pub email_domain: Option<String>,
@@ -1092,6 +1303,7 @@ pub struct TeamIcon {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct ThreadInfo {
     pub complete: Option<bool>,
     pub count: Option<i32>,
@@ -1124,6 +1336,7 @@ pub struct User {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Usergroup {
     pub auto_type: Option<String>,
     pub created_by: Option<String>,
@@ -1144,12 +1357,14 @@ pub struct Usergroup {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct UsergroupPrefs {
     pub channels: Option<Vec<String>>,
     pub groups: Option<Vec<String>>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct UserProfile {
     pub avatar_hash: Option<String>,
     pub display_name: Option<String>,
@@ -1164,8 +1379,9 @@ pub struct UserProfile {
     pub image_24: Option<String>,
     pub image_32: Option<String>,
     pub image_48: Option<String>,
-    pub image_512: Option<String>,
     pub image_72: Option<String>,
+    pub image_512: Option<String>,
+    pub image_1024: Option<String>,
     pub image_original: Option<String>,
     pub last_name: Option<String>,
     pub phone: Option<String>,
@@ -1176,9 +1392,12 @@ pub struct UserProfile {
     pub status_text: Option<String>,
     pub team: Option<String>,
     pub title: Option<String>,
+    pub status_expiration: Timestamp,
+    pub status_text_canonical: String,
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct UserProfileFields {
     pub alt: Option<String>,
     pub label: Option<String>,

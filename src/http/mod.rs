@@ -104,7 +104,10 @@ impl<C: SlackSender> ::std::fmt::Debug for Error<C> {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         match self {
             Error::Slack(reason) => write!(f, "{}", reason),
-            Error::CannotParse(e, json) => write!(f, "{}\n{}", e, json),
+            Error::CannotParse(e, json) => {
+                let v: ::serde_json::Value = ::serde_json::from_str(&json).unwrap();
+                write!(f, "{}\n{}", e, ::serde_json::to_string_pretty(&v).unwrap())
+            }
             Error::Client(..) => write!(f, "The requests client failed"),
         }
     }
@@ -114,7 +117,10 @@ impl<C: SlackSender> ::std::fmt::Display for Error<C> {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         match self {
             Error::Slack(reason) => write!(f, "{}", reason),
-            Error::CannotParse(e, json) => write!(f, "{}\n{}", e, json),
+            Error::CannotParse(e, json) => {
+                let v: ::serde_json::Value = ::serde_json::from_str(&json).unwrap();
+                write!(f, "{}\n{}", e, ::serde_json::to_string_pretty(&v).unwrap())
+            }
             Error::Client(..) => write!(f, "The requests client failed"),
         }
     }
