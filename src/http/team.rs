@@ -1,5 +1,5 @@
-use rtm::Paging;
-use rtm::Team;
+use rtm::{Paging, Team};
+use timestamp::Timestamp;
 
 /// Gets the access logs for the current team.
 ///
