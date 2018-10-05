@@ -1,7 +1,5 @@
 use serde::de::{self, Deserialize, Deserializer, Visitor};
 use std::collections::HashMap;
-use std::fmt;
-use uuid::Uuid;
 
 use id::*;
 use timestamp::Timestamp;
@@ -32,7 +30,7 @@ struct ChannelNameVisitor;
 impl<'de> Visitor<'de> for ChannelNameVisitor {
     type Value = ChannelName;
 
-    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+    fn expecting(&self, formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         formatter.write_str("a 9-byte str")
     }
 
@@ -96,7 +94,7 @@ pub struct Channel {
     pub is_channel: Option<bool>,
     pub is_general: Option<bool>,
     pub is_member: Option<bool>,
-    pub is_moved: Option<i32>,
+    pub is_moved: Option<u32>,
     pub is_mpim: Option<bool>,
     pub is_org_shared: Option<bool>,
     pub is_pending_ext_shared: Option<bool>,
@@ -105,18 +103,17 @@ pub struct Channel {
     pub is_shared: Option<bool>,
     pub last_read: Option<Timestamp>,
     pub latest: Option<Box<Event>>,
-    //pub latest: Option<Message>,
     pub members: Option<Vec<UserId>>,
     pub name: String,
     pub name_normalized: Option<String>,
-    pub num_members: Option<i32>,
+    pub num_members: Option<u32>,
     pub previous_names: Option<Vec<String>>,
-    pub priority: Option<i32>,
+    pub priority: Option<u32>,
     pub purpose: Option<ChannelPurpose>,
     pub topic: Option<ChannelTopic>,
-    pub unlinked: Option<i32>,
-    pub unread_count: Option<i32>,
-    pub unread_count_display: Option<i32>,
+    pub unlinked: Option<u32>,
+    pub unread_count: Option<u32>,
+    pub unread_count_display: Option<u32>,
     pub is_starred: Option<bool>,
 }
 
@@ -140,8 +137,8 @@ pub struct ChannelTopic {
 #[serde(deny_unknown_fields)]
 pub struct File {
     pub channels: Option<Vec<String>>,
-    pub comments_count: Option<i32>,
-    pub created: Option<i32>,
+    pub comments_count: Option<u32>,
+    pub created: Option<Timestamp>,
     pub display_as_bot: Option<bool>,
     pub edit_link: Option<String>,
     pub editable: Option<bool>,
@@ -154,12 +151,12 @@ pub struct File {
     pub is_external: Option<bool>,
     pub is_public: Option<bool>,
     pub is_starred: Option<bool>,
-    pub lines: Option<i32>,
-    pub lines_more: Option<i32>,
+    pub lines: Option<u32>,
+    pub lines_more: Option<u32>,
     pub mimetype: Option<String>,
     pub mode: Option<String>,
     pub name: Option<String>,
-    pub num_stars: Option<i32>,
+    pub num_stars: Option<u32>,
     pub permalink: Option<String>,
     pub permalink_public: Option<String>,
     pub pinned_to: Option<Vec<String>>,
@@ -169,45 +166,45 @@ pub struct File {
     pub public_url_shared: Option<bool>,
     #[serde(default)]
     pub reactions: Vec<Reaction>,
-    pub size: Option<i32>,
+    pub size: Option<u64>,
     pub thumb_160: Option<String>,
     pub thumb_360: Option<String>,
     pub thumb_360_gif: Option<String>,
-    pub thumb_360_h: Option<i32>,
-    pub thumb_360_w: Option<i32>,
+    pub thumb_360_h: Option<u32>,
+    pub thumb_360_w: Option<u32>,
     pub thumb_480: Option<String>,
-    pub thumb_480_h: Option<i32>,
-    pub thumb_480_w: Option<i32>,
+    pub thumb_480_h: Option<u32>,
+    pub thumb_480_w: Option<u32>,
     pub thumb_480_gif: Option<String>,
     pub thumb_64: Option<String>,
     pub thumb_80: Option<String>,
     pub thumb_720: Option<String>,
-    pub thumb_720_w: Option<u64>,
-    pub thumb_720_h: Option<u64>,
+    pub thumb_720_w: Option<u32>,
+    pub thumb_720_h: Option<u32>,
     pub thumb_960: Option<String>,
-    pub thumb_960_w: Option<u64>,
-    pub thumb_960_h: Option<u64>,
+    pub thumb_960_w: Option<u32>,
+    pub thumb_960_h: Option<u32>,
     pub thumb_800: Option<String>,
-    pub thumb_800_w: Option<u64>,
-    pub thumb_800_h: Option<u64>,
+    pub thumb_800_w: Option<u32>,
+    pub thumb_800_h: Option<u32>,
     pub thumb_1024: Option<String>,
-    pub thumb_1024_w: Option<u64>,
-    pub thumb_1024_h: Option<u64>,
-    pub timestamp: Option<i32>,
+    pub thumb_1024_w: Option<u32>,
+    pub thumb_1024_h: Option<u32>,
+    pub timestamp: Option<Timestamp>,
     pub title: Option<String>,
     pub url_private: Option<String>,
     pub url_private_download: Option<String>,
     pub user: Option<UserId>,
     pub username: Option<String>,
     pub deanimate_gif: Option<String>,
-    pub image_exif_rotation: Option<u64>,
+    pub image_exif_rotation: Option<u32>,
     pub thumb_video: Option<String>,
     pub thumb_pdf: Option<String>,
-    pub thumb_pdf_h: Option<u64>,
-    pub thumb_pdf_w: Option<u64>,
+    pub thumb_pdf_h: Option<u32>,
+    pub thumb_pdf_w: Option<u32>,
     pub preview_is_truncated: Option<bool>,
-    pub original_h: Option<u64>,
-    pub original_w: Option<u64>,
+    pub original_h: Option<u32>,
+    pub original_w: Option<u32>,
     pub editor: Option<UserId>,
     pub last_editor: Option<UserId>,
     pub state: Option<String>, // TODO Probably an enum
@@ -221,7 +218,7 @@ pub struct FileComment {
     pub id: Option<String>,
     #[serde(default)]
     pub reactions: Vec<Reaction>,
-    pub timestamp: Option<i32>,
+    pub timestamp: Option<Timestamp>,
     pub user: Option<UserId>,
     pub created: Option<Timestamp>,
     pub is_intro: Option<bool>,
@@ -230,7 +227,7 @@ pub struct FileComment {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Group {
-    pub created: Option<i32>,
+    pub created: Option<Timestamp>,
     pub creator: Option<String>,
     pub id: GroupId,
     pub is_archived: Option<bool>,
@@ -244,8 +241,8 @@ pub struct Group {
     pub name_normalized: String,
     pub purpose: Option<GroupPurpose>,
     pub topic: Option<GroupTopic>,
-    pub unread_count: Option<i32>,
-    pub unread_count_display: Option<i32>,
+    pub unread_count: Option<u32>,
+    pub unread_count_display: Option<u32>,
     pub last_set: Option<Timestamp>,
     pub priority: Option<u32>,
 }
@@ -254,7 +251,7 @@ pub struct Group {
 #[serde(deny_unknown_fields)]
 pub struct GroupPurpose {
     pub creator: Option<String>,
-    pub last_set: Option<i32>,
+    pub last_set: Option<Timestamp>,
     pub value: Option<String>,
 }
 
@@ -262,7 +259,7 @@ pub struct GroupPurpose {
 #[serde(deny_unknown_fields)]
 pub struct GroupTopic {
     pub creator: Option<String>,
-    pub last_set: Option<i32>,
+    pub last_set: Option<Timestamp>,
     pub value: Option<String>,
 }
 
@@ -276,114 +273,6 @@ pub struct Im {
     pub is_org_shared: Option<bool>,
     pub priority: Option<f64>,
     pub user: UserId,
-}
-
-macro_rules! deserialize_internally_tagged {
-    {
-        tag_field = $tagfield:expr,
-        default_variant = $default_variant:ident,
-        default_struct = $default_struct:ty,
-        $(#[$attr:meta])*
-        pub enum $enumname:ident {
-            $($variant_name:ident($struct_name:ty)),*,
-        }
-   } => {
-
-        $(#[$attr])*
-        pub enum $enumname {
-            $($variant_name($struct_name),)*
-        }
-
-        impl<'de> ::serde::Deserialize<'de> for $enumname {
-            fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-                where
-                D: ::serde::Deserializer<'de>,
-            {
-                let mut v: ::serde_json::Value = ::serde::Deserialize::deserialize(deserializer)?;
-
-                #[derive(Deserialize)]
-                #[serde(field_identifier, rename_all = "snake_case")]
-                enum Tag {
-                    $($variant_name,)*
-                }
-
-                v.as_object_mut().unwrap().remove("type"); // TODO: hack???
-                v.as_object_mut().unwrap().remove("msg_subtype"); // TODO: hack???
-
-                let maybe_tag = v
-                    .as_object_mut()
-                    .ok_or(::serde::de::Error::custom("Must be an object"))?
-                    .remove($tagfield);
-
-                match maybe_tag {
-                    None => {
-                        ::serde::Deserialize::deserialize(v)
-                            .map($enumname::$default_variant)
-                            .map_err(|e| ::serde::de::Error::custom(format!("{} while deserializing {}", e, stringify!($default_struct))))
-                    }
-                    Some(tag) => {
-                        match ::serde::Deserialize::deserialize(tag).map_err(::serde::de::Error::custom)? {
-                            $(
-                            Tag::$variant_name => {
-                                ::serde::Deserialize::deserialize(v)
-                                .map($enumname::$variant_name)
-                                .map_err(|e| ::serde::de::Error::custom(format!("{} while deserializing {}", e, stringify!($struct_name))))
-                            }
-                            )*
-                        }
-                    }
-                }
-            }
-        }
-    };
-    // Impl for when there is no default
-    {
-        tag_field = $tagfield:expr,
-        $(#[$attr:meta])*
-        pub enum $enumname:ident {
-            $($variant_name:ident($struct_name:ty)),*,
-        }
-   } => {
-
-        $(#[$attr])*
-        pub enum $enumname {
-            $($variant_name($struct_name),)*
-        }
-
-        impl<'de> ::serde::Deserialize<'de> for $enumname {
-            fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-                where
-                D: ::serde::Deserializer<'de>,
-            {
-                #[derive(Deserialize)]
-                #[serde(field_identifier, rename_all = "snake_case")]
-                enum Tag {
-                    $($variant_name,)*
-                }
-
-                let mut v: ::serde_json::Value = ::serde::Deserialize::deserialize(deserializer)?;
-
-                // Remove the tag from the Value so that we can deny_unknown_fields further down
-                let tag = v
-                    .as_object_mut()
-                    .and_then(|obj| obj.remove($tagfield))
-                    .ok_or_else(|| ::serde::de::Error::custom(format!("cannot deserialize {} without a tag", stringify!($enumname))))
-                    .and_then(|str_tag| Tag::deserialize(str_tag))
-                    // No idea how to do this conversion gracefully
-                    .map_err(|e| ::serde::de::Error::custom(format!("{}", e)))?;
-
-                match tag {
-                    $(
-                    Tag::$variant_name => {
-                        ::serde::Deserialize::deserialize(v)
-                        .map($enumname::$variant_name)
-                        .map_err(|e| ::serde::de::Error::custom(format!("{} while deserializing {}", e, stringify!($struct_name))))
-                    }
-                    )*
-                }
-            }
-        }
-    }
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -467,773 +356,10 @@ pub struct JustAFileId {
     pub id: FileId,
 }
 
-deserialize_internally_tagged! {
-    tag_field = "subtype",
-    default_variant = Standard,
-    default_struct = MessageStandard,
-    #[derive(Clone, Debug)]
-    pub enum Message {
-        Standard(MessageStandard),
-        BotAdd(MessageBotAdd),
-        BotRemove(MessageBotRemove),
-        BotMessage(MessageBotMessage),
-        ChannelArchive(MessageChannelArchive),
-        ChannelJoin(MessageChannelJoin),
-        ChannelLeave(MessageChannelLeave),
-        ChannelName(MessageChannelName),
-        ChannelPurpose(MessageChannelPurpose),
-        ChannelTopic(MessageChannelTopic),
-        ChannelUnarchive(MessageChannelUnarchive),
-        FileComment(Box<MessageFileComment>),
-        FileMention(Box<MessageFileMention>),
-        FileShare(Box<MessageFileShare>),
-        GroupArchive(MessageGroupArchive),
-        GroupJoin(MessageGroupJoin),
-        GroupLeave(MessageGroupLeave),
-        GroupName(MessageGroupName),
-        GroupPurpose(MessageGroupPurpose),
-        GroupTopic(MessageGroupTopic),
-        GroupUnarchive(MessageGroupUnarchive),
-        MeMessage(MessageMeMessage),
-        MessageChanged(MessageMessageChanged),
-        MessageDeleted(MessageMessageDeleted),
-        MessageReplied(MessageMessageReplied),
-        PinnedItem(MessagePinnedItem),
-        ReplyBroadcast(MessageReplyBroadcast),
-        ReminderAdd(MessageReminderAdd),
-        SlackbotResponse(MessageSlackbotResponse),
-        ThreadBroadcast(Box<MessageThreadBroadcast>),
-        Tombstone(MessageTombstone),
-        UnpinnedItem(MessageUnpinnedItem),
-    }
-}
-
-//TODO: Have only seen this once...
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageTombstone {
-    pub edited: Box<Message>,
-    pub hidden: bool,
-    pub replies: Vec<Message>,
-    pub reply_count: Option<u32>,
-    pub subscribed: bool,
-    pub text: String,
-    pub user: UserId,
-    pub unread_count: Option<u32>,
-    pub thread_ts: Timestamp,
-    pub ts: Timestamp,
-    // It looks like tombstone messages are actually events even though they end up coming through
-    // a conversations.history call
-    #[serde(rename = "type")]
-    pub ty: Option<String>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageChannelMarked {
-    pub channel: Option<ChannelId>,
-    pub ts: Option<Timestamp>,
-    pub unread_count: Option<i32>,
-    pub unread_count_display: Option<i32>,
-    pub num_mentions: Option<i32>,
-    pub num_mentions_display: Option<i32>,
-    pub mention_count: Option<i32>,
-    pub event_ts: Option<Timestamp>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageBotAdd {
-    pub bot_id: Option<BotId>,
-    pub bot_link: Option<String>,
-    #[serde(default)]
-    pub text: String,
-    pub ts: Option<Timestamp>,
-    pub user: Option<UserId>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageBotRemove {
-    pub bot_id: Option<BotId>,
-    pub bot_link: Option<String>,
-    #[serde(default)]
-    pub text: String,
-    pub ts: Option<Timestamp>,
-    pub user: Option<UserId>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageBotMessage {
-    pub bot_id: Option<BotId>,
-    pub icons: Option<MessageBotMessageIcons>,
-    pub text: Option<String>,
-    pub ts: Option<Timestamp>,
-    pub username: Option<String>,
-    pub channel: Option<ConversationId>,
-    pub team: Option<TeamId>,
-    #[serde(default)]
-    pub reactions: Vec<Reaction>,
-    pub attachments: Option<Vec<MessageStandardAttachment>>,
-    pub user: Option<UserId>,
-    pub replies: Option<Vec<MessageReply>>,
-    pub pinned_info: Option<PinnedInfo>,
-    pub reply_count: Option<u64>,
-    pub pinned_to: Option<Vec<ConversationId>>,
-    pub subscribed: Option<bool>,
-    pub thread_ts: Option<Timestamp>,
-    pub unread_count: Option<u64>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageBotMessageIcons {
-    pub image_36: Option<String>,
-    pub image_48: Option<String>,
-    pub image_72: Option<String>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageChannelArchive {
-    pub members: Option<Vec<String>>,
-    #[serde(default)]
-    pub text: String,
-    pub ts: Option<Timestamp>,
-    pub user: Option<UserId>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageChannelJoin {
-    #[serde(default)]
-    pub text: String,
-    pub ts: Option<Timestamp>,
-    pub user: Option<UserId>,
-    pub reactions: Option<Vec<Reaction>>,
-    pub inviter: Option<UserId>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageChannelLeave {
-    #[serde(default)]
-    pub text: String,
-    pub ts: Option<Timestamp>,
-    pub user: Option<UserId>,
-    pub reactions: Option<Vec<Reaction>>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageChannelName {
-    pub name: Option<String>,
-    pub old_name: Option<String>,
-    #[serde(default)]
-    pub text: String,
-    pub ts: Option<Timestamp>,
-    pub user: Option<UserId>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageChannelPurpose {
-    pub purpose: Option<String>,
-    #[serde(default)]
-    pub text: String,
-    pub ts: Option<Timestamp>,
-    pub user: Option<UserId>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageChannelTopic {
-    #[serde(default)]
-    pub text: String,
-    pub topic: Option<String>,
-    pub ts: Option<Timestamp>,
-    pub user: Option<UserId>,
-    pub reactions: Option<Vec<Reaction>>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageChannelUnarchive {
-    #[serde(default)]
-    pub text: String,
-    pub ts: Option<Timestamp>,
-    pub user: Option<UserId>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageFileComment {
-    pub comment: Option<FileComment>,
-    pub file: Option<File>,
-    #[serde(default)]
-    pub text: String,
-    pub ts: Option<Timestamp>,
-    pub files: Option<Vec<File>>,
-    pub is_intro: Option<bool>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageFileMention {
-    pub file: Option<File>,
-    #[serde(default)]
-    pub text: String,
-    pub ts: Option<Timestamp>,
-    pub user: Option<UserId>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageFileShare {
-    pub channel: Option<ConversationId>,
-    pub file: Option<File>,
-    #[serde(default)]
-    pub text: String,
-    pub ts: Option<Timestamp>,
-    pub upload: Option<bool>,
-    pub user: Option<UserId>,
-    #[serde(default)]
-    pub reactions: Vec<Reaction>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageGroupArchive {
-    pub members: Option<Vec<String>>,
-    #[serde(default)]
-    pub text: String,
-    pub ts: Option<Timestamp>,
-    pub user: Option<UserId>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageGroupJoin {
-    #[serde(default)]
-    pub text: String,
-    pub ts: Option<Timestamp>,
-    pub user: Option<UserId>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageGroupLeave {
-    #[serde(default)]
-    pub text: String,
-    pub ts: Option<Timestamp>,
-    pub user: Option<UserId>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageGroupName {
-    pub name: Option<String>,
-    pub old_name: Option<String>,
-    #[serde(default)]
-    pub text: String,
-    pub ts: Option<Timestamp>,
-    pub user: Option<UserId>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageGroupPurpose {
-    pub purpose: Option<String>,
-    #[serde(default)]
-    pub text: String,
-    pub ts: Option<Timestamp>,
-    pub user: Option<UserId>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageGroupTopic {
-    #[serde(default)]
-    pub text: String,
-    pub topic: Option<String>,
-    pub ts: Option<Timestamp>,
-    pub user: Option<UserId>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageGroupUnarchive {
-    #[serde(default)]
-    pub text: String,
-    pub ts: Option<Timestamp>,
-    pub user: Option<UserId>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageMeMessage {
-    pub channel: Option<ConversationId>,
-    #[serde(default)]
-    pub text: String,
-    pub ts: Option<Timestamp>,
-    pub user: Option<UserId>,
-    pub reactions: Option<Vec<Reaction>>,
-    pub reply_count: Option<u64>,
-    pub subscribed: Option<bool>,
-    pub unread_count: Option<u64>,
-    pub replies: Option<Vec<MessageReply>>,
-    pub thread_ts: Option<Timestamp>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageReply {
-    pub ts: Timestamp,
-    pub user: UserId,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageMessageChanged {
-    pub channel: ConversationId,
-    pub event_ts: Timestamp,
-    pub hidden: Option<bool>,
-    pub message: Option<MessageMessageChangedMessage>,
-    pub previous_message: Option<MessageMessageChangedPreviousMessage>,
-    pub ts: Timestamp,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageMessageChangedMessage {
-    pub bot_id: Option<BotId>,
-    pub edited: Option<MessageMessageChangedMessageEdited>,
-    pub last_read: Option<String>,
-    pub parent_user_id: Option<UserId>,
-    pub replies: Option<Vec<MessageMessageChangedMessageReply>>,
-    pub reply_count: Option<i32>,
-    pub subscribed: Option<bool>,
-    #[serde(default)]
-    pub text: String,
-    pub thread_ts: Option<Timestamp>,
-    pub ts: Timestamp,
-    pub unread_count: Option<i32>,
-    pub user: Option<UserId>,
-    pub client_msg_id: Option<Uuid>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageMessageChangedMessageEdited {
-    pub ts: Timestamp,
-    pub user: UserId,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageMessageChangedMessageReply {
-    pub ts: Timestamp,
-    pub user: UserId,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageMessageChangedPreviousMessage {
-    pub bot_id: Option<BotId>,
-    pub edited: Option<MessageMessageChangedPreviousMessageEdited>,
-    pub last_read: Option<Timestamp>,
-    pub parent_user_id: Option<UserId>,
-    pub replies: Option<Vec<MessageMessageChangedPreviousMessageReply>>,
-    pub reply_count: Option<i32>,
-    pub subscribed: Option<bool>,
-    #[serde(default)]
-    pub text: String,
-    pub thread_ts: Option<Timestamp>,
-    pub ts: Timestamp,
-    pub unread_count: Option<i32>,
-    pub user: Option<UserId>,
-    pub client_msg_id: Option<Uuid>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageMessageChangedPreviousMessageEdited {
-    pub ts: Timestamp,
-    pub user: UserId,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageMessageChangedPreviousMessageReply {
-    pub ts: Timestamp,
-    pub user: UserId,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageMessageDeleted {
-    pub channel: Option<String>,
-    pub deleted_ts: Option<String>,
-    pub event_ts: Option<String>,
-    pub hidden: Option<bool>,
-    pub previous_message: Option<MessageMessageDeletedPreviousMessage>,
-    pub ts: Option<Timestamp>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageMessageDeletedPreviousMessage {
-    pub bot_id: Option<BotId>,
-    pub edited: Option<MessageMessageDeletedPreviousMessageEdited>,
-    pub last_read: Option<Timestamp>,
-    pub parent_user_id: Option<String>,
-    pub replies: Option<Vec<MessageMessageDeletedPreviousMessageReply>>,
-    pub reply_count: Option<i32>,
-    pub subscribed: Option<bool>,
-    #[serde(default)]
-    pub text: String,
-    pub thread_ts: Option<Timestamp>,
-    pub ts: Timestamp,
-    pub unread_count: Option<i32>,
-    pub user: Option<UserId>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageMessageDeletedPreviousMessageEdited {
-    pub ts: Timestamp,
-    pub user: UserId,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageMessageDeletedPreviousMessageReply {
-    pub ts: Timestamp,
-    pub user: UserId,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageMessageReplied {
-    pub channel: Option<ConversationId>,
-    pub event_ts: Timestamp,
-    pub hidden: Option<bool>,
-    pub message: Option<MessageMessageRepliedMessage>,
-    pub thread_ts: Option<Timestamp>,
-    pub ts: Timestamp,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageMessageRepliedMessage {
-    pub bot_id: Option<BotId>,
-    pub edited: Option<MessageMessageRepliedMessageEdited>,
-    pub last_read: Option<Timestamp>,
-    pub parent_user_id: Option<UserId>,
-    pub replies: Option<Vec<MessageMessageRepliedMessageReply>>,
-    pub reply_count: Option<i32>,
-    pub subscribed: Option<bool>,
-    #[serde(default)]
-    pub text: String,
-    pub thread_ts: Option<Timestamp>,
-    pub ts: Timestamp,
-    pub unread_count: Option<i32>,
-    pub user: Option<UserId>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageMessageRepliedMessageEdited {
-    pub ts: Timestamp,
-    pub user: UserId,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageMessageRepliedMessageReply {
-    pub ts: Timestamp,
-    pub user: UserId,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessagePinnedItem {
-    pub channel: Option<ConversationId>,
-    pub item: Option<MessagePinnedItemItem>,
-    pub item_type: Option<String>,
-    #[serde(default)]
-    pub text: String,
-    pub ts: Option<Timestamp>,
-    pub user: Option<UserId>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessagePinnedItemItem {}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageReminderAdd {
-    pub message: Option<String>,
-    pub ts: Option<Timestamp>,
-    pub user: Option<UserId>,
-    pub channel: Option<String>,
-    pub text: Option<String>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageReplyBroadcast {
-    pub attachments: Option<Vec<MessageReplyBroadcastAttachment>>,
-    pub channel: Option<String>,
-    pub event_ts: Option<String>,
-    pub ts: Option<Timestamp>,
-    pub user: Option<UserId>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageReplyBroadcastAttachment {
-    pub author_icon: Option<String>,
-    pub author_link: Option<String>,
-    pub author_subname: Option<String>,
-    pub channel_id: Option<String>,
-    pub channel_name: Option<String>,
-    pub fallback: Option<String>,
-    pub footer: Option<String>,
-    pub from_url: Option<String>,
-    pub id: Option<i32>,
-    pub mrkdwn_in: Option<Vec<String>>,
-    #[serde(default)]
-    pub text: String,
-    pub ts: Option<Timestamp>,
-}
-
-#[derive(Clone, Debug, Default, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageStandard {
-    pub attachments: Option<Vec<MessageStandardAttachment>>,
-    pub bot_id: Option<BotId>,
-    pub channel: Option<ConversationId>,
-    pub edited: Option<MessageStandardEdited>,
-    pub event_ts: Option<Timestamp>,
-    pub reply_broadcast: Option<bool>,
-    pub source_team: Option<TeamId>,
-    pub team: Option<TeamId>,
-    #[serde(default)]
-    pub text: String,
-    pub thread_ts: Option<Timestamp>,
-    pub ts: Option<Timestamp>,
-    pub user: Option<UserId>,
-    pub client_msg_id: Option<Uuid>,
-    #[serde(default)]
-    pub reactions: Vec<Reaction>,
-    pub parent_user_id: Option<UserId>,
-    pub replies: Option<Vec<MessageStandardReply>>,
-    pub reply_count: Option<i32>,
-    pub last_read: Option<Timestamp>,
-    pub subscribed: Option<bool>,
-    pub pinned_info: Option<PinnedInfo>,
-    pub unread_count: Option<i32>,
-    pub pinned_to: Option<Vec<String>>,
-    pub is_starred: Option<bool>,
-    pub display_as_bot: Option<bool>,
-    // TODO: These fields should belong to a flattened struct
-    pub files: Option<Vec<File>>,
-    pub upload: Option<bool>,
-    pub upload_reply_to: Option<Uuid>,
-    pub x_files: Option<Vec<FileId>>,
-    pub user_profile: Option<UserProfile>,
-    pub user_team: Option<TeamId>,
-    // TODO: this is only present when deserializing a history message,
-    // eventually there should probably be a HistoryMessage struct that handles this more
-    // gracefully
-    #[serde(rename = "type")]
-    ty: Option<String>,
-}
-
-// TODO: need to add the fields necessary here
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageStandardReply {
-    pub ts: Timestamp,
-    pub user: UserId,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageStandardAttachment {
-    // TODO: This feels like an untagged enum...
-    pub author_icon: Option<String>,
-    pub author_link: Option<String>,
-    pub author_name: Option<String>,
-    pub author_id: Option<UserId>,
-    pub color: Option<String>,
-    pub fallback: Option<String>,
-    pub fields: Option<Vec<MessageStandardAttachmentField>>,
-    pub footer: Option<String>,
-    pub footer_icon: Option<String>,
-    pub image_url: Option<String>,
-    pub pretext: Option<String>,
-    #[serde(default)]
-    pub text: String,
-    pub title: Option<String>,
-    pub title_link: Option<String>,
-    pub ts: Option<Timestamp>,
-    pub author_subname: Option<String>,
-    pub from_url: Option<String>,
-    pub id: Option<i64>,
-    pub actions: Option<Vec<Action>>,
-    pub mrkdwn_in: Option<Vec<String>>,
-    pub original_url: Option<String>,
-    pub image_bytes: Option<u64>,
-    pub service_icon: Option<String>,
-    pub service_name: Option<String>,
-    pub service_url: Option<String>,
-    pub thumb_height: Option<u64>,
-    pub thumb_width: Option<u64>,
-    pub thumb_url: Option<String>,
-    pub channel_id: Option<ConversationId>,
-    pub callback_id: Option<String>,
-    pub image_height: Option<u64>,
-    pub image_width: Option<u64>,
-    pub channel_name: Option<String>,
-    pub is_msg_unfurl: Option<bool>,
-    pub video_html: Option<String>,
-    pub video_html_height: Option<u64>,
-    pub video_html_width: Option<u64>,
-    pub is_animated: Option<bool>,
-    pub is_share: Option<bool>,
-    pub audio_html: Option<String>,
-    pub audio_html_height: Option<u64>,
-    pub audio_html_width: Option<u64>,
-    pub app_unfurl_url: Option<String>,
-    pub files: Option<Vec<File>>,
-    pub video_url: Option<String>,
-    pub indent: Option<bool>,
-    pub bot_id: Option<BotId>,
-    pub is_app_unfurl: Option<bool>,
-    pub msg_subtype: Option<String>, // TODO: no idea what to do with this
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-#[serde(rename_all = "snake_case")]
-#[serde(tag = "type")]
-pub enum Action {
-    Button {
-        id: String,
-        name: Option<String>,
-        style: String,
-        text: String,
-        url: Option<String>,
-        value: Option<String>,
-        confirm: Option<Confirmation>,
-    },
-    Select {
-        data_source: String,
-        id: String,
-        name: String,
-        options: Vec<ActionOption>,
-        text: String,
-    },
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct Confirmation {
-    dismiss_text: String,
-    ok_text: String,
-    text: String,
-    title: String,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct ActionOption {
-    text: String,
-    value: String,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageStandardAttachmentField {
-    pub short: Option<bool>,
-    pub title: Option<String>,
-    pub value: Option<String>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageStandardEdited {
-    pub ts: Option<Timestamp>,
-    pub user: Option<UserId>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageUnpinnedItem {
-    pub channel: Option<ConversationId>,
-    pub item: Option<MessageUnpinnedItemItem>,
-    #[serde(default)]
-    pub text: String,
-    pub ts: Option<Timestamp>,
-    pub user: Option<UserId>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageUnpinnedItemItem {}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageSlackbotResponse {
-    #[serde(default)]
-    pub text: String,
-    pub ts: Option<Timestamp>,
-    pub user: Option<UserId>,
-    pub channel: Option<ConversationId>,
-    #[serde(default)]
-    pub reactions: Vec<Reaction>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageThreadBroadcast {
-    pub attachments: Option<Vec<MessageThreadBroadcastAttachment>>,
-    pub root: Option<MessageStandard>,
-    #[serde(default)]
-    pub text: String,
-    pub thread_ts: Option<String>,
-    pub user: Option<UserId>,
-    pub ts: Option<Timestamp>,
-    pub client_msg_id: Option<Uuid>,
-    // TODO: What the fuck
-    pub is_thread_broadcast: Option<bool>,
-    pub unfurl_links: Option<bool>,
-    pub unfurl_media: Option<bool>,
-    pub reactions: Option<Vec<Reaction>>,
-}
-
-#[derive(Clone, Debug, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MessageThreadBroadcastAttachment {
-    pub fallback: Option<String>,
-    pub from_url: Option<String>,
-    pub id: Option<i32>,
-    pub service_icon: Option<String>,
-    pub service_name: Option<String>,
-    #[serde(default)]
-    pub text: String,
-    pub title: Option<String>,
-    pub title_link: Option<String>,
-}
-
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Mpim {
-    pub created: Option<i32>,
+    pub created: Option<Timestamp>,
     pub creator: Option<String>,
     pub id: Option<String>,
     pub is_group: Option<bool>,
@@ -1242,8 +368,8 @@ pub struct Mpim {
     pub latest: Option<Message>,
     pub members: Option<Vec<UserId>>,
     pub name: Option<String>,
-    pub unread_count: Option<i32>,
-    pub unread_count_display: Option<i32>,
+    pub unread_count: Option<u32>,
+    pub unread_count_display: Option<u32>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -1252,16 +378,16 @@ pub struct Cursor(String); // TODO: Type safety goes here
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Paging {
-    pub count: Option<i32>,
-    pub page: Option<i32>,
-    pub pages: Option<i32>,
-    pub total: Option<i32>,
+    pub count: Option<u32>,
+    pub page: Option<u32>,
+    pub pages: Option<u32>,
+    pub total: Option<u32>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Reaction {
-    pub count: Option<i32>,
+    pub count: Option<u32>,
     pub name: String,
     pub users: Option<Vec<UserId>>,
 }
@@ -1306,7 +432,7 @@ pub struct TeamIcon {
 #[serde(deny_unknown_fields)]
 pub struct ThreadInfo {
     pub complete: Option<bool>,
-    pub count: Option<i32>,
+    pub count: Option<u32>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -1340,20 +466,20 @@ pub struct User {
 pub struct Usergroup {
     pub auto_type: Option<String>,
     pub created_by: Option<String>,
-    pub date_create: Option<i32>,
-    pub date_delete: Option<i32>,
-    pub date_update: Option<i32>,
-    pub deleted_by: Option<String>,
+    pub date_create: Option<Timestamp>,
+    pub date_delete: Option<Timestamp>,
+    pub date_update: Option<Timestamp>,
+    pub deleted_by: Option<UserId>,
     pub description: Option<String>,
     pub handle: Option<String>,
-    pub id: Option<String>,
+    pub id: Option<GroupId>,
     pub is_external: Option<bool>,
     pub is_usergroup: Option<bool>,
     pub name: Option<String>,
     pub prefs: Option<UsergroupPrefs>,
-    pub team_id: Option<String>,
-    pub updated_by: Option<String>,
-    pub user_count: Option<String>,
+    pub team_id: Option<TeamId>,
+    pub updated_by: Option<UserId>,
+    pub user_count: Option<String>, // TODO: What on Earth
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -1491,3 +617,5 @@ mod tests {
 
 mod event;
 pub use self::event::Event;
+mod message;
+pub use self::message::*;

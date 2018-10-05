@@ -32,10 +32,10 @@ pub struct AccessLogsResponse {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct AccessLogsResponseLogin {
-    pub count: Option<i32>,
+    pub count: Option<u32>,
     pub country: Option<String>,
-    pub date_first: Option<f32>,
-    pub date_last: Option<f32>,
+    pub date_first: Option<Timestamp>,
+    pub date_last: Option<Timestamp>,
     pub ip: Option<String>,
     pub isp: Option<String>,
     pub region: Option<String>,

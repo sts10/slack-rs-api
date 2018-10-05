@@ -103,7 +103,7 @@ pub struct FilesResponse {
 pub struct FilesResponseFiles {
     pub matches: Option<Vec<File>>,
     pub paging: Option<Paging>,
-    pub total: Option<i32>,
+    pub total: Option<u32>,
 }
 
 /// Searches for messages matching a query.
@@ -146,5 +146,5 @@ pub struct MessagesResponse {
 pub struct MessagesResponseMessages {
     pub matches: Option<Vec<Message>>,
     pub paging: Option<Paging>,
-    pub total: Option<i32>,
+    pub total: Option<u32>,
 }
