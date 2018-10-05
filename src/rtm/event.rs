@@ -277,7 +277,7 @@ pub enum Event {
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(rename_all = "snake_case")]
-#[serde(tag = "type")]
+#[serde(tag = "subtype")]
 #[serde(deny_unknown_fields)]
 pub enum EmojiChanged {
     Add {
