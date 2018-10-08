@@ -450,7 +450,7 @@ pub struct User {
     pub is_restricted: Option<bool>,
     pub is_ultra_restricted: Option<bool>,
     pub locale: Option<String>,
-    pub name: String,
+    pub name: Option<String>,
     pub profile: Option<UserProfile>,
     pub real_name: Option<String>,
     pub team_id: Option<String>,

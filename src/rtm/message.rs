@@ -403,10 +403,9 @@ pub struct MessageMessageChanged {
     pub channel: ConversationId,
     pub event_ts: Timestamp,
     pub hidden: Option<bool>,
-    pub message: Option<MessageMessageChangedMessage>,
-    pub previous_message: Option<MessageMessageChangedPreviousMessage>,
+    pub message: Option<Box<Message>>,
+    pub previous_message: Option<Box<Message>>,
     pub ts: Timestamp,
-    pub attachments: Option<Vec<MessageStandardAttachment>>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -486,7 +485,7 @@ pub struct MessageMessageDeleted {
     pub deleted_ts: Option<String>,
     pub event_ts: Option<String>,
     pub hidden: Option<bool>,
-    pub previous_message: Option<MessageMessageDeletedPreviousMessage>,
+    pub previous_message: Option<Box<Message>>,
     pub ts: Option<Timestamp>,
 }
 
@@ -529,7 +528,7 @@ pub struct MessageMessageReplied {
     pub channel: Option<ConversationId>,
     pub event_ts: Timestamp,
     pub hidden: Option<bool>,
-    pub message: Option<MessageMessageRepliedMessage>,
+    pub message: Option<Box<Message>>,
     pub thread_ts: Option<Timestamp>,
     pub ts: Timestamp,
 }
@@ -807,6 +806,7 @@ pub struct MessageSlackbotResponse {
     #[serde(default)]
     pub reactions: Vec<Reaction>,
     pub attachments: Option<Vec<MessageStandardAttachment>>,
+    pub source_team: Option<TeamId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
