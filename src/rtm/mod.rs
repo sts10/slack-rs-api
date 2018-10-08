@@ -492,6 +492,7 @@ pub struct UsergroupPrefs {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct UserProfile {
+    pub name: String,
     pub avatar_hash: Option<String>,
     pub display_name: Option<String>,
     pub display_name_normalized: Option<String>,
@@ -516,10 +517,12 @@ pub struct UserProfile {
     pub skype: Option<String>,
     pub status_emoji: Option<String>,
     pub status_text: Option<String>,
-    pub team: Option<String>,
+    pub team: Option<TeamId>,
     pub title: Option<String>,
-    pub status_expiration: Timestamp,
-    pub status_text_canonical: String,
+    pub status_expiration: Option<Timestamp>,
+    pub status_text_canonical: Option<String>,
+    pub is_restricted: bool,
+    pub is_ultra_restricted: bool,
 }
 
 #[derive(Clone, Debug, Deserialize)]

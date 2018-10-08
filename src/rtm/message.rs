@@ -406,6 +406,7 @@ pub struct MessageMessageChanged {
     pub message: Option<MessageMessageChangedMessage>,
     pub previous_message: Option<MessageMessageChangedPreviousMessage>,
     pub ts: Timestamp,
+    pub attachments: Option<Vec<MessageStandardAttachment>>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -425,6 +426,8 @@ pub struct MessageMessageChangedMessage {
     pub unread_count: Option<u32>,
     pub user: Option<UserId>,
     pub client_msg_id: Option<Uuid>,
+    #[serde(rename = "type")]
+    ty: String,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -458,6 +461,8 @@ pub struct MessageMessageChangedPreviousMessage {
     pub unread_count: Option<u32>,
     pub user: Option<UserId>,
     pub client_msg_id: Option<Uuid>,
+    #[serde(rename = "type")]
+    ty: String,
 }
 
 #[derive(Clone, Debug, Deserialize)]

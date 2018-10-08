@@ -257,6 +257,11 @@ pub enum Event {
         event_ts: Timestamp,
         icon: TeamIcon,
     },
+    TeamPrefChange {
+        event_ts: Timestamp,
+        name: String,
+        value: String,
+    },
     ThreadSubscribed {
         event_ts: Timestamp,
         subscription: Subscription,
