@@ -401,7 +401,7 @@ pub struct MessageReply {
 #[serde(deny_unknown_fields)]
 pub struct MessageMessageChanged {
     pub channel: ConversationId,
-    pub event_ts: Timestamp,
+    pub event_ts: Option<Timestamp>,
     pub hidden: Option<bool>,
     pub message: Option<Box<Message>>,
     pub previous_message: Option<Box<Message>>,
@@ -595,8 +595,8 @@ pub struct MessageReminderAdd {
 #[serde(deny_unknown_fields)]
 pub struct MessageReplyBroadcast {
     pub attachments: Option<Vec<MessageReplyBroadcastAttachment>>,
-    pub channel: Option<String>,
-    pub event_ts: Option<String>,
+    pub channel: Option<ConversationId>,
+    pub event_ts: Option<Timestamp>,
     pub ts: Option<Timestamp>,
     pub user: Option<UserId>,
 }
@@ -607,7 +607,7 @@ pub struct MessageReplyBroadcastAttachment {
     pub author_icon: Option<String>,
     pub author_link: Option<String>,
     pub author_subname: Option<String>,
-    pub channel_id: Option<String>,
+    pub channel_id: Option<ConversationId>,
     pub channel_name: Option<String>,
     pub fallback: Option<String>,
     pub footer: Option<String>,
