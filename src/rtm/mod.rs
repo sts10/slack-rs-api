@@ -88,7 +88,7 @@ pub type Conversation = Channel;
 pub struct Channel {
     pub accepted_user: Option<UserId>,
     pub created: Option<Timestamp>,
-    pub creator: Option<String>,
+    pub creator: Option<UserId>,
     pub id: ChannelId,
     pub is_archived: Option<bool>,
     pub is_channel: Option<bool>,
@@ -616,6 +616,6 @@ mod tests {
 }
 
 mod event;
-pub use self::event::Event;
+pub use self::event::*;
 mod message;
 pub use self::message::*;

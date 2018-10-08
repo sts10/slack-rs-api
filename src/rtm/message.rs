@@ -380,6 +380,14 @@ pub struct MessageMeMessage {
     pub unread_count: Option<u32>,
     pub replies: Option<Vec<MessageReply>>,
     pub thread_ts: Option<Timestamp>,
+    pub edited: Option<EditInfo>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EditInfo {
+    ts: Timestamp,
+    user: UserId,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -493,6 +501,7 @@ pub struct MessageMessageDeletedPreviousMessage {
     pub ts: Timestamp,
     pub unread_count: Option<u32>,
     pub user: Option<UserId>,
+    pub client_msg_id: Option<Uuid>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -792,6 +801,7 @@ pub struct MessageSlackbotResponse {
     pub channel: Option<ConversationId>,
     #[serde(default)]
     pub reactions: Vec<Reaction>,
+    pub attachments: Option<Vec<MessageStandardAttachment>>,
 }
 
 #[derive(Clone, Debug, Deserialize)]

@@ -1,4 +1,5 @@
-use rtm::{Conversation, Cursor, Message};
+use id::*;
+use rtm::{Cursor, Message};
 use timestamp::Timestamp;
 
 /// Archives a conversation.
@@ -100,7 +101,7 @@ pub struct HistoryResponse {
     pub messages: Vec<Message>,
     pub has_more: bool,
     pub pin_count: u32,
-    pub response_metadata: ResponseMetadata,
+    pub response_metadata: Option<ResponseMetadata>,
     pub is_limited: Option<bool>,
 }
 
@@ -129,7 +130,7 @@ pub struct InfoRequest {
 #[serde(deny_unknown_fields)]
 pub struct InfoResponse {
     ok: bool,
-    pub channel: Conversation,
+    pub channel: ConversationInfo,
 }
 
 /// Invites users to a channel.
@@ -227,8 +228,9 @@ pub struct ListRequest {
     pub limit: Option<u32>,
 
     /// Mix and match channel types by providing a comma-separated list of any combination of public_channel, private_channel, mpim, im
-    #[new(default)]
-    pub types: Option<Vec<ChannelType>>,
+    #[new(value = "vec![ChannelType::PublicChannel]")]
+    #[serde(serialize_with = "::serialize_comma_separated")]
+    pub types: Vec<ChannelType>,
 }
 
 #[derive(Clone, Debug, Serialize)]
@@ -238,6 +240,18 @@ pub enum ChannelType {
     PrivateChannel,
     Mpim,
     Im,
+}
+
+impl ::std::fmt::Display for ChannelType {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        use self::ChannelType::*;
+        match self {
+            PublicChannel => write!(f, "public_channel"),
+            PrivateChannel => write!(f, "private_channel"),
+            Mpim => write!(f, "mpim"),
+            Im => write!(f, "im"),
+        }
+    }
 }
 
 // TODO: This returns a _partial_ conversation object, per the slack docs
@@ -446,4 +460,198 @@ pub struct ConversationsResponse {
     ok: bool,
     pub channels: Vec<Conversation>,
     pub response_metadata: Option<ResponseMetadata>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(untagged)]
+pub enum Conversation {
+    Channel {
+        created: Timestamp,
+        creator: UserId,
+        id: ConversationId,
+        is_archived: bool,
+        is_channel: bool,
+        is_ext_shared: bool,
+        is_general: bool,
+        is_group: bool,
+        is_im: bool,
+        is_member: bool,
+        is_mpim: bool,
+        is_org_shared: bool,
+        is_pending_ext_shared: bool,
+        is_private: bool,
+        is_shared: bool,
+        name: String,
+        name_normalized: String,
+        num_members: u32,
+        pending_shared: Vec<String>,
+        previous_names: Vec<String>,
+        purpose: ConversationPurpose,
+        shared_team_ids: Vec<TeamId>,
+        topic: ConversationTopic,
+        unlinked: u32,
+    },
+    Group {
+        created: Timestamp,
+        creator: UserId,
+        id: ConversationId,
+        is_archived: bool,
+        is_channel: bool,
+        is_ext_shared: bool,
+        is_general: bool,
+        is_group: bool,
+        is_im: bool,
+        is_member: bool,
+        is_mpim: bool,
+        is_open: Option<bool>,
+        is_org_shared: bool,
+        is_pending_ext_shared: bool,
+        is_private: bool,
+        is_shared: bool,
+        last_read: Timestamp,
+        name: String,
+        name_normalized: String,
+        pending_shared: Vec<String>,
+        priority: f32,
+        purpose: ConversationPurpose,
+        shared_team_ids: Vec<TeamId>,
+        topic: ConversationTopic,
+        unlinked: u32,
+    },
+    DirectMessage {
+        created: Timestamp,
+        id: ConversationId,
+        is_im: bool,
+        is_org_shared: bool,
+        is_user_deleted: bool,
+        priority: f32,
+        user: UserId,
+    },
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ConversationPurpose {
+    #[serde(deserialize_with = "deserialize_userid_or_empty")]
+    pub creator: Option<UserId>,
+    pub last_set: Timestamp,
+    pub value: String,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ConversationTopic {
+    #[serde(deserialize_with = "deserialize_userid_or_empty")]
+    pub creator: Option<UserId>,
+    pub last_set: Timestamp,
+    pub value: String,
+}
+
+fn deserialize_userid_or_empty<'de, D>(deserializer: D) -> Result<Option<UserId>, D::Error>
+where
+    D: ::serde::Deserializer<'de>,
+{
+    struct TheVisitor;
+    impl<'de> ::serde::de::Visitor<'de> for TheVisitor {
+        type Value = Option<UserId>;
+
+        fn expecting(&self, formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+            formatter.write_str("an empty string or a UserId")
+        }
+
+        fn visit_str<E: ::serde::de::Error>(self, value: &str) -> Result<Option<UserId>, E> {
+            if value.is_empty() {
+                Ok(None)
+            } else {
+                Ok(Some(UserId::from(value)))
+            }
+        }
+    }
+
+    deserializer.deserialize_str(TheVisitor)
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(untagged)]
+pub enum ConversationInfo {
+    Channel {
+        created: Timestamp,
+        creator: UserId,
+        id: ChannelId,
+        is_archived: bool,
+        is_channel: bool,
+        is_ext_shared: bool,
+        is_general: bool,
+        is_group: bool,
+        is_im: bool,
+        is_member: bool,
+        is_mpim: bool,
+        is_org_shared: bool,
+        is_pending_ext_shared: bool,
+        is_private: bool,
+        /// Present on the general channel for free plans, possibly all channels otherwise
+        is_read_only: Option<bool>,
+        is_shared: bool,
+        /// Present if is_member is true
+        last_read: Option<Timestamp>,
+        name: String,
+        name_normalized: String,
+        pending_shared: Vec<String>,
+        previous_names: Vec<String>,
+        purpose: ConversationPurpose,
+        shared_team_ids: Vec<TeamId>,
+        topic: ConversationTopic,
+        unlinked: u32,
+    },
+    Group {
+        created: Timestamp,
+        creator: UserId,
+        id: GroupId,
+        is_archived: bool,
+        is_channel: bool,
+        is_ext_shared: bool,
+        is_general: bool,
+        is_group: bool,
+        is_im: bool,
+        is_member: bool,
+        is_mpim: bool,
+        is_open: bool,
+        is_org_shared: bool,
+        is_pending_ext_shared: bool,
+        is_private: bool,
+        is_shared: bool,
+        last_read: Timestamp,
+        name: String,
+        name_normalized: String,
+        pending_shared: Vec<String>,
+        purpose: ConversationPurpose,
+        shared_team_ids: Vec<TeamId>,
+        topic: ConversationTopic,
+        unlinked: u32,
+    },
+    OpenDirectMessage {
+        created: Timestamp,
+        id: ConversationId,
+        is_im: bool,
+        is_open: bool,
+        is_org_shared: bool,
+        last_read: Timestamp,
+        // Just... why...
+        latest: Option<::rtm::Message>,
+        priority: f32,
+        unread_count: u32,
+        unread_count_display: u32,
+        user: UserId,
+    },
+    ClosedDirectMessage {
+        created: Timestamp,
+        id: ConversationId,
+        is_im: bool,
+        is_org_shared: bool,
+        is_user_deleted: bool,
+        priority: f32,
+        user: UserId,
+    },
 }

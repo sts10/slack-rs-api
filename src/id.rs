@@ -19,9 +19,9 @@ macro_rules! make_id {
         impl<'a> From<&'a str> for $name {
             #[inline]
             fn from(input: &'a str) -> Self {
-                assert!(input.len() > 0 && input.len() <= ID_LENGTH);
-                match input.as_bytes()[0] {
-                   $(|$firstchar)* => {
+                assert!(input.len() <= ID_LENGTH);
+                match input.as_bytes().get(0) {
+                   $(|Some($firstchar))* => {
                         let mut output = Self {
                             len: input.len() as u8,
                             buf: [0; ID_LENGTH],
@@ -67,8 +67,8 @@ macro_rules! make_id {
                                 input
                             )))
                         } else {
-                            match input.as_bytes()[0] {
-                                $(|$firstchar)* => {
+                            match input.as_bytes().get(0) {
+                                $(|Some($firstchar))* => {
                                     let mut output = $name {
                                         len: input.len() as u8,
                                         buf: [0; ID_LENGTH],

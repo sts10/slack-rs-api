@@ -7,7 +7,7 @@ use timestamp::Timestamp;
 #[derive(Clone, Debug, Deserialize)]
 #[serde(tag = "type")]
 #[serde(rename_all = "snake_case")]
-#[serde(deny_unknown_fields)]
+//#[serde(deny_unknown_fields)]
 pub enum Event {
     AppsChanged {
         app: App,
@@ -192,7 +192,11 @@ pub enum Event {
         ts: Timestamp,
         event_ts: Timestamp,
     },
-    Message(Message),
+    Message {
+        #[serde(flatten)]
+        message: Message,
+        event_ts: Timestamp,
+    },
     PinAdded {
         user: UserId,
         channel_id: ConversationId,
@@ -220,7 +224,7 @@ pub enum Event {
     },
     ReactionAdded {
         user: UserId,
-        item: Box<Event>,
+        item: Reactable,
         reaction: String,
         item_user: Option<UserId>,
         event_ts: Timestamp,
@@ -228,7 +232,7 @@ pub enum Event {
     },
     ReactionRemoved {
         user: UserId,
-        item: Box<Event>,
+        item: Reactable,
         reaction: String,
         item_user: Option<UserId>,
         event_ts: Timestamp,
@@ -285,4 +289,12 @@ pub enum EmojiChanged {
         value: String,
         event_ts: Timestamp,
     },
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(rename_all = "snake_case")]
+#[serde(tag = "type")]
+#[serde(deny_unknown_fields)]
+pub enum Reactable {
+    Message { channel: ConversationId, ts: Timestamp },
 }
