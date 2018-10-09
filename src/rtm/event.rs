@@ -14,7 +14,6 @@ pub enum Event {
         event_ts: Timestamp,
     },
     AppsInstalled {
-        // new in refactor
         app: App,
         event_ts: Timestamp,
     },

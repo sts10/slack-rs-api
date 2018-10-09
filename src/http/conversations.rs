@@ -11,7 +11,7 @@ api_call!(archive, "conversations.archive", ArchiveRequest =>);
 #[derive(Clone, Debug, Serialize, new)]
 pub struct ArchiveRequest {
     /// ID of conversation to archive
-    pub channel: ::ConversationId,
+    pub channe: ::ConversationId,
 }
 
 /// Closes a direct message or multi-person direct message.

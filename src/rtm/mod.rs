@@ -458,7 +458,7 @@ pub struct User {
     pub tz: Option<String>,
     pub tz_label: Option<String>,
     pub tz_offset: Option<f32>,
-    pub updated: Option<f32>,
+    pub updated: Option<Timestamp>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -510,6 +510,7 @@ pub struct UserProfile {
     pub image_512: Option<String>,
     pub image_1024: Option<String>,
     pub image_original: Option<String>,
+    pub is_custom_image: Option<bool>,
     pub last_name: Option<String>,
     pub phone: Option<String>,
     pub real_name: Option<String>,
@@ -521,8 +522,8 @@ pub struct UserProfile {
     pub title: Option<String>,
     pub status_expiration: Option<Timestamp>,
     pub status_text_canonical: Option<String>,
-    pub is_restricted: bool,
-    pub is_ultra_restricted: bool,
+    pub is_restricted: Option<bool>,
+    pub is_ultra_restricted: Option<bool>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
