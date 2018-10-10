@@ -321,6 +321,7 @@ pub struct MessageGroupJoin {
     pub text: String,
     pub ts: Option<Timestamp>,
     pub user: Option<UserId>,
+    pub inviter: Option<UserId>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -499,7 +500,7 @@ pub struct MessageMessageDeleted {
 #[serde(deny_unknown_fields)]
 pub struct MessageMessageReplied {
     pub channel: Option<ConversationId>,
-    pub event_ts: Timestamp,
+    pub event_ts: Option<Timestamp>,
     pub hidden: Option<bool>,
     pub message: Option<Box<Message>>,
     pub thread_ts: Option<Timestamp>,
@@ -748,4 +749,5 @@ pub struct MessageThreadBroadcast {
     pub unfurl_links: Option<bool>,
     pub unfurl_media: Option<bool>,
     pub reactions: Option<Vec<Reaction>>,
+    pub edited: Option<Timestamp>,
 }

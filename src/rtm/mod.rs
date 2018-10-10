@@ -492,7 +492,7 @@ pub struct UsergroupPrefs {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct UserProfile {
-    pub name: String,
+    pub name: Option<String>,
     pub avatar_hash: Option<String>,
     pub display_name: Option<String>,
     pub display_name_normalized: Option<String>,
