@@ -98,10 +98,45 @@ deserialize_internally_tagged! {
         ReplyBroadcast(MessageReplyBroadcast),
         ReminderAdd(MessageReminderAdd),
         SlackbotResponse(MessageSlackbotResponse),
+        ShRoomCreated(MessageShRoomCreated),
         ThreadBroadcast(Box<MessageThreadBroadcast>),
         Tombstone(MessageTombstone),
         UnpinnedItem(MessageUnpinnedItem),
     }
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ShRoom {
+    pub channels: Vec<ConversationId>,
+    pub created_by: UserId,
+    pub date_end: Timestamp,
+    pub date_start: Timestamp,
+    pub has_ended: bool,
+    pub id: String,
+    pub is_dm_call: bool,
+    pub name: String,
+    pub participant_history: Vec<UserId>,
+    pub participants: Vec<UserId>,
+    pub participants_camera_off: Vec<UserId>,
+    pub participants_camera_on: Vec<UserId>,
+    pub participants_screenshare_off: Vec<UserId>,
+    pub participants_screenshare_on: Vec<UserId>,
+    pub was_accepted: bool,
+    pub was_missed: bool,
+    pub was_rejected: bool,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MessageShRoomCreated {
+    pub channel: ConversationId,
+    pub room: ShRoom,
+    pub user: UserId,
+    pub permalink: String,
+    pub text: String,
+    pub ts: Timestamp,
+    pub no_notifications: bool,
 }
 
 //TODO: Have only seen this once...
@@ -749,5 +784,5 @@ pub struct MessageThreadBroadcast {
     pub unfurl_links: Option<bool>,
     pub unfurl_media: Option<bool>,
     pub reactions: Option<Vec<Reaction>>,
-    pub edited: Option<Timestamp>,
+    pub edited: Option<MessageStandardEdited>,
 }

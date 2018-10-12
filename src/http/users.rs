@@ -153,6 +153,7 @@ pub struct User {
     pub color: Option<String>,
     pub deleted: bool,
     pub has_2fa: Option<bool>,
+    pub two_factor_type: Option<String>,
     pub id: UserId,
     pub is_admin: Option<bool>,
     pub is_app_user: bool,
