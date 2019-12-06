@@ -14,7 +14,9 @@ The error, in part, looks something like this:
 Err(MalformedResponse(Error("invalid type: string \"1575650231.403900\", expected f32", line: 1, column: 8089)))
 ```
 
-There is [a pull request](https://github.com/slack-rs/slack-rs-api/issues/78), but it hasn't been merged.
+There is [a pull request](https://github.com/slack-rs/slack-rs-api/issues/78), but it hasn't been merged. 
+
+There's also [another fork](https://github.com/clux/slack-rs-api/commit/673dc064405bcc74929cae10ce571c6254a798a8) that attempts to fix this issue (or a similar one), albeit with what looks like a blunter approach. 
 
 [Documentation][docs] (may be outdated)
 
